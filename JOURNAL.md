@@ -3,6 +3,20 @@
 最新记录在最上方；每个 session 一条。超过约 150 行时，将最新五条之前的内容压缩到
 Digest。
 
+## 2026-08-09 — M4–M5: 批准 MVP 合同并加入 UI 原型确认门槛
+
+- Decision: 产品负责人批准中性 Store、首次导入与可回滚 quarantine、Agent 配置只读、
+  同名变体不改写、按所选 Agent 计算最小 adapter 集合，以及 Cursor/Trae 有条件支持等
+  MVP 合同；M4 完成。
+- Design gate: 所有 UI、交互和文案在生产实现前必须先生成至少 3 个可比较原型，等待
+  产品负责人明确确认一个方向；该结论已同步到 `AGENTS.md`、`PLAN.md` 与 `DESIGN.md`。
+- Scope: 本轮只更新 harness 和设计规范，没有生成原型、修改生产 UI、实现 MVP 功能，
+  也没有触碰真实用户 Skill Store、项目或 Agent 配置。
+- Evidence: `npm run check` → exit 0；Rust tests 11 passed，Vite 1583 modules
+  transformed，并生成 `src-tauri/target/debug/bundle/macos/Habitat.app`。
+- Next: M5 先固定产品数据合同并生成 onboarding 到 rollback 的多个交互原型；等待产品
+  负责人确认后，才允许后续 milestone 实现生产 UI。
+
 ## 2026-08-09 — M4: 扩展 Cursor 与 Trae 兼容范围
 
 - Finding: Cursor 原生扫描 `.agents/skills`，无需新增 `.cursor` adapter，但也会扫描

@@ -1,3 +1,4 @@
+pub mod migration;
 pub mod skills;
 
 use skills::{AppError, CommandResult, Preflight, ProjectScan, SkillInspection, StoreScan};

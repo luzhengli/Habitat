@@ -51,7 +51,7 @@ targeted、path-compatible 和 runtime-verified。
 skills、修改 Agent 配置、云同步与团队分发、接管 Agent 启动命令，以及在未验证版本上
 宣称 Cursor/Trae 已受支持。
 
-## M5. 确认 MVP 产品合同与交互原型 — doing
+## M5. 确认 MVP 产品合同与交互原型 — done
 
 Done when: adapter、effective exposure、迁移事务与 rollback 的产品数据合同可供后续实现
 独立验证；针对 onboarding、inventory、冲突处理、迁移确认和结果恢复至少生成 3 个可比较
@@ -64,20 +64,33 @@ Done when: adapter、effective exposure、迁移事务与 rollback 的产品数�
 同步切换。首次设置 7 个页面状态、项目管理 6 个页面/组件状态、恢复区、术语和视觉探索前
 验收条件已形成信息架构合同。此前所有在首次迁移中展示项目上下文的原型均只保留为决策
 历史。产品负责人已选择第二轮方案 1 的三栏项目 Skills 工作台；底部状态条、待应用栏、真实
-Agent 图标和增量 Skill 详情已按反馈修订，第二次微调进一步缩小图标与控件视觉尺寸。最终稿
-确认前 M5 保持 `doing`，生产 UI 仍未获准实现。
+Agent 图标和增量 Skill 详情已按反馈修订，第二次微调进一步缩小图标与控件视觉尺寸；产品
+负责人确认 V2 作为最终方向。允许后续实现的 UI 范围是该三栏项目 Skills 工作台、条件式待
+应用栏与增量详情结构；首次设置仍以已批准 IA 为合同，进入 M8 前需按同一视觉系统补齐具体
+状态并复验。M5 已完成，视觉确认不代表跳过 M6/M7 安全内核和 runtime 验证。
 
-## M6. 实现安全内核与迁移事务 — todo
+## M6. 实现安全内核与迁移事务 — done
 
 Done when: 中性 Store 校验、正式 frontmatter 诊断、canonical inventory、staging 导入、
 manifest quarantine 与 rollback 在临时 fixture 中满足 M4 合同；路径安全语义不放宽，
 针对性 Rust 测试和 `npm run check` 通过。
 
-## M7. 实现多 Agent exposure 与项目 adapter — todo
+完成情况：新增独立 Rust 迁移内核，使用版本化目录清单和 SHA-256 内容指纹进行 canonical
+inventory；同一 canonical path 合并为一个 artifact，相同指纹副本和同名不同指纹变体保持
+独立。Store 会拒绝符号链接、已知 discovery root 或项目的祖先/后代位置，并在执行前复验
+Store 文件身份、源 canonical path、lstat 身份、链接文本与内容指纹。确认后先写事务 manifest，
+经 staging 验证后导入 Store，再立即将原用户入口移动到 recovery；rollback 只在目标缺失且
+Store/recovery 内容未漂移时精确恢复。全部验证只使用临时 fixture；未注册生产 UI command，
+未访问真实用户路径。新增 7 个迁移测试，Rust 共 18 个测试及 `npm run check` 全部通过。
+
+## M7. 实现多 Agent exposure 与项目 adapter — doing
 
 Done when: 五 Agent adapter registry、只读 policy/precedence 解释、所选 Agent 最小目标集、
 多目标预检和安全回滚均可观察；Codex/Claude/Pi 完成 runtime 验收，Cursor/Trae 未完成
 runtime QA 时只显示批准的有条件等级；`npm run check` 通过。
+
+当前进展：M6 已提供不可覆盖、可回滚的事务基础；下一步先把五 Agent 的路径、共享目标组、
+只读支持证据和最小目标集固化为 adapter registry 与 fixture 测试，再接入项目级多目标事务。
 
 ## M8. 实现已确认 UI 并完成 MVP QA — todo
 

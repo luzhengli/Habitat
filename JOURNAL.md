@@ -3,6 +3,26 @@
 最新记录在最上方；每个 session 一条。超过约 150 行时，将最新五条之前的内容压缩到
 Digest。
 
+## 2026-08-10 — M5→M7: 确认 V2，完成迁移内核
+
+- Approval: 产品负责人确认 `project-skills-round2-selected-v2.png`，M5 结束；V2 是项目
+  Skills 工作台、条件式待应用栏和增量详情结构的生产 UI 方向。
+- Boundary: 首次设置继续由已批准 IA 约束，M8 前仍需按 V2 视觉系统补齐具体状态；当前先
+  进入 M6，不抢跑生产 React/Tauri UI。
+- M6: 新增独立 `src-tauri/src/migration.rs`，实现中性 Store 校验、结构化 frontmatter
+  诊断、canonical inventory、版本化 SHA-256 内容指纹、staging 导入、即时 recovery、事务
+  manifest 与保守 rollback；未把接口注册为生产 Tauri command。
+- Identity: 同一 canonical path 只生成一个 artifact；同指纹副本与同名不同指纹变体仍是
+  独立 artifact。执行前复验 Store identity、源 canonical path、lstat identity、链接文本和
+  内容指纹，Store 与 discovery root/受管理项目的任一祖先/后代关系都会阻断。
+- Fixtures: 7 个临时目录测试覆盖 Store 位置/符号链接、canonical 去重、重复副本、同名变体、
+  非法声明、导入后立即恢复区、源/Store 漂移、rollback 目标漂移与精确恢复。
+- Safety: 本阶段不得访问或修改真实 Skill Store、真实项目或 Agent 配置。
+- Evidence: `cargo test --manifest-path src-tauri/Cargo.toml` → 18 passed；`npm run check` →
+  exit 0，Vite 1583 modules transformed，并生成 debug `Habitat.app`。
+- Next: M7 先固化五 Agent adapter registry、共享目标组与只读支持证据，再实现项目级多目标
+  预检和安全回滚；M8 前不修改生产 UI。
+
 ## 2026-08-10 — M5: 选择三栏方向并生成首份修订稿
 
 - Decision: 产品负责人选择第二轮方案 1 的三栏项目 Skills 工作台，但修订稿确认前仍不

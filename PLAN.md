@@ -58,6 +58,9 @@ Done when: adapter、effective exposure、迁移事务与 rollback 的产品数�
 原型，产品负责人明确选择一个方向；确认结论和允许实现的 UI 范围记录在 PLAN/JOURNAL，
 期间不修改生产 React/Tauri UI。
 
+当前进展：产品数据合同草案与 3 个 `1440×1024` 原型已生成，等待产品负责人选择或要求
+修订；M5 在选择与范围记录完成前保持 `doing`，生产 UI 仍未获准实现。
+
 ## M6. 实现安全内核与迁移事务 — todo
 
 Done when: 中性 Store 校验、正式 frontmatter 诊断、canonical inventory、staging 导入、

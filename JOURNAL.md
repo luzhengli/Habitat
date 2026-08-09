@@ -3,6 +3,21 @@
 最新记录在最上方；每个 session 一条。超过约 150 行时，将最新五条之前的内容压缩到
 Digest。
 
+## 2026-08-09 — M5: 完成产品合同草案与三方向原型
+
+- Contract: 新增 `docs/product/mvp-product-contract.md`，定义 adapter、canonical artifact、
+  exposure route、effective exposure、inventory snapshot、迁移事务、manifest、rollback、
+  多目标链接与支持等级合同；没有实现生产代码。
+- Prototypes: 基于现有 `DESIGN.md`、参考原型和真实 Spike 截图，分别生成 Guided migration、
+  Inventory workbench、Project exposure 三个独立 `1440×1024` 方向；三者使用相同 fixture、
+  冲突与支持等级，便于公平比较。
+- Boundary: `src/`、`src-tauri/`、真实用户 Skill Store、项目和 Agent 配置均未修改；原型
+  只保存在 `docs/prototypes/mvp/`，不能作为功能或 runtime 兼容性证据。
+- Evidence: 三个 PNG 均验证为 1440×1024；生成 reference 和 prompt set 已保存在同目录；
+  `git diff --check` 通过，diff 未包含 `src/` 或 `src-tauri/`。
+- Next: 等待产品负责人选择 1、2、3，或提出需要重新生成/组合的具体反馈；选择前 M5 保持
+  `doing`，不得进入生产 UI 实现。
+
 ## 2026-08-09 — M4–M5: 批准 MVP 合同并加入 UI 原型确认门槛
 
 - Decision: 产品负责人批准中性 Store、首次导入与可回滚 quarantine、Agent 配置只读、

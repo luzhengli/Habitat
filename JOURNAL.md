@@ -22,6 +22,7 @@ Digest。
 - Boundary: 本轮未修改 `src/`、`src-tauri/`、真实 Skill Store、项目或 Agent 配置；M5
   继续 `doing`，等待产品负责人确认修订稿。
 - Checkpoint: `0d5b38d` 保存方案 1 修订稿、真实图标依据与 M5 选择状态。
+- Checkpoint: `1a5a1b5` 保存图标尺寸微调后的 V2 当前视觉目标。
 - Next: 评审修订稿中右栏增量信息与待应用栏，确认后再固定允许实现的 UI 范围。
 
 ## 2026-08-09 — M5: 生成第二轮项目 Skills 视觉方案

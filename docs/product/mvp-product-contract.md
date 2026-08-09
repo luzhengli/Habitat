@@ -208,7 +208,8 @@ The manifest records, for every operation:
   and fingerprint;
 - staging path and final Store path;
 - quarantine path;
-- project target, relative link text, and expected canonical Store target;
+- optional project target, relative link text, and expected canonical Store target; these are
+  absent from a first-run migration manifest and present only in a project-link transaction;
 - operation result, timestamp, structured error, and whether Habitat may safely undo it.
 
 Rollback is exact and conservative. Habitat restores an entry only when the destination

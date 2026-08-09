@@ -3,6 +3,20 @@
 最新记录在最上方；每个 session 一条。超过约 150 行时，将最新五条之前的内容压缩到
 Digest。
 
+## 2026-08-09 — M5: 生成第二轮项目 Skills 视觉方案
+
+- Scope: 以迁移完成后的 P2 项目 Skills 为唯一比较面，首次迁移只作为前置条件，不再把
+  机器级迁移、项目链接与日常管理混在同一页面。
+- Shared contract: 三稿使用相同项目、Skill、Agent 状态和待应用草稿；均删除顶部含糊统计、
+  独立链接状态、策略、优先级和原始路径，并把 Codex/Pi/Cursor 作为一个共享入口控件。
+- Prototypes: 新增三栏工作台、行内展开账本、Agent 可用性矩阵三个 1440×1024 静态方向；
+  三者都只在用户点击 Agent 控件后形成草稿，再通过单一“查看并应用”动作提交。
+- Boundary: 本轮未修改 `src/`、`src-tauri/` 或真实用户文件；视觉方向尚未选择，M5 继续
+  `doing`，生产 UI 仍未获准实现。
+- Evidence: 原始生成图使用已偏好的三栏稿与真实 Spike 截图作为视觉参考；归档副本统一为
+  1440×1024，生成约束与比较轴记录在 `docs/prototypes/mvp/project-skills-round2.md`。
+- Next: 等待产品负责人选择 1、2、3，或明确要组合和修订的部分。
+
 ## 2026-08-09 — M5: 固定 MVP 页面信息架构
 
 - IA: 新增 `docs/product/mvp-information-architecture.md`，将已批准生命周期拆为首次设置

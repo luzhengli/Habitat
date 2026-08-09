@@ -33,8 +33,9 @@ Digest。
   `docs/qa/runtime-compatibility.md`；Claude 仍为 `targeted`，M7 不得标为完成。
 - Evidence: `npm run check` → exit 0；Rust 26 passed，Vite 1583 modules transformed，并生成
   debug `Habitat.app`。
-- Next: 保存 M7 内核检查点；外部订阅恢复后补齐 Claude invocation/reload/dedupe/conflict/
-  unlink 验收。M8 前不修改生产 UI。
+- Checkpoint: `9aeaf95` 保存五 Agent registry、项目多目标事务、runtime QA 证据和 M7 当前状态。
+- Next: 外部订阅恢复后补齐 Claude invocation/reload/dedupe/conflict/unlink 验收；通过前 M7
+  保持 `doing`，且不进入 M8 生产 UI。
 
 ## 2026-08-10 — M5: 选择三栏方向并生成首份修订稿
 

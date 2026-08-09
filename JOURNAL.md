@@ -16,6 +16,9 @@ Digest。
   `pi.dev` 官方 Press Kit 标志；状态勾、点、减号和警告与品牌图形分层表达。
 - Prototype: 新增 `docs/prototypes/mvp/project-skills-round2-selected-v1.png`，归档尺寸为
   1440×1024。
+- Icon scale: 产品负责人认为 V1 基本可用，但 Agent 图标偏大；新增
+  `project-skills-round2-selected-v2.png`，将品牌图形收至约 14–16px、点击容器约 28px，
+  共享入口保持一个组合控件，其他布局和信息合同不变。
 - Boundary: 本轮未修改 `src/`、`src-tauri/`、真实 Skill Store、项目或 Agent 配置；M5
   继续 `doing`，等待产品负责人确认修订稿。
 - Checkpoint: `0d5b38d` 保存方案 1 修订稿、真实图标依据与 M5 选择状态。

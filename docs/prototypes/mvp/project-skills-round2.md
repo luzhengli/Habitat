@@ -1,6 +1,6 @@
 # Project Skills Visual Round 2
 
-Status: direction A selected; first revision awaiting confirmation
+Status: direction A selected; icon-scale refinement awaiting final confirmation
 Date: 2026-08-09
 Implementation status: static visual exploration only; production UI is not authorized.
 
@@ -63,6 +63,15 @@ The first revision keeps Direction A's three-pane structure and applies the prod
 - keeps business state markers separate from each Agent logo.
 
 The revision still awaits visual confirmation and does not authorize production implementation.
+
+## Selected direction revision V2
+
+File: `project-skills-round2-selected-v2.png`
+
+V2 is a scoped visual-density correction. Agent brand marks are reduced to approximately 14–16px
+inside approximately 28px controls, while the shared Codex/Pi/Cursor control, status markers, layout,
+copy, inspector information, and draft commit boundary remain unchanged. This is the current visual
+target awaiting final confirmation.
 
 ## Evaluation axes
 

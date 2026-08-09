@@ -5,22 +5,26 @@
 ## 结论
 
 Habitat 可以保持 Agent-agnostic，但不能把 `.agents/skills` 当成所有 Agent 的唯一项目级
-发现路径。
+发现路径，也不能把“路径被官方扫描”直接等同于“Habitat 的跨目录 symlink 已验证可用”。
 
-推荐采用两层契约：
+首个兼容范围现为 Codex、Claude Code、Pi、Cursor、Trae。推荐采用三层契约：
 
-1. Store 中的源内容遵循 Agent Skills 开放格式，保持一份 `SKILL.md` 与配套资源；
-2. 项目侧通过版本化 adapter 将同一源 skill 以相对符号链接暴露到各 Agent 的真实发现
-   目录。
+1. Store 中只保留一份符合 Agent Skills 公共格式的 canonical skill；
+2. 由版本化 adapter registry 声明每个 Agent 的发现路径、配置条件和验证版本；
+3. 按用户选择的 Agent 计算最小项目目标集，而不是为每个 Agent 机械创建一份链接。
 
-对当前明确提到的三个 Agent，首个兼容集合应至少覆盖：
+五个 Agent 全部启用时，最小覆盖集是：
 
-- `.agents/skills/<name>`：Codex、Pi，以及多种采用通用目录的 Agent；
-- `.claude/skills/<name>`：Claude Code。
+```text
+Store/<skill>
+  ├── project/.agents/skills/<skill>  # Codex + Pi + Cursor
+  ├── project/.claude/skills/<skill>  # Claude Code；Cursor 也会扫描
+  └── project/.trae/skills/<skill>    # Trae，不依赖 .agents 开关
+```
 
-Pi 当前也原生支持 `.pi/skills`，但其第一方文档同时明确支持项目 `.agents/skills`，因此
-没有必要默认创建第二份 `.pi/skills` 链接。重复入口还会引入名称冲突、重复展示与解除
-语义问题。
+Cursor 不需要新增 `.cursor/skills` adapter。Trae 虽能兼容 `.agents/skills`，但官方当前
+要求用户先打开“启用 .agents skills directory”；Habitat 若要承诺开箱即用的 Trae
+覆盖，应使用原生 `.trae/skills` adapter，且不静默修改该开关。
 
 ## 标准只统一内容，不统一安装位置
 
@@ -28,143 +32,180 @@ Pi 当前也原生支持 `.pi/skills`，但其第一方文档同时明确支持�
 `SKILL.md`、frontmatter 与可选 `scripts/`、`references/`、`assets/`，但没有定义宿主
 Agent 必须从哪个项目目录发现 skills。
 
-因此需要严格区分：
+因此需要分别验证：
 
-- 内容兼容：多个 Agent 能理解同一个 skill 目录；
-- 发现兼容：这些 Agent 是否会扫描同一个项目路径；
-- 执行兼容：skill 使用的工具名、frontmatter 扩展和运行环境是否在各 Agent 中成立。
-
-Habitat 当前只解决了内容存储和 `.agents/skills` 发现路径的一部分，尚不能据此承诺完整
-的跨 Agent 兼容。
+- 内容兼容：Agent 是否理解同一份 skill 内容；
+- 发现兼容：Agent 是否扫描目标路径；
+- 链接兼容：IDE、CLI 与 cloud runtime 是否跟随跨目录 symlink；
+- 执行兼容：工具名、frontmatter 扩展和运行环境是否成立；
+- 有效暴露：配置、路径作用域、重名优先级和内置来源后，Agent 实际看到什么。
 
 ## 当前兼容矩阵
 
-| Agent | 官方项目级路径 | `.agents/skills` | 相对 skill 目录 symlink | 非 Git 目录 |
+| Agent | 官方项目级路径 | `.agents/skills` | Habitat 相对目录 symlink | 当前验证级别 |
 | --- | --- | --- | --- | --- |
-| Codex 0.139.0 | `.agents/skills` | 原生支持 | 官方明确支持 | 本机 CWD 夹具已验证；非 Git 父级扫描未见官方承诺 |
-| Claude Code 2.1.207 | `.claude/skills` | 官方未支持 | 2.1.203 起官方支持；当前版本满足 | 起始目录应可用；非 Git 父级边界未验证 |
-| Pi 0.81.1 | `.pi/skills`、`.agents/skills` | 原生支持 | 本机安装源码会跟随目录 symlink | 官方明确扫描到 Git 根；非 Git 时扫描到文件系统根 |
+| Codex 0.139.0 | `.agents/skills` | 原生 | 官方支持 | 本机 runtime 已验证 |
+| Claude Code 2.1.207 | `.claude/skills` | 未声明 | 2.1.203 起官方支持并按真实目标去重 | 本机版本满足，待端到端验收 |
+| Pi 0.81.1 | `.pi/skills`、`.agents/skills` | 原生 | 本机源码跟随并 canonicalize | 本机源码与 fixture 已验证 |
+| Cursor | `.agents/skills`、`.cursor/skills`，兼容 Claude/Codex 路径 | 原生 | 官方未形成稳定合同；IDE/CLI 曾有差异 | 路径兼容，runtime 待验证 |
+| Trae | `.trae/skills`；可选 `.agents/skills` | 需设置开关 | 官方未明确 symlink 语义 | 路径兼容，runtime 待验证 |
+
+这里的“路径兼容”只表示官方声明会扫描该目录，不是发布级兼容承诺。Cursor 与 Trae 在
+选定受支持版本完成真实相对链接验收前，UI 必须显示“未验证/有条件”，不能显示“已支持”。
 
 ### Codex
 
 [OpenAI 官方 Build skills 文档](https://learn.chatgpt.com/docs/build-skills) 明确说明：
 
-- 仓库级 skills 位于从 CWD 到 repository root 各层的 `.agents/skills`；
+- repository skills 位于从 CWD 到 repository root 各层的 `.agents/skills`；
 - Codex 支持 symlinked skill folders，并在扫描时跟随目标；
 - skill 内容建立在开放 Agent Skills 标准上。
 
 本机额外使用 `codex-cli 0.139.0` 的 `codex debug prompt-input` 做了只读验证：在一个
 不含 `.git` 的临时项目 CWD 中，Codex 成功发现 Habitat fixture 创建的三个
-`.agents/skills/<name>` 相对符号链接，并把真实 Store 内的 `SKILL.md` 路径放入可见
-skills 列表。这证明当前版本至少支持非 Git CWD；不把这项结果外推为所有版本的非 Git
-父目录扫描保证。
+`.agents/skills/<name>` 相对符号链接，并读取真实 Store 内的 `SKILL.md`。
 
 ### Claude Code
 
-[Claude Code 官方 Skills 文档](https://code.claude.com/docs/en/skills) 只声明以下本地
-发现位置：
+[Claude Code 官方 Skills 文档](https://code.claude.com/docs/en/skills) 声明个人目录
+`~/.claude/skills` 与项目目录 `.claude/skills`，没有声明扫描 `.agents/skills`。
 
-- 个人：`~/.claude/skills/<name>/SKILL.md`；
-- 项目：`.claude/skills/<name>/SKILL.md`；
-- 从启动目录向 repository root 扫描父级 `.claude/skills`，并按需发现更深目录。
-
-该文档同时说明 Claude Code 遵循 Agent Skills 开放标准，但没有声明会扫描
-`.agents/skills`。本机 `Claude Code 2.1.207` 可执行文件中的路径文本也只出现
-`.claude/skills`，没有发现 `.agents/skills`；这只是辅助证据，产品合同仍以官方文档
-为准。
-
-Claude 官方文档当前明确说明：2.1.203 起，personal 或 project skills 下的单个 skill
-目录项可以是 symlink；Claude Code 会跟随目标，并对同一真实目标去重。本机
-Claude Code 2.1.207 满足最低版本，但 Habitat 仍应做真实启动验收，覆盖有效链接、
-失效链接、热更新与解除链接。
+Claude Code 2.1.203 起正式支持 personal/project skill 目录项为 symlink，并对同一真实
+目标去重。本机 2.1.207 满足最低条件，但 Habitat 仍需覆盖有效链接、失效链接、重载与
+解除链接的真实启动验收。
 
 ### Pi
 
-[Pi 第一方 Skills 文档](https://github.com/earendil-works/pi/blob/main/packages/coding-agent/docs/skills.md)
-明确列出：
+[Pi 第一方 Skills 文档](https://pi.dev/docs/latest/skills) 列出：
 
 - 全局：`~/.pi/agent/skills` 与 `~/.agents/skills`；
 - 项目：`.pi/skills` 与 CWD/父目录中的 `.agents/skills`；
-- 在 Git 项目中扫描到 repo root，非 Git 目录中扫描到 filesystem root；
+- Git 项目扫描到 repo root，非 Git 目录扫描到 filesystem root；
 - 项目资源只在项目被信任后加载。
 
-本机 `Pi 0.81.1` 的已安装源码还明确对目录 symlink 调用 `stat` 跟随目标，并用
-canonical real path 去重。因此 Habitat 当前 `.agents/skills` 链接已覆盖 Pi，不必为了
-Pi 再创建 `.pi/skills` 链接。
+本机 `Pi 0.81.1` 源码对目录 symlink 调用 `stat`、按 canonical real path 去重。因此
+`.agents/skills` 已覆盖 Pi，不需要默认创建 `.pi/skills` 链接。
 
-## `npx skills` 不是运行时真相来源
+### Cursor
 
-[Vercel Labs skills CLI](https://github.com/vercel-labs/skills) 维护自己的 agent path
-registry，并推荐把一份 canonical skill 以 symlink 暴露给多个 Agent。其当前映射是：
+[Cursor 官方 Skills 文档](https://cursor.com/docs/skills) 当前声明：
 
-- Codex → `.agents/skills`；
-- Claude Code → `.claude/skills`；
-- Pi → `.pi/skills`。
+- 项目级自动扫描 `.agents/skills`、`.cursor/skills`，并兼容 `.claude/skills`、
+  `.codex/skills`；用户级也扫描对应四组目录；
+- skill 资源按需加载，`disable-model-invocation` 可禁止自动调用；
+- 递归发现项目内的 `SKILL.md`，嵌套 skill root 会按所在目录限制作用域；`paths`
+  frontmatter 还会进一步限制文件匹配范围；
+- Cursor 自带的 skills 由 runtime 管理，仍会与用户 skills 一起出现。
 
-本机缓存版本为 `skills 1.5.22`。在同一个 Habitat 临时 fixture 中直接执行其
-`list --project --json`，三个 `.agents/skills` 项目 skill 被列为 Codex、Cursor、
-Gemini CLI、GitHub Copilot、OpenCode 等可见，但没有列出 Claude Code 或 Pi。
+[Cursor 2.4 changelog](https://cursor.com/changelog/2-4) 是 Skills 在 editor 和 CLI 中的
+功能起点。因此 2.4 是“功能存在”的版本下限，但不是 Habitat 的发布下限。本机 Cursor
+仍是 1.2.4，无法验证 Skills。
 
-Pi 第一方运行时实际上支持 `.agents/skills`，说明 CLI registry、CLI 输出 schema 与
-真实 Agent 能力会发生漂移。Habitat 可以保留 `npx skills` 作为辅助诊断，但不得用它
-决定安全写入目标或宣告某个 Agent 一定可用。
+symlink 需要单独做版本化 QA。Cursor 2.4 的
+[官方社区已确认过 symlink 已知问题](https://forum.cursor.com/t/cursor-doesnt-follow-symlinks-to-discover-skills/149693)，
+后续又出现过 IDE 与 CLI 行为不一致的
+[可复现报告](https://forum.cursor.com/t/discovery-of-symlinked-skills-not-working-for-all-cases-in-cli/163569)。
+社区员工在最新 CLI 上无法复现后一问题，但这仍不是跨 runtime 的稳定合同。
 
-## 对 Habitat MVP 的建议
+另一个盲点是重复入口：Cursor 同时扫描 `.agents/skills` 与 `.claude/skills`，而 Habitat
+为了 Claude Code 必须创建后者。官方没有声明同一 realpath 的去重或同名优先级，所以
+Cursor adapter 必须把“两条路径指向同一 artifact”作为显式测试，不得假设只展示一次。
 
-### 1. Store 保持 Agent-agnostic
+### Trae
 
-- Store 只保存一份 skill 源目录；
-- 不复制、不改写 Agent 专用 frontmatter；
-- 使用 Agent Skills 标准的严格公共子集做基础校验；
-- 对 `allowed-tools`、Claude 扩展字段、`agents/openai.yaml` 等实现差异只做兼容诊断，
-  不静默转换。
+[Trae 官方 Skills 文档](https://docs.trae.cn/ide_skills) 当前声明：
 
-### 2. 项目安装改为 adapter 集合
+- 项目原生目录为 `.trae/skills`；中国版用户目录为 `~/.trae-cn/skills`；
+- project/global skill 可在 UI 中启用或禁用；项目禁用状态写入
+  `.trae/skill-config.json`，global 禁用状态的存储合同未公开；
+- `.agents/skills` 需要用户在“设置 → Skills & Commands”中显式启用；
+- `.trae/skills` 与 `.agents/skills` 同名时，原生 `.trae/skills` 优先；
+- Skills 按相关性加载，也可手动调用；内置 skills 不属于 Habitat 管理范围。
 
-把一次“安装到项目”建模为一个 logical installation，下面包含一个或多个 target link：
+[Trae 官方 changelog](https://www.trae.cn/changelog) 显示 3.3.44 才加入
+`.agents/skills` 自动加载。当前文档又把它定义为设置控制的能力，因此 Habitat 不能仅凭
+目录存在判断 Trae 已覆盖。
 
-```text
-Store/<skill>
-  ├── project/.agents/skills/<skill>  # common adapter: Codex + Pi + others
-  └── project/.claude/skills/<skill>  # Claude Code adapter
-```
+国际版与中国版用户目录必须作为两个 edition profile：官方社区当前给出的路径分别是
+`~/.trae/skills` 和 `~/.trae-cn/skills`。本机两者都存在，且各有 20 个指向
+`~/.agents/skills` 的 symlink，但没有可执行的 Trae app/CLI，无法证明哪一版 runtime
+正在使用。项目路径两版都使用 `.trae/skills`。
 
-首个 MVP 可只实现两个 adapter：`common-agents` 与 `claude-code`。未来再通过显式、
-版本化 registry 增加其他 Agent 路径，不能把外部 CLI 的动态列表直接变成可写路径。
+Trae 官方文档没有明确承诺 skill 目录 symlink。Habitat 采用原生 adapter 后仍必须在
+受支持版本验证：跨项目 Store 相对链接、失效链接、重启、禁用状态、同名优先级与解除。
 
-### 3. 保留现有安全语义
+## Adapter registry，而不是固定路径列表
 
-扩展目标目录时，每一个新的容器仍必须沿用当前 canonical path 与 lstat 合同：
+建议每个 adapter 至少记录：
 
-- `.claude`、`.claude/skills` 与目标名都必须单独预检；
-- 普通文件、真实目录、失效 symlink、未知 symlink 一律阻断；
-- 只有确认指向同一 Store source 的已知相对 symlink 才能幂等或解除；
-- 多 target 安装必须先完成全量预检，再写入；部分成功状态必须可观察、可恢复，不能
-  猜测回滚或删除未知目标。
+- `agent_id`、edition、最低/已验版本；
+- project roots、user roots、额外来源；
+- 是否需要配置开关或 project trust；
+- symlink 与 realpath 去重能力；
+- 同名优先级、作用域条件和 runtime-owned 来源；
+- reload/restart 要求与验证证据日期。
 
-这会扩大当前路径 schema，按 `AGENTS.md` 边界必须在实现前获得产品目标批准。
+安装计划根据所选 Agent 做最小集合覆盖：
 
-### 4. 通用目录不能依赖 Git
+| 用户选择 | 项目目标 |
+| --- | --- |
+| Codex、Pi、Cursor 的任意组合 | `.agents/skills` |
+| 包含 Claude Code | 追加 `.claude/skills` |
+| 包含 Trae | 追加 `.trae/skills` |
 
-- 选择项目的有效性只取决于安全的真实目录，不应要求存在 `.git`；
-- Git status/diff 只能是可选诊断；“不是 Git 仓库”应显示为不适用，而不是安装失败；
-- Agent 发现验收应从所选项目根启动，并分别覆盖 Git repo 与普通目录 fixture。
+这比“每个 Agent 一个链接”更少重复，也比固定“双 adapter”更能表达实际支持范围。若用户
+只选择 Trae，Habitat 不应额外创建 `.agents` 或 `.claude`。
 
-### 5. 对用户展示真实覆盖状态
+## 对首次迁移的影响
 
-不能再用一个 `.agents/skills` 链接笼统显示“已添加到项目”。建议至少区分：
+要保证迁移后不再全局暴露，inventory 与 quarantine 必须覆盖每个已支持 user root：
 
-- 已连接：目标兼容 profile 的所有 link 均正确；
-- 部分连接：只有部分 Agent adapter 正确；
-- 冲突：任一目标存在未知内容或不安全容器；
-- 未连接：所有目标均不存在。
+- common/Codex/Claude/Pi：`~/.agents/skills`、`~/.codex/skills`、
+  `~/.claude/skills`、`~/.pi/agent/skills`；
+- Cursor：再加 `~/.cursor/skills`，并注意它还扫描前述 common/Claude/Codex roots；
+- Trae 国际版与中国版：分别加 `~/.trae/skills`、`~/.trae-cn/skills`。
 
-## M4 尚需产品负责人批准的决定
+同一 canonical target 可能从多个 root 暴露；quarantine 需要移动全部选中入口，少移动
+一个就不能宣称该 skill 已从对应 Agent 的全局 catalog 中消失。Store 自身也必须拒绝
+位于这些 discovery roots 的等于、祖先或后代路径。
 
-1. 首个 MVP 是否承诺 Codex + Claude Code + Pi 三者均可发现；
-2. 默认是否自动启用 `common-agents` + `claude-code` 两个 adapter；
-3. 已有 `.agents/skills` 项目升级时，是显示“部分连接”并让用户显式补齐，还是提供一次
-   明确确认的兼容性迁移；
-4. 多 target 写入第二步失败时，采用保留可观察部分状态，还是只回滚本次新建且已确认
-   的链接；
-5. 每个受支持 Agent 的最低版本与发布前兼容测试矩阵。
+## 版本与发布门槛
+
+当前可作为测试基线的本机版本：Codex 0.139.0、Claude Code 2.1.207、Pi 0.81.1。
+
+新增两个 Agent 的状态是：
+
+- Cursor：2.4 仅是功能下限；本机 1.2.4 不支持，发布下限待当前版本真实 QA 后确定；
+- Trae：3.3.44 是 `.agents` 兼容功能下限；原生 `.trae/skills` 的发布下限与 symlink
+  合同仍待真实 QA；本机无 runtime。
+
+因此首个 MVP 可以现在承诺“五 Agent 是目标兼容范围”，但在 QA 完成前不能承诺五者均为
+runtime-verified。UI 和文档应分开显示 `targeted`、`path-compatible`、
+`runtime-verified`。
+
+## 实现前的决定
+
+已确认：
+
+1. 兼容范围扩展为 Codex、Claude Code、Pi、Cursor、Trae；
+2. 多目标中途失败时，只回滚本事务创建且仍符合预期的链接，否则保留并报告部分状态。
+
+仍需产品负责人批准：
+
+1. 是否以“所选 Agent 的最小覆盖集”取代固定 `.agents + .claude` 默认；
+2. Trae 是否默认使用原生 `.trae/skills`，从而不修改或依赖 `.agents` 设置开关；
+3. Cursor 与 Trae 在真实 runtime QA 完成前，是以 Beta/有条件支持进入 MVP，还是阻断发布；
+4. 是否要求 Cursor 对 `.agents` 与 `.claude` 同源双入口完成去重验收；若不去重，产品如何
+   展示和告警；
+5. Trae 国际版与中国版是否都进入首发 inventory，还是按检测到的 edition 启用。
+
+## 主要来源
+
+- [Agent Skills specification](https://agentskills.io/specification)
+- [OpenAI Build skills](https://learn.chatgpt.com/docs/build-skills)
+- [Claude Code Skills](https://code.claude.com/docs/en/skills)
+- [Pi Skills](https://pi.dev/docs/latest/skills)
+- [Cursor Agent Skills](https://cursor.com/docs/skills)
+- [Cursor 2.4 changelog](https://cursor.com/changelog/2-4)
+- [Trae Skills](https://docs.trae.cn/ide_skills)
+- [Trae changelog](https://www.trae.cn/changelog)

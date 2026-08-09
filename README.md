@@ -2,7 +2,7 @@
 
 Habitat 的产品方向是一个 macOS-only、Agent-agnostic 的 Skills 管理工具。当前 Tauri 2 可行性原型面向通用目录项目，维护一个用户选择的本地 Skill Store，并在项目的 `.agents/skills` 中安全创建或解除相对符号链接。
 
-当前原型路径可被 Codex 与 Pi 发现，但 Claude Code 官方项目级路径是 `.claude/skills`，因此本原型尚不能宣称完整覆盖 Codex、Claude Code 与 Pi。跨 Agent 兼容性结论与 MVP adapter 建议见 [项目级 Agent Skills 兼容性调研](docs/research/agent-skill-compatibility.md)。Habitat 不介入任何 Agent 的运行时或配置。
+当前原型的 `.agents/skills` 路径可被 Codex、Pi 与新版 Cursor 扫描，但尚未实现 Claude Code 的 `.claude/skills` 和 Trae 的 `.trae/skills` adapter；Cursor 与 Trae 的跨目录 symlink 也尚未完成发布级 runtime 验证。因此本原型不能宣称已完整覆盖目标范围中的 Codex、Claude Code、Pi、Cursor 与 Trae。兼容性结论与 MVP adapter 建议见 [项目级 Agent Skills 兼容性调研](docs/research/agent-skill-compatibility.md)。Habitat 不介入任何 Agent 的运行时或配置。
 
 本原型不复制 skill 文件，不删除 Store 源目录，不执行 Git commit/push，也不提供任意 shell 接口。
 

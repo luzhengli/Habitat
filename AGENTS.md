@@ -2,10 +2,10 @@
 
 Habitat 的产品方向是 macOS-only、Agent-agnostic 的 Tauri 2 桌面应用，用本地 Skill
 Store 和项目内相对符号链接管理通用目录项目中的项目级 skills。Codex、Claude Code、
-Pi Agent 等 Agent 仍按各自规则读取项目资产，Habitat 不介入 Agent 运行时。当前 Spike
-只实现 `.agents/skills`，尚未覆盖 Claude Code 的 `.claude/skills` 发现路径；兼容性结论
-见 `docs/research/agent-skill-compatibility.md`。下一阶段产品目标尚未批准，当前工作重点是
-保住已验证的路径安全边界并让后续开发可以可靠接力。
+Pi、Cursor、Trae 等 Agent 仍按各自规则读取项目资产，Habitat 不介入 Agent 运行时。
+当前 Spike 只实现 `.agents/skills`；正式 MVP 的多 adapter 与迁移范围尚未批准，兼容性
+结论见 `docs/research/agent-skill-compatibility.md`。下一阶段产品目标尚未批准，当前工作
+重点是保住已验证的路径安全边界并让后续开发可以可靠接力。
 
 ## Session protocol
 

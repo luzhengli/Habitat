@@ -10,8 +10,8 @@ Habitat 的核心价值不应只表述为“把 Store skill 链接进项目”�
 > 默认全局暴露收敛为按项目显式暴露。
 
 这个价值成立，但不能简单宣称“全局 skill 会把完整 `SKILL.md` 都塞进 context”。
-Codex、Claude Code 与 Pi 都采用 progressive disclosure：启动时主要暴露 skill 的名称和
-描述，完整正文只在调用时加载。全局 skill 过多的实际成本包括：
+Codex、Claude Code、Pi、Cursor 与 Trae 都采用 progressive disclosure：启动时主要暴露
+skill 的名称和描述，完整正文只在调用时加载。全局 skill 过多的实际成本包括：
 
 - 每个 skill 的名称和描述仍占用初始 catalog；Agent Skills 集成指南估算每项约
   50–100 tokens；
@@ -24,16 +24,19 @@ Codex、Claude Code 与 Pi 都采用 progressive disclosure：启动时主要暴
 
 ## 调研范围
 
-首个兼容矩阵继续限定为本机已安装的三个本地 Agent：
+首个目标兼容矩阵扩展为五个本地 Agent：
 
 - Codex CLI 0.139.0；
 - Claude Code 2.1.207；
-- Pi 0.81.1。
+- Pi 0.81.1；
+- Cursor，官方 Skills 功能始于 2.4，但本机 1.2.4 不具备验证条件；
+- Trae，官方当前支持项目 Skills，但本机没有可执行 runtime。
 
-结论来自当前官方文档、Pi 本机安装源码和本机只读 inventory。云端 Agent、团队分发和
-其他 Agent 只作为未来 adapter，不外推本轮结论。
+结论来自当前官方文档、Pi 本机安装源码和本机只读 inventory。前三个 Agent 有本机版本
+证据；Cursor 与 Trae 目前只有路径合同，不能标为 runtime-verified。云端 Agent、团队
+分发和其他 Agent 只作为未来 adapter，不外推本轮结论。
 
-## 三个 Agent 的有效 Skills 策略
+## 已验证三个 Agent 的有效 Skills 策略
 
 | 维度 | Codex | Claude Code | Pi |
 | --- | --- | --- | --- |
@@ -84,6 +87,44 @@ Pi 同名时保留 first-found。当前 0.81.1 本机源码的资源收集顺序
 祖先 `.agents`、user `.pi`、user `.agents`，所以项目版本通常胜出；但这属于版本化实现
 行为，Habitat 应显示 winner/loser，而不能把它固化为跨 Agent 通则。
 
+## 新增 Agent 的有效 Skills 策略
+
+| 维度 | Cursor | Trae |
+| --- | --- | --- |
+| 用户级来源 | `~/.agents/skills`、`~/.cursor/skills`，并兼容 `~/.claude/skills`、`~/.codex/skills` | 国际版 `~/.trae/skills`；中国版 `~/.trae-cn/skills`；启用设置后还可能包含 common root |
+| 项目级来源 | `.agents/skills`、`.cursor/skills`，并兼容 `.claude/skills`、`.codex/skills`；还能发现项目子目录中的 nested roots | `.trae/skills`；设置中显式启用后读取 `.agents/skills` |
+| 其他来源 | built-in skills；editor、CLI、cloud 的实现可能不同 | built-in skills；UI 创建/导入来源 |
+| 启动 context | 名称/描述供 Agent 选择，正文资源按需加载；官方未公开 aggregate catalog 预算 | 摘要先扫描，正文按相关性加载；官方未公开 aggregate catalog 预算 |
+| 作用域 | nested root 按目录作用域；`paths` 可按 glob 限制 | 官方当前未声明等价的 path-scoping frontmatter |
+| 同名处理 | 官方未声明各 root 的优先级或同 realpath 去重 | `.trae/skills` 胜过 `.agents/skills`；project/user 同名完整顺序未公开 |
+| 单项隐藏 | `disable-model-invocation: true` 只保留手动 `/skill` 调用 | project/global skill 可在 UI 禁用；project 状态写入 `.trae/skill-config.json` |
+| skill 目录 symlink | 官方未形成稳定合同，历史 IDE/CLI 行为有差异 | 官方未声明，需真实 runtime QA |
+
+### Cursor
+
+Cursor 官方会同时扫描 `.agents`、`.cursor`、`.claude` 和 `.codex` 四组 project/user
+roots。对 Habitat 来说，这有两个直接后果：
+
+1. `.agents/skills` 已覆盖 Cursor，不需要新增 `.cursor/skills` adapter；
+2. 为 Claude Code 创建的 `.claude/skills` 也会被 Cursor 再次扫描。官方没有保证同一
+   canonical target 去重，所以 effective exposure 必须保留两条 route，并在真实 runtime
+   验证最终 catalog 是否重复。
+
+Cursor 还会递归发现 nested roots，并根据目录和 `paths` 把 skill 限定到特定文件。因此
+“某项目可见”不再是一个简单布尔值；至少要能表达 `available`、`path-conditional` 和
+`manual-only`。
+
+### Trae
+
+Trae 原生项目目录是 `.trae/skills`。虽然 3.3.44 起支持 `.agents/skills`，当前官方
+文档要求用户先启用对应设置；Habitat 若只创建 common link，就只能报告“路径存在、Trae
+覆盖取决于设置”，不能报告“已连接”。
+
+推荐使用原生 `.trae/skills` adapter 获得确定的项目发现路径，同时保持 Agent 配置只读。
+国际版与中国版共用项目目录，但用户目录分别为 `~/.trae/skills` 与
+`~/.trae-cn/skills`，inventory 与 quarantine 必须按 edition 分开建模。原生目录的
+symlink 能力仍待受支持 runtime 验收。
+
 ## 本机只读 inventory
 
 本机当前状态恰好展示了为什么需要有效暴露面模型：
@@ -96,7 +137,12 @@ Pi 同名时保留 first-found。当前 0.81.1 本机源码的资源收集顺序
 - `~/.claude/skills` 有 14 个 symlink，全部指向 `~/.agents/skills` 的子集，其中 3 个
   skill 设置了 `disable-model-invocation: true`；
 - `~/.pi/agent/skills` 不存在，但 Pi 默认仍会扫描 `~/.agents/skills`，因此其候选集合
-  接近全部 44 个，而不是 Claude 的 14 个或 Codex 的已过滤集合。
+  接近全部 44 个，而不是 Claude 的 14 个或 Codex 的已过滤集合；
+- `~/.cursor/skills` 不存在，但 Cursor 会扫描已有的 common、Claude 和 Codex 用户目录，
+  所以缺少 native root 不代表没有全局 exposure；
+- `~/.trae/skills` 与 `~/.trae-cn/skills` 各有 20 个 symlink，全部指向
+  `~/.agents/skills` 下的同一组 lark skills；本机没有 Trae runtime，不能判断当前活动
+  edition，也不能把 40 条入口误报为 40 个 artifact。
 
 按 Agent Skills 指南的 50–100 tokens/skill 粗略估算，Pi 当前仅 41 个可隐式发现的用户
 skill description 就可能占约 2,050–4,100 tokens；这是估算，不替代真实 prompt 测量。
@@ -113,8 +159,10 @@ Habitat 不能把 44 个目录显示成一份统一的“已安装列表”。�
 
 ## Store 的必要新约束
 
-如果 Store 本身位于 `~/.agents/skills`、`~/.claude/skills`、`~/.pi/agent/skills` 或
-其他已知自动发现根目录下，那么所有项目仍会看到整份 Store，项目隔离目标从根本上失败。
+如果 Store 本身位于 `~/.agents/skills`、`~/.codex/skills`、`~/.claude/skills`、
+`~/.cursor/skills`、`~/.pi/agent/skills`、`~/.trae/skills`、
+`~/.trae-cn/skills` 或其他已知自动发现根目录下，那么相关 Agent 仍会看到整份 Store，
+项目隔离目标从根本上失败。
 
 因此首个 MVP 应新增硬约束：
 
@@ -133,7 +181,7 @@ Habitat 不能把 44 个目录显示成一份统一的“已安装列表”。�
 
 首次启动先扫描已支持 Agent 的已知用户级根目录和用户选择的项目，不立即移动文件：
 
-- `.agents`、Codex、Claude、Pi 的已知 roots；
+- `.agents`、Codex、Claude、Pi、Cursor、Trae 国际版与中国版的已知 roots；
 - Agent 专用的禁用/调用策略，只读解析支持的字段；
 - `SKILL.md` 格式、目录名、兼容性扩展和 symlink；
 - canonical path、内容指纹、同名和同内容关系。
@@ -156,8 +204,9 @@ Habitat 不能把 44 个目录显示成一份统一的“已安装列表”。�
 - 暂不处理；
 - 同名变体中选择 canonical 版本，其他版本进入冲突隔离区。
 
-计划必须预览迁移后的三份“有效集合”，而不仅是文件移动列表：Codex、Claude Code 与 Pi
-各自会看到什么、哪些同名项被遮蔽、哪些 runtime-owned skills 仍然存在。
+计划必须预览迁移后的五份“有效集合”，而不仅是文件移动列表：Codex、Claude Code、Pi、
+Cursor 与 Trae 各自会看到什么、哪些路径有条件生效、哪些同名项被遮蔽、哪些
+runtime-owned skills 仍然存在。
 
 ### 3. 导入中性 Store
 
@@ -187,19 +236,21 @@ Habitat 不能把 44 个目录显示成一份统一的“已安装列表”。�
 - 提供从 manifest 恢复原路径的显式 rollback；
 - 首个 MVP 不提供永久清空 quarantine。
 
-逐 Agent 改配置可以作为未来的高级模式，但不应成为默认清理方案：Codex、Claude 和 Pi
-的字段、优先级和作用范围不同，而且新 Agent 仍可能重新扫描遗留的通用全局目录。物理移出
-自动发现 roots 才是跨 Agent 一致的用户级隔离。
+逐 Agent 改配置可以作为未来的高级模式，但不应成为默认清理方案：五个 Agent 的字段、
+优先级和作用范围不同，Trae 的 `.agents` 支持还受设置控制，而且 Cursor 会交叉扫描多组
+兼容目录。物理移出所有受支持的自动发现 roots 才是跨 Agent 一致的用户级隔离。
 
 ### 5. 建立项目暴露并验证
 
 隔离前必须至少为一个项目建立并验证目标链接：
 
-- `.agents/skills/<name>` 覆盖 Codex 与 Pi；
+- `.agents/skills/<name>` 覆盖 Codex、Pi 与 Cursor；
 - `.claude/skills/<name>` 覆盖 Claude Code；
+- `.trae/skills/<name>` 覆盖 Trae，不依赖 `.agents` 设置；
 - 全量预检后才写入，多目标失败采用已批准的安全回滚语义；
 - 最终展示 `project expected` 与各 Agent `effective` 的差异；
-- Claude/Pi 的 project trust、Codex/Claude 的重载或重启提示必须可见。
+- Claude/Pi 的 project trust、各 runtime 的重载或重启提示，以及 Cursor/Trae 的未验证
+  状态必须可见。
 
 ## 对首个 MVP 的修订建议
 
@@ -207,11 +258,11 @@ Habitat 不能把 44 个目录显示成一份统一的“已安装列表”。�
 全局目录的用户兑现项目隔离价值。因此首个 MVP 至少应增加以下 onboarding 能力：
 
 1. 已支持 roots 的只读 inventory；
-2. 三个 Agent 的 effective exposure、过滤和同名 winner/loser 解释；
+2. 五个 Agent 的 effective exposure、过滤、条件开关和同名 winner/loser 解释；
 3. Store neutral-path 硬校验；
 4. 将用户选定的既有 skill 导入 Store；
 5. 可选、逐项确认、可回滚的用户级 quarantine；
-6. 导入后立即为至少一个项目建立两个已批准 adapter；
+6. 导入后立即为至少一个项目建立所选 Agent 的最小 adapter 覆盖集；
 7. 迁移前后 effective set 与 catalog 大小的测量。
 
 首个 MVP 继续不做：
@@ -222,7 +273,9 @@ Habitat 不能把 44 个目录显示成一份统一的“已安装列表”。�
 - 管理 system、admin、enterprise、bundled 或 plugin skills；
 - 承诺“Agent context 中只有 Habitat 项目 skills”；运行时自带 skills 仍会存在；
 - 云端同步、团队分发、跨设备链接修复；
-- 为了隔离而包装或接管 Codex、Claude Code、Pi 的启动命令。
+- 为了隔离而包装或接管任一 Agent 的启动命令；
+- 静默修改 Trae 的 `.agents` 开关或其他 Agent 配置；
+- 在未验证的版本上宣称 Cursor/Trae symlink 已受支持。
 
 ## Discovery Goal 与价值门槛
 
@@ -233,11 +286,11 @@ Habitat 不能把 44 个目录显示成一份统一的“已安装列表”。�
 
 建议价值门槛：
 
-- Habitat inventory 与三个 Agent 的实际列表在受支持来源上完全一致；
+- Habitat inventory 与五个 Agent 的实际列表在受支持来源上完全一致；
 - 同一 canonical skill 的多入口不会被误报为多个独立 skill；
 - 同名不同内容永不自动覆盖；
 - 迁移后，用户选择“项目级”的 skill 不再从任何受支持用户级 root 暴露；
-- 目标项目三 Agent 均能读取 Store 中的同一 canonical source；
+- 目标项目五个 Agent 均能读取 Store 中的同一 canonical source；
 - 另一个未连接项目看不到这些用户管理的 skills；
 - rollback 能恢复每个旧入口，内容指纹与迁移前一致；
 - 用实际 Agent catalog 或诊断输出测量迁移前后候选数量和 context 占用，不只使用理论
@@ -248,8 +301,9 @@ Skills 管理”。
 
 ## 实现前仍需批准的高成本决定
 
-前一轮已批准：默认启用 `.agents/skills` + `.claude/skills`；多目标中途失败时安全回滚，
-否则报告部分状态。
+前一轮已批准：对 Codex、Claude Code、Pi 默认启用 `.agents/skills` +
+`.claude/skills`；多目标中途失败时安全回滚，否则报告部分状态。本轮已确认兼容范围扩展
+到 Cursor 与 Trae，但这会重新打开默认 adapter 的产品决策。
 
 本轮新增、尚未批准：
 
@@ -259,6 +313,11 @@ Skills 管理”。
    已知 discovery root；
 4. 首个 MVP 是否完全不改 Agent 配置，只读解释配置并通过物理隔离获得跨 Agent 一致性；
 5. 对同名不同内容是否统一采用“选择一个 canonical，其余只隔离不改写”的策略。
+6. 是否以“所选 Agent 的最小覆盖集”取代固定双 adapter；五个 Agent 全选时加入
+   `.trae/skills`；
+7. Cursor 与 Trae 必须完成真实 runtime QA 才能进入正式 MVP，还是可先以明确的 Beta/
+   有条件状态交付；
+8. Trae 国际版与中国版是否都进入首发 inventory，还是只启用检测到的 edition。
 
 ## 主要来源
 
@@ -266,5 +325,9 @@ Skills 管理”。
 - [Claude Code Skills](https://code.claude.com/docs/en/skills)
 - [Claude Code context management](https://code.claude.com/docs/en/how-claude-code-works)
 - [Pi Skills](https://pi.dev/docs/latest/skills)
+- [Cursor Agent Skills](https://cursor.com/docs/skills)
+- [Cursor 2.4 changelog](https://cursor.com/changelog/2-4)
+- [Trae Skills](https://docs.trae.cn/ide_skills)
+- [Trae changelog](https://www.trae.cn/changelog)
 - [Agent Skills specification](https://agentskills.io/specification)
 - [Agent Skills client implementation guide](https://agentskills.io/client-implementation/adding-skills-support)

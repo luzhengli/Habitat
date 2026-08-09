@@ -25,21 +25,26 @@ Done when: 产品负责人写明用户价值、可观察验收标准和明确非
 `SPIKE.md` 的建议自行启动实现。
 
 已确认定位：Habitat 应面向通用目录项目，并与消费项目级 skills 的具体 Agent 解耦；
-macOS-only 描述应用运行平台，不限制 Codex、Claude Code、Pi Agent 等下游消费者。
+macOS-only 描述应用运行平台。首个目标兼容范围已扩展为 Codex、Claude Code、Pi、
+Cursor 与 Trae 五个下游消费者。
 首个 MVP 仍只管理 skills，MCP、Rules 等项目 harness 资产仅作为未来扩展方向。
 
-调研结论：Agent Skills 标准统一内容格式但不统一发现目录；Codex 与 Pi 原生支持
-`.agents/skills`，Claude Code 使用 `.claude/skills`。M4 完成前需批准首个兼容矩阵、
-默认 adapter 集合、多目标链接的部分成功/回滚语义和最低验证版本，证据见
+调研结论：Agent Skills 标准统一内容格式但不统一发现目录；`.agents/skills` 可覆盖
+Codex、Pi、Cursor，Claude Code 使用 `.claude/skills`，Trae 的 common root 受设置开关
+控制，确定性覆盖需要 `.trae/skills`。Cursor 与 Trae 的跨目录 symlink 仍缺少发布级
+runtime 验证，证据见
 `docs/research/agent-skill-compatibility.md`。
 
-已批准：默认 adapter 为 `.agents/skills` + `.claude/skills`；多目标中途失败时只安全
-回滚本事务创建且仍符合预期的链接，否则保留并报告部分状态。
+已批准：原三 Agent 范围的默认 adapter 为 `.agents/skills` + `.claude/skills`；多目标
+中途失败时只安全回滚本事务创建且仍符合预期的链接，否则保留并报告部分状态。加入
+Cursor 与 Trae 后，M4 完成前还需批准改用“所选 Agent 的最小覆盖集”、Trae 原生
+`.trae/skills` adapter，以及未完成 runtime QA 时的支持等级。
 
-新增调研结论：三个 Agent 都只在启动时暴露 skill metadata、按需读取正文，但用户级
-来源、过滤和同名优先级不同；仅增加项目链接不能消除全局 catalog、误触发或遮蔽。
-Habitat 需要 effective exposure 模型、中性 Store 路径约束，以及既有用户级 skills 的
-首次导入与可回滚隔离方案，证据见
+新增调研结论：五个 Agent 都采用 metadata 先行、正文按需加载，但用户级来源、过滤、
+条件开关和同名优先级不同；仅增加项目链接不能消除全局 catalog、误触发或遮蔽。
+Habitat 需要五 Agent effective exposure 模型、中性 Store 路径约束，以及覆盖 common、
+Codex、Claude、Pi、Cursor、Trae 国际版/中国版全部已知用户 roots 的首次导入与可回滚
+隔离方案，证据见
 `docs/research/project-skill-scope-and-migration.md`。实现前仍需批准迁移是否进入首个 MVP、
 Store staging 复制边界、默认 Store 路径、是否保持 Agent 配置只读，以及同名变体策略。
 

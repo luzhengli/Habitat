@@ -1,0 +1,145 @@
+{
+  "store": {
+    "root": "/private/var/folders/94/lhd61w252qjcnz9g62d27txm0000gn/T/habitat-demo.5891EK/habitat-store",
+    "name": "habitat-store",
+    "skills": [
+      {
+        "name": "explain-and-quiz",
+        "description": "解释概念并生成测验",
+        "version": "1.0.4",
+        "sourcePath": "/private/var/folders/94/lhd61w252qjcnz9g62d27txm0000gn/T/habitat-demo.5891EK/habitat-store/.agents/skills/explain-and-quiz",
+        "sourceKind": ".agents/skills",
+        "modifiedAt": 1786270239780
+      },
+      {
+        "name": "finding-unknowns",
+        "description": "发现信息缺口与验证路径",
+        "version": "1.2.3",
+        "sourcePath": "/private/var/folders/94/lhd61w252qjcnz9g62d27txm0000gn/T/habitat-demo.5891EK/habitat-store/finding-unknowns",
+        "sourceKind": "技能库根目录",
+        "modifiedAt": 1786270239780
+      },
+      {
+        "name": "project-harness",
+        "description": "项目上下文与验证助手架",
+        "version": "1.0.0",
+        "sourcePath": "/private/var/folders/94/lhd61w252qjcnz9g62d27txm0000gn/T/habitat-demo.5891EK/habitat-store/.agents/skills/project-harness",
+        "sourceKind": ".agents/skills",
+        "modifiedAt": 1786270239780
+      },
+      {
+        "name": "sharpen",
+        "description": "精炼方案与优化建议",
+        "version": "1.1.0",
+        "sourcePath": "/private/var/folders/94/lhd61w252qjcnz9g62d27txm0000gn/T/habitat-demo.5891EK/habitat-store/sharpen",
+        "sourceKind": "技能库根目录",
+        "modifiedAt": 1786270239780
+      }
+    ]
+  },
+  "project": {
+    "root": "/private/var/folders/94/lhd61w252qjcnz9g62d27txm0000gn/T/habitat-demo.5891EK/media",
+    "name": "media",
+    "skillsDirectory": "/private/var/folders/94/lhd61w252qjcnz9g62d27txm0000gn/T/habitat-demo.5891EK/media/.agents/skills",
+    "links": [
+      {
+        "name": "explain-and-quiz",
+        "targetPath": "/private/var/folders/94/lhd61w252qjcnz9g62d27txm0000gn/T/habitat-demo.5891EK/media/.agents/skills/explain-and-quiz",
+        "relativeTarget": "../../../habitat-store/.agents/skills/explain-and-quiz",
+        "state": "valid",
+        "detail": "已验证指向技能库：/private/var/folders/94/lhd61w252qjcnz9g62d27txm0000gn/T/habitat-demo.5891EK/habitat-store/.agents/skills/explain-and-quiz"
+      },
+      {
+        "name": "finding-unknowns",
+        "targetPath": "/private/var/folders/94/lhd61w252qjcnz9g62d27txm0000gn/T/habitat-demo.5891EK/media/.agents/skills/finding-unknowns",
+        "relativeTarget": "../../../habitat-store/finding-unknowns",
+        "state": "valid",
+        "detail": "已验证指向技能库：/private/var/folders/94/lhd61w252qjcnz9g62d27txm0000gn/T/habitat-demo.5891EK/habitat-store/finding-unknowns"
+      },
+      {
+        "name": "sharpen",
+        "targetPath": "/private/var/folders/94/lhd61w252qjcnz9g62d27txm0000gn/T/habitat-demo.5891EK/media/.agents/skills/sharpen",
+        "relativeTarget": "../../../habitat-store/sharpen",
+        "state": "valid",
+        "detail": "已验证指向技能库：/private/var/folders/94/lhd61w252qjcnz9g62d27txm0000gn/T/habitat-demo.5891EK/habitat-store/sharpen"
+      }
+    ]
+  },
+  "preflight": {
+    "sourcePath": "/private/var/folders/94/lhd61w252qjcnz9g62d27txm0000gn/T/habitat-demo.5891EK/habitat-store/.agents/skills/project-harness",
+    "targetPath": "/private/var/folders/94/lhd61w252qjcnz9g62d27txm0000gn/T/habitat-demo.5891EK/media/.agents/skills/project-harness",
+    "relativeLink": "../../../habitat-store/.agents/skills/project-harness",
+    "canLink": true,
+    "alreadyLinked": false,
+    "checks": [
+      {
+        "id": "source",
+        "label": "源技能目录存在",
+        "status": "pass",
+        "detail": "/private/var/folders/94/lhd61w252qjcnz9g62d27txm0000gn/T/habitat-demo.5891EK/habitat-store/.agents/skills/project-harness",
+        "recovery": null
+      },
+      {
+        "id": "project",
+        "label": "目标项目目录存在",
+        "status": "pass",
+        "detail": "/private/var/folders/94/lhd61w252qjcnz9g62d27txm0000gn/T/habitat-demo.5891EK/media",
+        "recovery": null
+      },
+      {
+        "id": "target",
+        "label": "目标位置可用",
+        "status": "pass",
+        "detail": "目标尚不存在，不会覆盖任何内容。",
+        "recovery": null
+      },
+      {
+        "id": "source_boundary",
+        "label": "源路径位于技能库内",
+        "status": "pass",
+        "detail": "已 canonicalize 并验证边界。",
+        "recovery": null
+      },
+      {
+        "id": "project_boundary",
+        "label": "目标路径位于项目内",
+        "status": "pass",
+        "detail": "/private/var/folders/94/lhd61w252qjcnz9g62d27txm0000gn/T/habitat-demo.5891EK/media/.agents/skills/project-harness",
+        "recovery": null
+      },
+      {
+        "id": "name",
+        "label": "无同名路径注入",
+        "status": "pass",
+        "detail": "project-harness",
+        "recovery": null
+      },
+      {
+        "id": "relative",
+        "label": "相对链接路径有效",
+        "status": "pass",
+        "detail": "../../../habitat-store/.agents/skills/project-harness",
+        "recovery": null
+      },
+      {
+        "id": "git",
+        "label": "Git 工作区干净",
+        "status": "pass",
+        "detail": "未发现未提交变更。",
+        "recovery": null
+      }
+    ]
+  },
+  "gitStatus": {
+    "program": "git",
+    "args": [
+      "status",
+      "--short"
+    ],
+    "cwd": "/private/var/folders/94/lhd61w252qjcnz9g62d27txm0000gn/T/habitat-demo.5891EK/media",
+    "status": 0,
+    "success": true,
+    "stdout": "",
+    "stderr": ""
+  }
+}

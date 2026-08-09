@@ -17,7 +17,8 @@ Digest。
   已验证，但指令执行与同名 winner 尚未验证，Claude 保持 `targeted`，M7 保持 `doing`。
 - Evidence: `npm run check` → exit 0；Rust 29 passed，Vite 1583 modules transformed，并生成
   debug `Habitat.app`。所有 runtime fixture 都位于 `/private/tmp`，未使用真实项目或 Store。
-- Next: 保存检查点；外部订阅恢复后只补实际 Skill invocation 与同名冲突 winner 验收。
+- Checkpoint: `299227c` 保存 effective exposure 检查、3 个新增 fixture 与 Claude 初始化矩阵。
+- Next: 外部订阅恢复后只补实际 Skill invocation 与同名冲突 winner 验收。
 
 ## 2026-08-10 — M5→M7: 确认 V2，完成迁移内核
 

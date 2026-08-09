@@ -33,6 +33,16 @@ macOS-only 描述应用运行平台，不限制 Codex、Claude Code、Pi Agent �
 默认 adapter 集合、多目标链接的部分成功/回滚语义和最低验证版本，证据见
 `docs/research/agent-skill-compatibility.md`。
 
+已批准：默认 adapter 为 `.agents/skills` + `.claude/skills`；多目标中途失败时只安全
+回滚本事务创建且仍符合预期的链接，否则保留并报告部分状态。
+
+新增调研结论：三个 Agent 都只在启动时暴露 skill metadata、按需读取正文，但用户级
+来源、过滤和同名优先级不同；仅增加项目链接不能消除全局 catalog、误触发或遮蔽。
+Habitat 需要 effective exposure 模型、中性 Store 路径约束，以及既有用户级 skills 的
+首次导入与可回滚隔离方案，证据见
+`docs/research/project-skill-scope-and-migration.md`。实现前仍需批准迁移是否进入首个 MVP、
+Store staging 复制边界、默认 Store 路径、是否保持 Agent 配置只读，以及同名变体策略。
+
 ## M5. 交付已批准产品目标 — todo
 
 Done when: 在 M4 批准的范围内完成实现与针对性测试，`npm run check` 通过并记录实际

@@ -3,6 +3,24 @@
 最新记录在最上方；每个 session 一条。超过约 150 行时，将最新五条之前的内容压缩到
 Digest。
 
+## 2026-08-09 — M4: 调研项目级 Skills 暴露面与首次迁移
+
+- Finding: Codex、Claude Code 与 Pi 都采用 progressive disclosure；全局 skills 的主要
+  成本是 metadata catalog、误触发和同名遮蔽，而不是启动时加载所有正文。三者的用户级
+  roots、过滤机制和同名优先级不同，项目链接存在不等于项目版本实际生效。
+- Local evidence: `~/.agents/skills` 有 44 个 skill；Codex 配置有 27 个禁用条目；
+  `~/.claude/skills` 有 14 个指向该目录子集的 symlink；`~/.pi/agent/skills` 不存在，
+  但 Pi 仍默认扫描全部通用用户级目录。本轮只读，未改动这些真实路径。
+- Recommendation: Store 必须位于任何 Agent discovery root 之外；首次使用应先建立
+  effective exposure inventory，再把选定 skill 导入中性 Store，并以 manifest 驱动、
+  可回滚的 quarantine 隔离旧全局入口，首版不永久删除。
+- Correction: Claude Code 官方当前明确从 2.1.203 起支持 personal/project skill 目录
+  symlink；已修正旧研究结论，本机 2.1.207 满足最低版本。
+- Decision: 默认双 adapter 与多目标安全回滚已经产品负责人批准；导入/quarantine 是否
+  进入 MVP、Store staging 复制边界、默认 Store 路径、Agent 配置只读边界和同名变体
+  策略仍待批准，M4 保持 `doing`。
+- Next: 产品负责人评审新增五项高成本决定；批准前不进入实现，也不触碰真实用户 skills。
+
 ## 2026-08-09 — M4: 调研项目级 Skills 的跨 Agent 发现契约
 
 - Finding: Agent Skills 标准统一 `SKILL.md` 内容格式，但没有统一项目发现目录；Codex

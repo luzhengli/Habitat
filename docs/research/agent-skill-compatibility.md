@@ -42,7 +42,7 @@ Habitat 当前只解决了内容存储和 `.agents/skills` 发现路径的一部
 | Agent | 官方项目级路径 | `.agents/skills` | 相对 skill 目录 symlink | 非 Git 目录 |
 | --- | --- | --- | --- | --- |
 | Codex 0.139.0 | `.agents/skills` | 原生支持 | 官方明确支持 | 本机 CWD 夹具已验证；非 Git 父级扫描未见官方承诺 |
-| Claude Code 2.1.207 | `.claude/skills` | 官方未支持 | 官方文档未明确保证，需纳入版本 QA | 起始目录应可用；非 Git 父级边界未验证 |
+| Claude Code 2.1.207 | `.claude/skills` | 官方未支持 | 2.1.203 起官方支持；当前版本满足 | 起始目录应可用；非 Git 父级边界未验证 |
 | Pi 0.81.1 | `.pi/skills`、`.agents/skills` | 原生支持 | 本机安装源码会跟随目录 symlink | 官方明确扫描到 Git 根；非 Git 时扫描到文件系统根 |
 
 ### Codex
@@ -73,9 +73,10 @@ skills 列表。这证明当前版本至少支持非 Git CWD；不把这项结�
 `.claude/skills`，没有发现 `.agents/skills`；这只是辅助证据，产品合同仍以官方文档
 为准。
 
-Claude 官方文档没有明确承诺项目 skill 目录 symlink。生态工具普遍采用逐 skill
-symlink，但 Habitat 在对外承诺 Claude 支持前，仍应对选定 Claude Code 版本做真实
-启动验收，覆盖有效链接、失效链接、热更新与解除链接。
+Claude 官方文档当前明确说明：2.1.203 起，personal 或 project skills 下的单个 skill
+目录项可以是 symlink；Claude Code 会跟随目标，并对同一真实目标去重。本机
+Claude Code 2.1.207 满足最低版本，但 Habitat 仍应做真实启动验收，覆盖有效链接、
+失效链接、热更新与解除链接。
 
 ### Pi
 
@@ -167,4 +168,3 @@ Store/<skill>
 4. 多 target 写入第二步失败时，采用保留可观察部分状态，还是只回滚本次新建且已确认
    的链接；
 5. 每个受支持 Agent 的最低版本与发布前兼容测试矩阵。
-

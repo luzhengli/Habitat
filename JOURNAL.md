@@ -15,6 +15,8 @@ Digest。
   只保存在 `docs/prototypes/mvp/`，不能作为功能或 runtime 兼容性证据。
 - Evidence: 三个 PNG 均验证为 1440×1024；生成 reference 和 prompt set 已保存在同目录；
   `git diff --check` 通过，diff 未包含 `src/` 或 `src-tauri/`。
+- Checkpoint: `3a75459` 保存 MVP 产品合同草案、共享原型 brief、三张独立原型和可复现
+  prompt set；M5 仍等待产品负责人选择。
 - Next: 等待产品负责人选择 1、2、3，或提出需要重新生成/组合的具体反馈；选择前 M5 保持
   `doing`，不得进入生产 UI 实现。
 

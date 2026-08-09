@@ -28,6 +28,11 @@ Done when: 产品负责人写明用户价值、可观察验收标准和明确非
 macOS-only 描述应用运行平台，不限制 Codex、Claude Code、Pi Agent 等下游消费者。
 首个 MVP 仍只管理 skills，MCP、Rules 等项目 harness 资产仅作为未来扩展方向。
 
+调研结论：Agent Skills 标准统一内容格式但不统一发现目录；Codex 与 Pi 原生支持
+`.agents/skills`，Claude Code 使用 `.claude/skills`。M4 完成前需批准首个兼容矩阵、
+默认 adapter 集合、多目标链接的部分成功/回滚语义和最低验证版本，证据见
+`docs/research/agent-skill-compatibility.md`。
+
 ## M5. 交付已批准产品目标 — todo
 
 Done when: 在 M4 批准的范围内完成实现与针对性测试，`npm run check` 通过并记录实际

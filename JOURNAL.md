@@ -3,6 +3,20 @@
 最新记录在最上方；每个 session 一条。超过约 150 行时，将最新五条之前的内容压缩到
 Digest。
 
+## 2026-08-09 — M4: 调研项目级 Skills 的跨 Agent 发现契约
+
+- Finding: Agent Skills 标准统一 `SKILL.md` 内容格式，但没有统一项目发现目录；Codex
+  与 Pi 原生支持 `.agents/skills`，Claude Code 官方只声明 `.claude/skills`。
+- Local evidence: Codex 0.139.0 在非 Git 临时 fixture 中发现 Habitat 创建的三个相对
+  symlink；Pi 0.81.1 第一方文档与本机源码支持 `.agents/skills`、非 Git 父级扫描和目录
+  symlink；`skills 1.5.22 list --project --json` 的 agent 映射与 Pi 运行时能力存在漂移。
+- Decision: 推荐“统一 Agent Skills 源内容 + 版本化项目 adapter”，首个候选 adapter 为
+  `.agents/skills` 和 `.claude/skills`；本轮只记录研究，不扩大写路径或进入 MVP 实现。
+- Artifact: `docs/research/agent-skill-compatibility.md`；同步修正 `AGENTS.md`、`README.md`
+  与 `PLAN.md` 中对当前原型兼容性的过度表述。
+- Next: 产品负责人批准首个兼容矩阵、默认 adapter、多目标失败语义与最低验证版本；M4
+  继续保持 `doing`。
+
 ## 2026-08-09 — M4: 确认 Agent-agnostic 产品定位
 
 - Confirmed: Habitat 运行平台仍为 macOS，但管理对象是通用目录项目中的项目级

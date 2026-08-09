@@ -16,6 +16,8 @@ Digest。
   1440×1024；2R 不再是当前候选，三屏 2.1 动线等待产品负责人最终确认。
 - Boundary: 本轮仅更新静态决策原型与文档，没有修改 `src/`、`src-tauri/`、真实用户
   Skill Store、项目或 Agent 配置；M5 保持 `doing`，生产 UI 仍未获准实现。
+- Evidence: 三张 PNG 均验证为 1440×1024；`git diff --check` 通过，变更中不包含
+  `src/` 或 `src-tauri/`；检查点 `a5f0ec2` 保存三屏原型与生成依据。
 - Next: 等待产品负责人确认三屏 2.1 动线或指出下一轮具体屏幕修改。
 
 ## 2026-08-09 — M5: 生成 Inventory workbench 2R 修订原型

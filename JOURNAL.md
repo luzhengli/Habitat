@@ -3,6 +3,23 @@
 最新记录在最上方；每个 session 一条。超过约 150 行时，将最新五条之前的内容压缩到
 Digest。
 
+## 2026-08-10 — M5: 选择三栏方向并生成首份修订稿
+
+- Decision: 产品负责人选择第二轮方案 1 的三栏项目 Skills 工作台，但修订稿确认前仍不
+  进入生产 UI 实现。
+- Footer: 删除最下方常驻状态条；待应用区域明确为只在 Agent 图标产生未提交草稿时出现的
+  临时操作栏，压缩为“待应用更改 / 添加 2 / 移除 1 / 尚未写入项目”。
+- Navigation: 左栏“恢复中心”改为“恢复”。
+- Inspector: 右栏不再重复列表已有的来源、版本与完整 Agent 状态，只展示本次更改、检查
+  结果、项目入口与折叠技术详情。
+- Icons: Codex、Cursor、Claude Code、Trae 使用 Lobe Icons 的真实品牌图形参考，Pi 使用
+  `pi.dev` 官方 Press Kit 标志；状态勾、点、减号和警告与品牌图形分层表达。
+- Prototype: 新增 `docs/prototypes/mvp/project-skills-round2-selected-v1.png`，归档尺寸为
+  1440×1024。
+- Boundary: 本轮未修改 `src/`、`src-tauri/`、真实 Skill Store、项目或 Agent 配置；M5
+  继续 `doing`，等待产品负责人确认修订稿。
+- Next: 评审修订稿中右栏增量信息与待应用栏，确认后再固定允许实现的 UI 范围。
+
 ## 2026-08-09 — M5: 生成第二轮项目 Skills 视觉方案
 
 - Scope: 以迁移完成后的 P2 项目 Skills 为唯一比较面，首次迁移只作为前置条件，不再把

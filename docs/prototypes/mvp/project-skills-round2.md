@@ -1,6 +1,6 @@
 # Project Skills Visual Round 2
 
-Status: awaiting product-owner selection
+Status: direction A selected; first revision awaiting confirmation
 Date: 2026-08-09
 Implementation status: static visual exploration only; production UI is not authorized.
 
@@ -45,6 +45,24 @@ File: `project-skills-round2-matrix.png`
 Turns the three target controls into stable columns for faster scanning across many Skills. The
 right inspector keeps selected-Skill explanation and diagnostics without adding a redundant link
 column.
+
+## Selected direction revision V1
+
+File: `project-skills-round2-selected-v1.png`
+
+The first revision keeps Direction A's three-pane structure and applies the product-owner feedback:
+
+- removes the persistent global status strip at the bottom;
+- renames `恢复中心` to `恢复`;
+- treats the pending-change region as a conditional draft commit bar, not a status footer;
+- limits the right inspector to incremental information: pending effects, checks, project-relative
+  targets, and collapsed technical details;
+- replaces placeholder Agent marks with brand-shape references from
+  [Lobe Icons](https://icons.lobehub.com/) and the official
+  [Pi press kit](https://pi.dev/press-kit);
+- keeps business state markers separate from each Agent logo.
+
+The revision still awaits visual confirmation and does not authorize production implementation.
 
 ## Evaluation axes
 

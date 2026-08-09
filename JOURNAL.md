@@ -19,6 +19,8 @@ Digest。
 - Decision: 默认双 adapter 与多目标安全回滚已经产品负责人批准；导入/quarantine 是否
   进入 MVP、Store staging 复制边界、默认 Store 路径、Agent 配置只读边界和同名变体
   策略仍待批准，M4 保持 `doing`。
+- Checkpoint: `473747f` 新增项目粒度暴露面与首次迁移研究，修正 Claude symlink 兼容
+  结论并同步 PLAN；`git diff --cached --check` 通过。
 - Next: 产品负责人评审新增五项高成本决定；批准前不进入实现，也不触碰真实用户 skills。
 
 ## 2026-08-09 — M4: 调研项目级 Skills 的跨 Agent 发现契约

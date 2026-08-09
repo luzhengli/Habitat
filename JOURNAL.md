@@ -20,6 +20,7 @@ Digest。
 - Safety: 本阶段不得访问或修改真实 Skill Store、真实项目或 Agent 配置。
 - Evidence: `cargo test --manifest-path src-tauri/Cargo.toml` → 18 passed；`npm run check` →
   exit 0，Vite 1583 modules transformed，并生成 debug `Habitat.app`。
+- Checkpoint: `5393356` 保存可回滚迁移内核、临时 fixture 证据及 M6→M7 状态。
 - Next: M7 先固化五 Agent adapter registry、共享目标组与只读支持证据，再实现项目级多目标
   预检和安全回滚；M8 前不修改生产 UI。
 

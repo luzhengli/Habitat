@@ -2,590 +2,496 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { open } from "@tauri-apps/plugin-dialog";
 import {
   AlertCircle,
-  ArrowRight,
+  BookOpen,
   Box,
   Check,
   CheckCircle2,
   ChevronDown,
   CircleDot,
-  Clipboard,
-  ClipboardCheck,
-  Code2,
+  Crosshair,
   Database,
-  FileCode2,
   Folder,
-  FolderGit2,
   FolderOpen,
-  GitBranch,
   Info,
-  Link2,
   LoaderCircle,
-  Menu,
   Plus,
   RefreshCw,
+  RotateCcw,
   Search,
-  ShieldCheck,
-  Unlink,
+  Settings,
+  Sparkles,
   X,
-  XCircle,
 } from "lucide-react";
+import codexIcon from "@lobehub/icons-static-svg/icons/codex.svg";
+import claudeCodeIcon from "@lobehub/icons-static-svg/icons/claudecode.svg";
+import cursorIcon from "@lobehub/icons-static-svg/icons/cursor.svg";
+import piIcon from "@lobehub/icons-static-svg/icons/pi.svg";
+import traeIcon from "@lobehub/icons-static-svg/icons/trae.svg";
 import { api } from "./api";
+import { projectQaStore, projectQaWorkspace } from "./qa/projectState";
 import type {
+  AgentId,
   AppError,
-  CommandResult,
-  LinkState,
-  Preflight,
-  ProjectScan,
-  Skill,
+  ProjectDraftSelection,
+  ProjectExposureInspection,
+  ProjectExposurePlan,
   StoreScan,
+  TargetGroupId,
 } from "./types";
+import "./project.css";
 
-type Notice = { tone: "success" | "error" | "info"; title: string; detail?: string };
-type BusyAction = "store" | "project" | "scan" | "link" | "unlink" | "npx" | "git" | null;
-
-type QaCaptureState = {
-  store: StoreScan;
-  project: ProjectScan;
-  preflight: Preflight;
-  gitStatus: CommandResult;
-};
+type GroupState = Record<TargetGroupId, boolean>;
+type DraftMap = Record<string, GroupState>;
+type Filter = "all" | "linked" | "available" | "pending" | "attention";
+type Notice = { tone: "error" | "success"; title: string; detail: string };
+type ManagedProject = { root: string; groups: TargetGroupId[] };
 
 const qaMode = import.meta.env.DEV ? new URLSearchParams(window.location.search).get("qa") : null;
+const agentMeta: Record<AgentId, { label: string; icon: string }> = {
+  codex: { label: "Codex", icon: codexIcon },
+  claude_code: { label: "Claude Code", icon: claudeCodeIcon },
+  pi: { label: "Pi", icon: piIcon },
+  cursor: { label: "Cursor", icon: cursorIcon },
+  trae: { label: "Trae", icon: traeIcon },
+};
 
-const stateLabels: Record<LinkState, string> = {
-  available: "未链接",
-  valid: "已链接",
-  broken: "失效链接",
-  conflict: "名称冲突",
-  outside_store: "技能库外链接",
+const groupAgents: Record<TargetGroupId, AgentId[]> = {
+  agents_shared: ["codex", "pi", "cursor"],
+  claude: ["claude_code"],
+  trae: ["trae"],
+};
+
+const groupLabels: Record<TargetGroupId, string> = {
+  agents_shared: "Codex、Pi 与 Cursor",
+  claude: "Claude Code",
+  trae: "Trae",
 };
 
 function toError(error: unknown): AppError {
   if (typeof error === "object" && error !== null) return error as AppError;
   if (typeof error === "string") {
-    try {
-      return JSON.parse(error) as AppError;
-    } catch {
-      return { message: error };
-    }
+    try { return JSON.parse(error) as AppError; } catch { return { message: error }; }
   }
   return { message: "发生未知错误。" };
 }
 
-function formatTime(value: number) {
-  if (!value) return "未知";
-  return new Intl.DateTimeFormat("zh-CN", {
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(new Date(value));
+function SkillGlyph({ name }: { name: string }) {
+  if (name === "explain-and-quiz") return <BookOpen aria-hidden="true" />;
+  if (name === "finding-unknowns") return <Crosshair aria-hidden="true" />;
+  if (name === "sharpen") return <Sparkles aria-hidden="true" />;
+  if (name === "habit-store") return <Database aria-hidden="true" />;
+  return <Box aria-hidden="true" />;
 }
 
-function commandTitle(result: CommandResult | null) {
-  if (!result) return "尚未运行";
-  if (result.success) return `完成 · 退出码 ${result.status ?? 0}`;
-  return `失败 · 退出码 ${result.status ?? "未知"}`;
+function deriveBase(workspace: ProjectExposureInspection[]): DraftMap {
+  return Object.fromEntries(workspace.map((skill) => {
+    const satisfied = (agentId: AgentId) => skill.agents.find((agent) => agent.agentId === agentId)?.expectedSatisfied ?? false;
+    return [skill.skillName, {
+      agents_shared: satisfied("codex") || satisfied("pi") || satisfied("cursor"),
+      claude: satisfied("claude_code"),
+      trae: satisfied("trae"),
+    }];
+  }));
 }
 
-function CopyPath({ value, label }: { value: string; label: string }) {
-  const [copied, setCopied] = useState(false);
-  const copy = async () => {
-    await navigator.clipboard.writeText(value);
-    setCopied(true);
-    window.setTimeout(() => setCopied(false), 1400);
-  };
+function draftSelections(draft: DraftMap): ProjectDraftSelection[] {
+  return Object.entries(draft).map(([name, groups]) => ({
+    name,
+    selectedAgents: (Object.keys(groups) as TargetGroupId[])
+      .filter((group) => groups[group])
+      .flatMap((group) => groupAgents[group]),
+  }));
+}
+
+function groupHasProblem(skill: ProjectExposureInspection, group: TargetGroupId) {
+  return groupAgents[group].some((agentId) => {
+    const agent = skill.agents.find((item) => item.agentId === agentId);
+    return agent?.routes.some((route) => ["conflicting", "broken", "unsafe"].includes(route.state));
+  });
+}
+
+function AgentGroupButton({
+  group,
+  current,
+  verified,
+  blocked,
+  disabled = false,
+  forceHelp = false,
+  onToggle,
+}: {
+  group: TargetGroupId;
+  current: boolean;
+  verified: boolean;
+  blocked: boolean;
+  disabled?: boolean;
+  forceHelp?: boolean;
+  onToggle: () => void;
+}) {
+  const pending = current !== verified;
+  const state = blocked ? "blocked" : pending ? (current ? "pending-add" : "pending-remove") : current ? "verified" : "off";
+  const action = current ? "停用" : "启用";
   return (
-    <div className="path-box">
-      <code>{value}</code>
-      <button className="icon-button path-copy" onClick={copy} aria-label={`复制${label}`} title={`复制${label}`}>
-        {copied ? <ClipboardCheck aria-hidden="true" /> : <Clipboard aria-hidden="true" />}
-      </button>
-      {copied && <span className="copy-feedback" role="status">已复制</span>}
-    </div>
+    <button
+      type="button"
+      className={`agent-toggle ${group === "agents_shared" ? "shared" : "single"} ${state} ${forceHelp ? "force-help" : ""}`}
+      onClick={onToggle}
+      disabled={disabled}
+      aria-label={`${action}${groupLabels[group]}读取此 Skill；当前${pending ? "有待应用更改" : current ? "已启用" : "未启用"}`}
+      title={blocked ? `${groupLabels[group]}存在需要先处理的问题` : `${action}${groupLabels[group]}`}
+    >
+      {groupAgents[group].map((agentId) => (
+        <img key={agentId} src={agentMeta[agentId].icon} alt="" aria-hidden="true" />
+      ))}
+      <span className="toggle-state" aria-hidden="true">
+        {blocked ? <AlertCircle /> : pending ? <CircleDot /> : current ? <Check /> : <span />}
+      </span>
+      {group === "agents_shared" && <span className="agent-help">通用入口：Codex、Pi、Cursor 共享一个项目入口，点击会同步切换。</span>}
+    </button>
   );
 }
 
-function StatusIcon({ state }: { state: LinkState }) {
-  if (state === "valid") return <CheckCircle2 className="status-success" aria-hidden="true" />;
-  if (state === "available") return <Plus className="status-accent" aria-hidden="true" />;
-  if (state === "broken") return <XCircle className="status-danger" aria-hidden="true" />;
-  return <AlertCircle className="status-warning" aria-hidden="true" />;
-}
-
-function App() {
-  const [store, setStore] = useState<StoreScan | null>(null);
-  const [project, setProject] = useState<ProjectScan | null>(null);
-  const [selectedName, setSelectedName] = useState<string | null>(null);
-  const [preflight, setPreflight] = useState<Preflight | null>(null);
+export default function App() {
+  const [store, setStore] = useState<StoreScan | null>(qaMode?.startsWith("project-") ? projectQaStore : null);
+  const [workspace, setWorkspace] = useState<ProjectExposureInspection[]>(qaMode?.startsWith("project-") ? projectQaWorkspace.skills : []);
+  const [projectRoot, setProjectRoot] = useState(qaMode?.startsWith("project-") ? projectQaWorkspace.projectRoot : "");
+  const [projects, setProjects] = useState<ManagedProject[]>(() => {
+    if (qaMode?.startsWith("project-")) return [{ root: projectQaWorkspace.projectRoot, groups: ["agents_shared", "claude", "trae"] }];
+    try {
+      const saved = JSON.parse(window.localStorage.getItem("habitat.projects") ?? "[]") as ManagedProject[];
+      if (Array.isArray(saved)) return saved;
+    } catch { /* ignore malformed legacy state */ }
+    const legacy = window.localStorage.getItem("habitat.projectRoot");
+    return legacy ? [{ root: legacy, groups: ["agents_shared", "claude", "trae"] }] : [];
+  });
+  const [activeGroups, setActiveGroups] = useState<TargetGroupId[]>(["agents_shared", "claude", "trae"]);
+  const [projectCandidate, setProjectCandidate] = useState<string | null>(qaMode === "project-add" ? "/private/tmp/habitat-project-v2/blog" : null);
+  const [candidateGroups, setCandidateGroups] = useState<TargetGroupId[]>(["agents_shared", "claude", "trae"]);
+  const [base, setBase] = useState<DraftMap>(() => deriveBase(qaMode?.startsWith("project-") ? projectQaWorkspace.skills : []));
+  const [draft, setDraft] = useState<DraftMap>(() => {
+    const initial = deriveBase(qaMode?.startsWith("project-") ? projectQaWorkspace.skills : []);
+    if (qaMode?.startsWith("project-") && initial["project-harness"]) {
+      initial["project-harness"] = { ...initial["project-harness"], agents_shared: true, claude: true };
+      initial["media-kit"] = { ...initial["media-kit"], trae: false };
+    }
+    return initial;
+  });
+  const [selectedName, setSelectedName] = useState(qaMode?.startsWith("project-") ? "project-harness" : "");
   const [search, setSearch] = useState("");
-  const [filter, setFilter] = useState("all");
-  const [busy, setBusy] = useState<BusyAction>(null);
+  const [filter, setFilter] = useState<Filter>("all");
+  const [busy, setBusy] = useState<"load" | "plan" | "apply" | null>(null);
+  const [reviewPlan, setReviewPlan] = useState<ProjectExposurePlan | null>(null);
   const [notice, setNotice] = useState<Notice | null>(null);
-  const [gitStatus, setGitStatus] = useState<CommandResult | null>(null);
-  const [gitDiff, setGitDiff] = useState<CommandResult | null>(null);
-  const [npxStatus, setNpxStatus] = useState<CommandResult | null>(null);
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const [lastChecked, setLastChecked] = useState<Date | null>(null);
+  const [inspectorOpen, setInspectorOpen] = useState(false);
 
-  const linkedByName = useMemo(
-    () => new Map((project?.links ?? []).map((link) => [link.name, link])),
-    [project],
-  );
+  const projectName = projectRoot.split("/").filter(Boolean).at(-1) ?? "未选择项目";
+  const inspectionByName = useMemo(() => new Map(workspace.map((item) => [item.skillName, item])), [workspace]);
+  const selected = selectedName ? store?.skills.find((skill) => skill.name === selectedName) ?? null : null;
+  const selectedInspection = selectedName ? inspectionByName.get(selectedName) : undefined;
+  const dirty = useMemo(() => Object.entries(draft).flatMap(([name, groups]) =>
+    (Object.keys(groups) as TargetGroupId[])
+      .filter((group) => groups[group] !== base[name]?.[group])
+      .map((group) => ({
+        name,
+        group,
+        action: (groups[group] ? "create" : "remove") as "create" | "remove",
+      }))), [draft, base]);
+  const blockingCount = useMemo(() => dirty.filter(({ name, group, action }) => action === "create" && groupHasProblem(inspectionByName.get(name)!, group)).length, [dirty, inspectionByName]);
 
-  const annotatedSkills = useMemo(() => {
-    return (store?.skills ?? []).map((skill) => {
-      const link = linkedByName.get(skill.name);
-      return { skill, state: link?.state ?? ("available" as LinkState), link };
-    });
-  }, [store, linkedByName]);
+  const refresh = useCallback(async (nextStore = store, nextProject = projectRoot) => {
+    if (!nextStore || !nextProject) return;
+    setBusy("load");
+    setNotice(null);
+    try {
+      const [freshStore, inspection] = qaMode?.startsWith("project-")
+        ? [projectQaStore, projectQaWorkspace]
+        : await Promise.all([api.scanStore(nextStore.root), api.inspectProjectWorkspace(nextStore.root, nextProject)]);
+      const nextBase = deriveBase(inspection.skills);
+      setStore(freshStore);
+      setWorkspace(inspection.skills);
+      setProjectRoot(inspection.projectRoot);
+      setBase(nextBase);
+      setDraft(nextBase);
+      setSelectedName((current) => freshStore.skills.some((skill) => skill.name === current) ? current : freshStore.skills[0]?.name ?? "");
+    } catch (error) {
+      const detail = toError(error);
+      setNotice({ tone: "error", title: detail.message ?? "无法检查项目", detail: detail.recovery ?? detail.stderr ?? "请重新选择项目。" });
+    } finally {
+      setBusy(null);
+    }
+  }, [store, projectRoot]);
+
+  useEffect(() => {
+    if (qaMode?.startsWith("project-") || store) return;
+    const storeRoot = window.localStorage.getItem("habitat.storeRoot");
+    if (!storeRoot) return;
+    setBusy("load");
+    api.scanStore(storeRoot)
+      .then((value) => {
+        setStore(value);
+        const savedProject = window.localStorage.getItem("habitat.projectRoot");
+        if (savedProject) {
+          setActiveGroups(projects.find((item) => item.root === savedProject)?.groups ?? ["agents_shared", "claude", "trae"]);
+          return refresh(value, savedProject);
+        }
+      })
+      .catch((error) => {
+        const detail = toError(error);
+        setNotice({ tone: "error", title: detail.message ?? "无法打开 Skill Store", detail: detail.recovery ?? "请重新完成首次设置。" });
+      })
+      .finally(() => setBusy(null));
+  }, [store, refresh, projects]);
+
+  const chooseProject = async () => {
+    const path = await open({ directory: true, multiple: false, title: "选择要管理的项目" });
+    if (typeof path !== "string" || !store) return;
+    setProjectCandidate(path);
+    setCandidateGroups(["agents_shared", "claude", "trae"]);
+  };
+
+  const confirmProject = async () => {
+    if (!projectCandidate || candidateGroups.length === 0 || !store) return;
+    const nextProjects = [...projects.filter((item) => item.root !== projectCandidate), { root: projectCandidate, groups: candidateGroups }];
+    setProjects(nextProjects);
+    setActiveGroups(candidateGroups);
+    window.localStorage.setItem("habitat.projects", JSON.stringify(nextProjects));
+    window.localStorage.setItem("habitat.projectRoot", projectCandidate);
+    setProjectCandidate(null);
+    await refresh(store, projectCandidate);
+  };
+
+  const selectProject = async (item: ManagedProject) => {
+    if (item.root === projectRoot) return;
+    if (dirty.length > 0) {
+      setNotice({ tone: "error", title: "当前项目还有待应用更改", detail: "请先应用或撤销这些更改，再切换项目。" });
+      return;
+    }
+    setActiveGroups(item.groups);
+    window.localStorage.setItem("habitat.projectRoot", item.root);
+    await refresh(store, item.root);
+  };
+
+  const toggle = (name: string, group: TargetGroupId) => {
+    const inspection = inspectionByName.get(name);
+    if (inspection && groupHasProblem(inspection, group) && !draft[name]?.[group]) {
+      setSelectedName(name);
+      setInspectorOpen(true);
+      return;
+    }
+    setDraft((current) => ({ ...current, [name]: { ...current[name], [group]: !current[name][group] } }));
+    setSelectedName(name);
+  };
 
   const visibleSkills = useMemo(() => {
     const query = search.trim().toLocaleLowerCase();
-    return annotatedSkills.filter(({ skill, state }) => {
-      const matchesQuery = !query || `${skill.name} ${skill.description}`.toLocaleLowerCase().includes(query);
-      const matchesFilter = filter === "all" || (filter === "linked" ? state !== "available" : state === "available");
-      return matchesQuery && matchesFilter;
+    const dirtyNames = new Set(dirty.map((item) => item.name));
+    return (store?.skills ?? []).filter((skill) => {
+      const groups = draft[skill.name];
+      const inspection = inspectionByName.get(skill.name);
+      const isLinked = groups && Object.values(groups).some(Boolean);
+      const attention = inspection && (Object.keys(groups ?? {}) as TargetGroupId[]).some((group) => groupHasProblem(inspection, group));
+      const matchesFilter = filter === "all"
+        || (filter === "linked" && isLinked)
+        || (filter === "available" && !isLinked)
+        || (filter === "pending" && dirtyNames.has(skill.name))
+        || (filter === "attention" && attention);
+      return matchesFilter && (!query || `${skill.name} ${skill.description}`.toLocaleLowerCase().includes(query));
     });
-  }, [annotatedSkills, search, filter]);
+  }, [store, draft, dirty, filter, search, inspectionByName]);
 
-  const linked = visibleSkills.filter(({ state }) => state !== "available");
-  const available = visibleSkills.filter(({ state }) => state === "available");
-  const selected = store?.skills.find((skill) => skill.name === selectedName) ?? null;
-  const selectedLink = selectedName ? linkedByName.get(selectedName) : undefined;
-
-  useEffect(() => {
-    if (!qaMode) return;
-    fetch(`/docs/qa/state/${qaMode}.json`)
-      .then((response) => {
-        if (!response.ok) throw new Error(`QA state ${qaMode} is unavailable`);
-        return response.json() as Promise<QaCaptureState>;
-      })
-      .then((capture) => {
-        setStore(capture.store);
-        setProject(capture.project);
-        setPreflight(capture.preflight);
-        setGitStatus(capture.gitStatus);
-        setSelectedName("project-harness");
-        setLastChecked(new Date());
-        setDrawerOpen(new URLSearchParams(window.location.search).get("drawer") === "1");
-        if (qaMode === "success") {
-          setNotice({ tone: "success", title: "project-harness 已链接到 media", detail: "已创建相对符号链接；源文件没有被复制或修改。" });
-        }
-        if (qaMode === "conflict") {
-          setNotice({ tone: "error", title: "目标位置存在冲突", detail: "目标已存在真实目录，Habitat 不会覆盖。" });
-        }
-      })
-      .catch((error: Error) => setNotice({ tone: "error", title: "无法载入 QA 状态", detail: error.message }));
-  }, []);
-
-  useEffect(() => {
-    if (qaMode || store) return;
-    const savedStore = window.localStorage.getItem("habitat.storeRoot");
-    if (!savedStore) return;
-    setBusy("store");
-    api.scanStore(savedStore)
-      .then((nextStore) => setStore(nextStore))
-      .catch((error) => {
-        const detail = toError(error);
-        setNotice({ tone: "error", title: "无法重新打开技能库", detail: detail.recovery ?? detail.message });
-      })
-      .finally(() => setBusy(null));
-  }, [store]);
-
-  const refreshProject = useCallback(async (
-    storeRoot = store?.root,
-    projectRoot = project?.root,
-    skillName = selectedName,
-  ) => {
-    if (!storeRoot || !projectRoot) return;
-    const [next, nextGit, nextPreflight] = await Promise.all([
-      api.scanProject(projectRoot, storeRoot),
-      api.inspectGitStatus(projectRoot),
-      skillName ? api.preflightLink(storeRoot, projectRoot, skillName) : Promise.resolve(null),
-    ]);
-    setProject(next);
-    setGitStatus(nextGit);
-    setPreflight(nextPreflight);
-  }, [store?.root, project?.root, selectedName]);
-
-  const refreshAll = useCallback(async () => {
-    if (!store || !project) return;
-    setBusy("scan");
+  const review = async () => {
+    if (!store || !projectRoot || dirty.length === 0 || blockingCount > 0) return;
+    setBusy("plan");
     setNotice(null);
     try {
-      const [nextStore, nextProject, nextGit] = await Promise.all([
-        api.scanStore(store.root),
-        api.scanProject(project.root, store.root),
-        api.inspectGitStatus(project.root),
-      ]);
-      setStore(nextStore);
-      setProject(nextProject);
-      setGitStatus(nextGit);
-      setLastChecked(new Date());
-      setNotice({ tone: "success", title: "已重新读取真实文件与链接状态。" });
+      const plan = qaMode?.startsWith("project-")
+        ? {
+            transactionId: "qa-project-plan",
+            registryVersion: "1",
+            storeRoot: store.root,
+            projectRoot,
+            manifestPath: `${store.root}/.habitat/transactions/qa.project.json`,
+            operations: dirty.map((item, index) => ({
+              skillName: item.name,
+              targetGroup: item.group,
+              action: item.action,
+              sourcePath: `${store.root}/${item.name}`,
+              targetPath: `${projectRoot}/${item.group === "agents_shared" ? ".agents" : item.group === "claude" ? ".claude" : ".trae"}/skills/${item.name}`,
+              relativeLink: `../../../Skill Store/${item.name}`,
+              result: "pending" as const,
+              sourceIdentity: { device: 1, inode: index + 1, mode: 16877 },
+            })),
+          }
+        : await api.planProjectSettings(store.root, projectRoot, draftSelections(draft));
+      setReviewPlan(plan);
     } catch (error) {
       const detail = toError(error);
-      setNotice({ tone: "error", title: detail.message ?? "刷新失败", detail: detail.recovery ?? detail.stderr });
-    } finally {
-      setBusy(null);
-    }
-  }, [store, project]);
-
-  useEffect(() => {
-    if (qaMode) return;
-    if (!store || !project || !selectedName) {
-      setPreflight(null);
-      return;
-    }
-    let cancelled = false;
-    setPreflight(null);
-    api.preflightLink(store.root, project.root, selectedName)
-      .then((result) => { if (!cancelled) setPreflight(result); })
-      .catch((error) => {
-        if (!cancelled) {
-          const detail = toError(error);
-          setNotice({ tone: "error", title: detail.message ?? "预检失败", detail: detail.recovery ?? detail.stderr });
-        }
-      });
-    return () => { cancelled = true; };
-  }, [store?.root, project?.root, selectedName]);
-
-  const chooseStore = async () => {
-    setBusy("store");
-    setNotice(null);
-    try {
-      const path = await open({ directory: true, multiple: false, title: "选择唯一 Skill Store" });
-      if (typeof path !== "string") return;
-      const nextStore = await api.scanStore(path);
-      setStore(nextStore);
-      setSelectedName(null);
-      setPreflight(null);
-      if (project) await refreshProject(nextStore.root, project.root, null);
-      setNotice({ tone: "success", title: `已选择技能库 ${nextStore.name}`, detail: `读取到 ${nextStore.skills.length} 个有效 skills。` });
-    } catch (error) {
-      const detail = toError(error);
-      setNotice({ tone: "error", title: detail.message ?? "无法选择技能库", detail: detail.recovery ?? detail.stderr });
+      setNotice({ tone: "error", title: detail.message ?? "项目设置预检失败", detail: detail.recovery ?? "处理冲突后重新检查。" });
     } finally {
       setBusy(null);
     }
   };
 
-  const chooseProject = async () => {
-    if (!store) {
-      setNotice({ tone: "info", title: "请先选择唯一 Skill Store。" });
-      return;
-    }
-    setBusy("project");
-    setNotice(null);
+  const apply = async () => {
+    if (!reviewPlan) return;
+    setBusy("apply");
     try {
-      const path = await open({ directory: true, multiple: false, title: "选择当前项目" });
-      if (typeof path !== "string") return;
-      const [nextProject, nextGit] = await Promise.all([
-        api.scanProject(path, store.root),
-        api.inspectGitStatus(path),
-      ]);
-      setProject(nextProject);
-      setGitStatus(nextGit);
-      setGitDiff(null);
-      setNpxStatus(null);
-      setSelectedName(store.skills.at(-1)?.name ?? null);
-      setNotice({ tone: "success", title: `已选择项目 ${nextProject.name}`, detail: "列表状态来自项目内真实符号链接。" });
+      if (!qaMode?.startsWith("project-")) await api.applyProjectSettings(reviewPlan.transactionId);
+      setReviewPlan(null);
+      if (qaMode?.startsWith("project-")) {
+        setBase(structuredClone(draft));
+      } else {
+        await refresh();
+      }
+      setNotice({ tone: "success", title: "项目设置已应用", detail: "只更新了当前项目中的相对 Skill 链接。" });
     } catch (error) {
       const detail = toError(error);
-      setNotice({ tone: "error", title: detail.message ?? "无法选择项目", detail: detail.recovery ?? detail.stderr });
+      setNotice({ tone: "error", title: detail.message ?? "项目设置未完成", detail: detail.recovery ?? "请保留现场并重新检查。" });
     } finally {
       setBusy(null);
     }
   };
 
-  const performLink = async () => {
-    if (!store || !project || !selected) return;
-    setBusy("link");
-    setNotice(null);
-    try {
-      const result = await api.linkSkill(store.root, project.root, selected.name);
-      await refreshProject();
-      setPreflight(result);
-      setNotice({ tone: "success", title: `${selected.name} 已链接到 ${project.name}`, detail: "已创建相对符号链接；源文件没有被复制或修改。" });
-    } catch (error) {
-      const detail = toError(error);
-      setNotice({ tone: "error", title: detail.message ?? "创建链接失败", detail: detail.recovery ?? detail.stderr });
-    } finally {
-      setBusy(null);
-    }
-  };
-
-  const performUnlink = async () => {
-    if (!store || !project || !selected) return;
-    setBusy("unlink");
-    setNotice(null);
-    try {
-      await api.unlinkSkill(store.root, project.root, selected.name);
-      await refreshProject();
-      setNotice({ tone: "success", title: `${selected.name} 已从 ${project.name} 解除链接`, detail: "技能库中的源目录与 SKILL.md 保持不变。" });
-    } catch (error) {
-      const detail = toError(error);
-      setNotice({ tone: "error", title: detail.message ?? "解除链接失败", detail: detail.recovery ?? detail.stderr });
-    } finally {
-      setBusy(null);
-    }
-  };
-
-  const runNpx = async () => {
-    if (!project) return;
-    setBusy("npx");
-    setNotice(null);
-    try {
-      const result = await api.listProjectSkills(project.root);
-      setNpxStatus(result);
-      setLastChecked(new Date());
-      setNotice({
-        tone: result.success ? "success" : "error",
-        title: result.success ? "npx skills 状态已更新。" : "npx skills 返回失败状态。",
-        detail: result.success ? "输出已保留在右侧 Git 与命令状态区。" : (result.stderr || "请检查 npx 输出。"),
-      });
-    } catch (error) {
-      const detail = toError(error);
-      setNotice({ tone: "error", title: detail.message ?? "npx skills 检查失败", detail: detail.recovery ?? detail.stderr });
-    } finally {
-      setBusy(null);
-    }
-  };
-
-  const runGitDiff = async () => {
-    if (!project) return;
-    setBusy("git");
-    try {
-      const [status, diff] = await Promise.all([api.inspectGitStatus(project.root), api.previewGitDiff(project.root)]);
-      setGitStatus(status);
-      setGitDiff(diff);
-      setNotice({ tone: diff.success ? "success" : "error", title: diff.success ? "已读取 Git 变更预览。" : "Git diff 返回失败状态。", detail: diff.stderr || undefined });
-    } catch (error) {
-      const detail = toError(error);
-      setNotice({ tone: "error", title: detail.message ?? "Git 检查失败", detail: detail.recovery ?? detail.stderr });
-    } finally {
-      setBusy(null);
-    }
-  };
-
-  const selectSkill = (skill: Skill) => {
-    setSelectedName(skill.name);
-    setDrawerOpen(true);
-    setNotice(null);
-  };
+  if (!projectRoot) {
+    return (
+      <div className="project-empty-shell">
+        <aside><Brand /><StoreNav store={store} /></aside>
+        <main>
+          <FolderOpen aria-hidden="true" />
+          <h1>添加第一个项目</h1>
+          <p>选择项目目录后，再决定每个 Skill 可供哪些 Agent 使用。添加项目不会自动创建任何链接。</p>
+          <button className="project-primary" onClick={chooseProject} disabled={!store || busy !== null}><Plus />添加项目</button>
+          {notice && <NoticeBanner notice={notice} />}
+        </main>
+        {projectCandidate && <AddProjectDialog path={projectCandidate} groups={candidateGroups} onGroupsChange={setCandidateGroups} onCancel={() => setProjectCandidate(null)} onConfirm={confirmProject} busy={busy !== null} />}
+      </div>
+    );
+  }
 
   return (
-    <div className="app-shell">
-      <aside className="sidebar" aria-label="项目与技能库">
-        <div className="window-drag" data-tauri-drag-region />
-        <div className="brand">
-          <Box aria-hidden="true" />
-          <div><strong>技能管理</strong><span>本地 Git 技能仓库</span></div>
-        </div>
-        <div className="sidebar-rule" />
-        <div className="sidebar-heading"><span>项目</span><button className="icon-button" onClick={chooseProject} disabled={!store || busy !== null} title="选择项目" aria-label="选择项目"><Plus /></button></div>
-        <nav className="project-list" aria-label="当前项目">
-          {project ? (
-            <button className="project-item selected" onClick={chooseProject} disabled={busy !== null}>
-              <FolderGit2 aria-hidden="true" />
-              <span><strong>{project.name}</strong><small title={project.root}>{project.root}</small></span>
-            </button>
-          ) : (
-            <button className="project-empty" onClick={chooseProject} disabled={!store || busy !== null}>
-              <FolderOpen aria-hidden="true" />
-              <span>{store ? "选择一个项目目录" : "先选择下方技能库"}</span>
-            </button>
-          )}
-        </nav>
-        <div className="sidebar-spacer" />
-        <button className={`store-row ${store ? "connected" : ""}`} onClick={chooseStore} disabled={busy !== null}>
-          {busy === "store" ? <LoaderCircle className="spin" aria-hidden="true" /> : <Database aria-hidden="true" />}
-          <span><strong>技能库</strong><small title={store?.root}>{store ? store.name : "选择唯一 Skill Store"}</small></span>
-          <i aria-hidden="true" />
-        </button>
-        <div className="sidebar-footer"><ShieldCheck aria-hidden="true" /><span>Codex-only · 本地优先</span></div>
+    <div className="project-shell">
+      <aside className="project-sidebar">
+        <Brand />
+        <div className="sidebar-label">项目</div>
+        {projects.map((item) => <button key={item.root} className={`project-nav ${item.root === projectRoot ? "selected" : ""}`} onClick={() => selectProject(item)} title={item.root}>
+          <Folder /><span><strong>{item.root.split("/").filter(Boolean).at(-1) ?? "未命名"}</strong><small>{item.root}</small></span>
+        </button>)}
+        <button className="sidebar-action" onClick={chooseProject}><Plus />添加项目</button>
+        <StoreNav store={store} />
       </aside>
 
-      <main className="workspace">
-        <header className="topbar">
-          <div>
-            <h1>{project?.name ?? "选择当前项目"}</h1>
-            <p>{project ? "管理此项目已链接的技能" : "从唯一技能库为项目创建可验证的符号链接"}</p>
-          </div>
-          <div className="topbar-actions">
-            <button className="secondary-button inspector-trigger" onClick={() => setDrawerOpen(true)} disabled={!selected}>
-              <Menu aria-hidden="true" />技能详情
-            </button>
-            <button className="secondary-button" onClick={runNpx} disabled={!project || busy !== null}>
-              {busy === "npx" ? <LoaderCircle className="spin" aria-hidden="true" /> : <RefreshCw aria-hidden="true" />}
-              {busy === "npx" ? "正在检查…" : "检查技能库更新"}
-            </button>
-          </div>
+      <main className="project-main">
+        <header className="project-header">
+          <div><h1>{projectName}</h1><code>{projectRoot}</code><p>管理此项目中的 Skills 与 Agent 入口</p></div>
+          <button className="project-secondary" onClick={() => refresh()} disabled={busy !== null}><RefreshCw className={busy === "load" ? "spin" : ""} />重新检查</button>
         </header>
-
-        <div className="toolbar" role="search">
-          <label className="search-field">
-            <Search aria-hidden="true" />
-            <span className="sr-only">搜索技能</span>
-            <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="搜索技能名称…" />
-            {search && <button className="icon-button" onClick={() => setSearch("")} aria-label="清空搜索" title="清空搜索"><X /></button>}
-          </label>
-          <label className="select-field">
-            <span className="sr-only">筛选链接状态</span>
-            <select value={filter} onChange={(event) => setFilter(event.target.value)}>
-              <option value="all">全部状态</option>
-              <option value="linked">已链接</option>
-              <option value="available">可添加</option>
-            </select>
-            <ChevronDown aria-hidden="true" />
-          </label>
+        <div className="project-toolbar">
+          <label><Search /><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="搜索 Skill 名称或描述..." /></label>
+          <select value={filter} onChange={(event) => setFilter(event.target.value as Filter)} aria-label="筛选 Skill">
+            <option value="all">全部状态</option><option value="linked">当前可用</option><option value="available">尚未添加</option><option value="pending">待应用</option><option value="attention">需要处理</option>
+          </select>
         </div>
-
-        {notice && (
-          <div className={`notice ${notice.tone}`} role={notice.tone === "error" ? "alert" : "status"}>
-            {notice.tone === "success" ? <CheckCircle2 aria-hidden="true" /> : notice.tone === "error" ? <AlertCircle aria-hidden="true" /> : <Info aria-hidden="true" />}
-            <span><strong>{notice.title}</strong>{notice.detail && <small>{notice.detail}</small>}</span>
-            <button className="icon-button" onClick={() => setNotice(null)} aria-label="关闭消息" title="关闭消息"><X /></button>
-          </div>
-        )}
-
-        <div className="table-wrap">
-          {!store || !project ? (
-            <div className="onboarding-empty">
-              <FolderOpen aria-hidden="true" />
-              <h2>{store ? "选择当前项目" : "选择唯一 Skill Store"}</h2>
-              <p>{store ? "Habitat 将读取项目内真实的 .agents/skills 链接。" : "扫描技能库根目录及 .agents/skills 下的有效 SKILL.md。"}</p>
-              <button className="primary-button" onClick={store ? chooseProject : chooseStore} disabled={busy !== null}>
-                {busy ? <LoaderCircle className="spin" aria-hidden="true" /> : <FolderOpen aria-hidden="true" />}
-                {store ? "选择项目目录" : "选择 Skill Store"}
-              </button>
-            </div>
-          ) : (
-            <table className="skills-table">
-              <thead><tr><th>技能名称</th><th>来源</th><th>链接状态</th><th>验证</th><th>更新时间</th></tr></thead>
-              <tbody>
-                <tr className="group-row"><th colSpan={5}>此项目已链接（{linked.length}）</th></tr>
-                {linked.map(({ skill, state, link }) => (
-                  <tr key={skill.name} className={`skill-row ${selectedName === skill.name ? "selected" : ""}`} aria-selected={selectedName === skill.name} tabIndex={0} onClick={() => selectSkill(skill)} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") selectSkill(skill); }}>
-                    <td><div className="skill-name"><StatusIcon state={state} /><span><strong>{skill.name}</strong><small>{skill.description}</small></span></div></td>
-                    <td><span className="cell-stack"><span>{skill.sourceKind}</span><small>v{skill.version}</small></span></td>
-                    <td><span className={`cell-stack state ${state}`}><span>{stateLabels[state]}</span><small title={link?.relativeTarget ?? undefined}>{link?.relativeTarget ?? "—"}</small></span></td>
-                    <td><span className="verified"><CircleDot aria-hidden="true" />{state === "valid" ? "目标已验证" : "需要处理"}</span></td>
-                    <td>{formatTime(skill.modifiedAt)}</td>
-                  </tr>
-                ))}
-                {linked.length === 0 && <tr className="empty-row"><td colSpan={5}>当前筛选下没有已链接 skills。</td></tr>}
-                <tr className="group-row"><th colSpan={5}>可添加到此项目（{available.length}）</th></tr>
-                {available.map(({ skill, state }) => (
-                  <tr key={skill.name} className={`skill-row ${selectedName === skill.name ? "selected" : ""}`} aria-selected={selectedName === skill.name} tabIndex={0} onClick={() => selectSkill(skill)} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") selectSkill(skill); }}>
-                    <td><div className="skill-name"><StatusIcon state={state} /><span><strong>{skill.name}</strong><small>{skill.description}</small></span></div></td>
-                    <td><span className="cell-stack"><span>{skill.sourceKind}</span><small>v{skill.version}</small></span></td>
-                    <td><span className="cell-stack state available"><span>未链接</span><small>.agents/skills/{skill.name}</small></span></td>
-                    <td><span className="verified"><CircleDot aria-hidden="true" />等待预检</span></td>
-                    <td>{formatTime(skill.modifiedAt)}</td>
-                  </tr>
-                ))}
-                {available.length === 0 && <tr className="empty-row"><td colSpan={5}>当前筛选下没有可添加 skills。</td></tr>}
-              </tbody>
-            </table>
-          )}
+        {notice && <NoticeBanner notice={notice} onClose={() => setNotice(null)} />}
+        <div className="skill-columns"><span>Skill</span><span>适用于 <Info /></span><span>来源与版本</span><span>状态</span></div>
+        <div className="skill-list">
+          {visibleSkills.map((skill) => {
+            const groups = draft[skill.name];
+            const verified = base[skill.name];
+            const inspection = inspectionByName.get(skill.name)!;
+            const skillDirty = dirty.filter((item) => item.name === skill.name);
+            const hasProblem = (Object.keys(groups) as TargetGroupId[]).some((group) => groupHasProblem(inspection, group));
+            return (
+              <div key={skill.name} className={`skill-row ${selectedName === skill.name ? "selected" : ""}`} onClick={() => { setSelectedName(skill.name); setInspectorOpen(true); }}>
+                <div className="skill-name"><SkillGlyph name={skill.name} /><span><strong>{skill.name}</strong><small>{skill.description}</small></span></div>
+                <div className="skill-agents" onClick={(event) => event.stopPropagation()}>
+                  {(["agents_shared", "claude", "trae"] as TargetGroupId[]).map((group) => <AgentGroupButton key={group} group={group} current={groups[group]} verified={verified[group]} blocked={groupHasProblem(inspection, group)} disabled={!activeGroups.includes(group)} forceHelp={Boolean(qaMode?.startsWith("project-") && selectedName === skill.name && group === "agents_shared")} onToggle={() => toggle(skill.name, group)} />)}
+                </div>
+                <div className="skill-source"><span>Skill Store</span><small>v{skill.version}</small></div>
+                <div className={`skill-status ${skillDirty.length ? "pending" : hasProblem ? "warning" : Object.values(groups).some(Boolean) ? "ok" : "off"}`} title={skillDirty.length ? "有待应用更改" : hasProblem ? "需要处理" : Object.values(groups).some(Boolean) ? "已验证" : "未添加"}>
+                  {skillDirty.length ? <CircleDot /> : hasProblem ? <AlertCircle /> : Object.values(groups).some(Boolean) ? <CheckCircle2 /> : <span>—</span>}
+                </div>
+              </div>
+            );
+          })}
         </div>
-
-        <footer className="workspace-status">
-          <span>{project ? `${project.name} 已链接 ${project.links.filter((link) => link.state === "valid").length} / 技能库共 ${store?.skills.length ?? 0}` : "等待选择项目"}</span>
-          <span className="store-path" title={store?.root}>{store ? `技能库位置：${store.root}` : "尚未选择技能库"}</span>
-          <button className="quiet-button" onClick={refreshAll} disabled={!store || !project || busy !== null} title="重新读取文件状态">
-            {busy === "scan" ? <LoaderCircle className="spin" aria-hidden="true" /> : <RefreshCw aria-hidden="true" />}刷新
-          </button>
-        </footer>
+        {dirty.length > 0 && <div className="pending-bar">
+          <div><strong>待应用更改</strong><span>涉及 {new Set(dirty.map((item) => item.name)).size} 个 Skill · 添加 {dirty.filter((item) => item.action === "create").length} · 移除 {dirty.filter((item) => item.action === "remove").length}</span>{blockingCount > 0 && <small>{blockingCount} 项需要先处理</small>}</div>
+          <button className="project-secondary" onClick={() => setDraft(structuredClone(base))}>撤销</button>
+          <button className="project-primary" onClick={review} disabled={blockingCount > 0 || busy !== null}>{busy === "plan" ? <LoaderCircle className="spin" /> : <Check />}检查并应用</button>
+        </div>}
       </main>
 
-      <div className={`drawer-backdrop ${drawerOpen ? "open" : ""}`} onClick={() => setDrawerOpen(false)} aria-hidden="true" />
-      <aside className={`inspector ${drawerOpen ? "open" : ""}`} aria-label="技能详情">
-        <div className="inspector-header">
-          <span>技能详情</span>
-          <button className="icon-button inspector-close" onClick={() => setDrawerOpen(false)} aria-label="关闭技能详情" title="关闭技能详情"><X /></button>
-        </div>
-        {!selected || !project || !store ? (
-          <div className="inspector-empty"><FileCode2 aria-hidden="true" /><p>选择一个 skill 查看详情、真实路径和预检结果。</p></div>
-        ) : (
-          <div className="inspector-content">
-            <section className="identity-section">
-              <div className="identity-title"><Box aria-hidden="true" /><h2>{selected.name}</h2><span className="status-label">v{selected.version}</span></div>
-              <p className="source-line">{selected.sourceKind} · {selectedLink ? stateLabels[selectedLink.state] : "可添加"}</p>
-              <p className="description">{selected.description}</p>
-            </section>
-
-            <section>
-              <h3>将添加到</h3>
-              <div className="project-summary"><Folder aria-hidden="true" /><span><strong>{project.name}</strong><small>{project.root}</small></span></div>
-            </section>
-
-            <section>
-              <h3>符号链接目标{selectedLink ? "（已存在）" : "（将创建）"}</h3>
-              <CopyPath value={preflight?.targetPath ?? `${project.skillsDirectory}/${selected.name}`} label="符号链接目标" />
-              {preflight && <div className="link-map"><code>{preflight.relativeLink}</code><ArrowRight aria-hidden="true" /><span>源技能</span></div>}
-            </section>
-
-            <section>
-              <h3>源路径（技能库）</h3>
-              <CopyPath value={selected.sourcePath} label="源路径" />
-            </section>
-
-            <section>
-              <div className="section-heading"><h3>Git 与命令状态</h3><GitBranch aria-hidden="true" /></div>
-              <div className="command-state">
-                <div><span>git status --short</span><strong className={gitStatus?.success ? "ok" : gitStatus ? "bad" : ""}>{commandTitle(gitStatus)}</strong></div>
-                {gitStatus && <pre>{gitStatus.stdout || gitStatus.stderr || "工作区干净（无输出）"}</pre>}
-                <div><span>npx skills list --project --json</span><strong className={npxStatus?.success ? "ok" : npxStatus ? "bad" : ""}>{commandTitle(npxStatus)}</strong></div>
-                {npxStatus && <pre>{npxStatus.stdout || npxStatus.stderr || "命令完成（无输出）"}</pre>}
-                {gitDiff && <details open><summary>git diff 输出</summary><pre>{gitDiff.stdout || gitDiff.stderr || "无文本差异"}</pre></details>}
-              </div>
-              <button className="secondary-button compact" onClick={runGitDiff} disabled={busy !== null}>
-                {busy === "git" ? <LoaderCircle className="spin" aria-hidden="true" /> : <Code2 aria-hidden="true" />}预览 Git 变更
-              </button>
-            </section>
-
-            <section>
-              <h3>预检结果</h3>
-              {!preflight ? <div className="preflight-loading"><LoaderCircle className="spin" aria-hidden="true" />正在检查真实路径与链接…</div> : (
-                <ul className="check-list">
-                  {preflight.checks.map((check) => (
-                    <li key={check.id} className={check.status}>
-                      {check.status === "pass" ? <Check aria-hidden="true" /> : check.status === "warning" ? <AlertCircle aria-hidden="true" /> : <XCircle aria-hidden="true" />}
-                      <span><strong>{check.label}</strong><small>{check.detail}</small>{check.recovery && <em>{check.recovery}</em>}</span>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </section>
-
-            <section className="action-section">
-              <div className="safety-note"><Info aria-hidden="true" /><span>仅创建或解除符号链接，不复制文件，也不删除技能库源文件。</span></div>
-              {selectedLink?.state === "valid" ? (
-                <button className="unlink-button" onClick={performUnlink} disabled={busy !== null}>
-                  {busy === "unlink" ? <LoaderCircle className="spin" aria-hidden="true" /> : <Unlink aria-hidden="true" />}
-                  {busy === "unlink" ? "正在解除…" : `从 ${project.name} 解除链接`}
-                </button>
-              ) : (
-                <button className="primary-button full" onClick={performLink} disabled={!preflight?.canLink || busy !== null} aria-describedby="preflight-summary">
-                  {busy === "link" ? <LoaderCircle className="spin" aria-hidden="true" /> : <Link2 aria-hidden="true" />}
-                  {busy === "link" ? "正在创建链接…" : `添加到 ${project.name}`}
-                </button>
-              )}
-              <p id="preflight-summary" className="action-hint">{preflight?.canLink ? "预检通过；操作需要明确点击确认。" : "解决预检失败项后才能操作。"}</p>
-            </section>
-          </div>
-        )}
+      <aside className={`project-inspector ${inspectorOpen ? "open" : ""}`}>
+        {selected && selectedInspection ? <>
+          <header><SkillGlyph name={selected.name} /><div><h2>{selected.name}</h2><small>v{selected.version}</small></div><button onClick={() => setInspectorOpen(false)} aria-label="关闭详情"><X /></button></header>
+          <section><h3>本次更改</h3>{dirty.filter((item) => item.name === selected.name).length ? dirty.filter((item) => item.name === selected.name).map((item) => <div className="inspector-change" key={item.group}><AgentIcons group={item.group} /><span>{item.action === "create" ? "将添加" : "将移除"}</span><i /></div>) : <p className="quiet-copy">这个 Skill 没有待应用更改。</p>}<p className="quiet-copy">应用后，所选 Agent 可在当前项目中读取此 Skill。</p></section>
+          <section><h3>检查结果</h3><CheckLine ok label="目标位置可用" /><CheckLine ok label="未发现同名占用" />{selectedInspection.agents.some((agent) => agent.supportTier === "path_compatible") && <CheckLine warning label="Cursor 与 Trae 应用后建议验证" />}</section>
+          <section><h3>项目入口</h3>{(["agents_shared", "claude", "trae"] as TargetGroupId[]).filter((group) => draft[selected.name][group]).map((group) => <div className="target-line" key={group}><AgentIcons group={group} /><code>{group === "agents_shared" ? ".agents" : group === "claude" ? ".claude" : ".trae"}/skills/{selected.name}</code></div>)}</section>
+          <details><summary>技术详情 <ChevronDown /></summary><dl><div><dt>Store 来源</dt><dd>{selected.sourcePath}</dd></div><div><dt>Registry</dt><dd>{selectedInspection.registryVersion}</dd></div></dl></details>
+        </> : <div className="inspector-empty"><Info /><p>选择一个 Skill 查看项目入口与检查结果。</p></div>}
       </aside>
+      <button className={`inspector-backdrop ${inspectorOpen ? "open" : ""}`} onClick={() => setInspectorOpen(false)} aria-label="关闭详情" />
 
-      <div className="global-status" role="status" aria-live="polite">
-        <span><i />{busy ? "正在处理真实本地状态…" : "就绪"}</span>
-        <span>{lastChecked ? `最后检查：${lastChecked.toLocaleString("zh-CN")}` : "尚未检查 npx skills"}</span>
-      </div>
+      {reviewPlan && <div className="review-backdrop" role="presentation">
+        <section className="review-dialog" role="dialog" aria-modal="true" aria-labelledby="review-title">
+          <header><div><small>项目设置</small><h2 id="review-title">检查后应用到 {projectName}</h2></div><button onClick={() => setReviewPlan(null)} aria-label="关闭"><X /></button></header>
+          <div className="review-body">
+            <p>将只增加或移除当前项目中的相对 Skill 链接；Skill 内容与 Agent 设置不会改变。</p>
+            {reviewPlan.operations.filter((operation) => operation.action === "create").length > 0 && <ReviewGroup title="将添加" operations={reviewPlan.operations.filter((operation) => operation.action === "create")} />}
+            {reviewPlan.operations.filter((operation) => operation.action === "remove").length > 0 && <ReviewGroup title="将移除" operations={reviewPlan.operations.filter((operation) => operation.action === "remove")} />}
+            <div className="review-pass"><CheckCircle2 /><span><strong>预检通过</strong><small>{reviewPlan.operations.length} 个项目入口可以安全更新</small></span></div>
+          </div>
+          <footer><button className="project-secondary" onClick={() => setReviewPlan(null)}>返回调整</button><button className="project-primary" onClick={apply} disabled={busy === "apply"}>{busy === "apply" ? <LoaderCircle className="spin" /> : <Check />}应用项目设置</button></footer>
+        </section>
+      </div>}
+      {projectCandidate && <AddProjectDialog path={projectCandidate} groups={candidateGroups} onGroupsChange={setCandidateGroups} onCancel={() => setProjectCandidate(null)} onConfirm={confirmProject} busy={busy !== null} />}
     </div>
   );
 }
 
-export default App;
+function Brand() {
+  return <div className="project-brand"><Box /><span><strong>Habitat</strong><small>本地优先 · Skill 管理器</small></span></div>;
+}
+
+function StoreNav({ store }: { store: StoreScan | null }) {
+  return <div className="store-nav"><div><Database /><span><strong>Skill Store</strong><small>{store ? `${store.skills.length} 个 Skills` : "尚未就绪"}</small></span><i /></div><button><RotateCcw />恢复</button><button><Settings />设置</button></div>;
+}
+
+function AgentIcons({ group }: { group: TargetGroupId }) {
+  return <span className={`mini-agent-group ${group === "agents_shared" ? "shared" : ""}`}>{groupAgents[group].map((agentId) => <img key={agentId} src={agentMeta[agentId].icon} alt={agentMeta[agentId].label} />)}</span>;
+}
+
+function CheckLine({ ok, warning, label }: { ok?: boolean; warning?: boolean; label: string }) {
+  return <div className={`check-line ${warning ? "warning" : ok ? "ok" : ""}`}>{warning ? <AlertCircle /> : <CheckCircle2 />}<span>{label}</span></div>;
+}
+
+function NoticeBanner({ notice, onClose }: { notice: Notice; onClose?: () => void }) {
+  return <div className={`project-notice ${notice.tone}`} role="status">{notice.tone === "error" ? <AlertCircle /> : <CheckCircle2 />}<span><strong>{notice.title}</strong><small>{notice.detail}</small></span>{onClose && <button onClick={onClose} aria-label="关闭提示"><X /></button>}</div>;
+}
+
+function ReviewGroup({ title, operations }: { title: string; operations: ProjectExposurePlan["operations"] }) {
+  return <section className="review-group"><h3>{title}（{operations.length}）</h3>{operations.map((operation) => <div key={`${operation.skillName}-${operation.targetGroup}`}><SkillGlyph name={operation.skillName} /><span><strong>{operation.skillName}</strong><small>{groupLabels[operation.targetGroup]}</small></span><code>{operation.targetPath}</code></div>)}</section>;
+}
+
+function AddProjectDialog({ path, groups, onGroupsChange, onCancel, onConfirm, busy }: {
+  path: string;
+  groups: TargetGroupId[];
+  onGroupsChange: (groups: TargetGroupId[]) => void;
+  onCancel: () => void;
+  onConfirm: () => void;
+  busy: boolean;
+}) {
+  const toggleGroup = (group: TargetGroupId) => onGroupsChange(groups.includes(group) ? groups.filter((item) => item !== group) : [...groups, group]);
+  return <div className="review-backdrop" role="presentation"><section className="review-dialog add-project-dialog" role="dialog" aria-modal="true" aria-labelledby="add-project-title">
+    <header><div><small>项目</small><h2 id="add-project-title">添加项目</h2></div><button onClick={onCancel} aria-label="关闭"><X /></button></header>
+    <div className="review-body">
+      <p>选择这个项目会使用的 Agent 入口。添加项目只保存管理范围，不会自动链接任何 Skill。</p>
+      <div className="candidate-path"><FolderOpen /><span><strong>{path.split("/").filter(Boolean).at(-1)}</strong><code>{path}</code></span></div>
+      <h3 className="choice-title">项目使用的 Agent</h3>
+      <div className="project-agent-choices">
+        {(["agents_shared", "claude", "trae"] as TargetGroupId[]).map((group) => <button key={group} className={groups.includes(group) ? "selected" : ""} onClick={() => toggleGroup(group)} aria-pressed={groups.includes(group)}><AgentIcons group={group} /><span><strong>{group === "agents_shared" ? "通用入口" : groupLabels[group]}</strong><small>{group === "agents_shared" ? "Codex、Pi、Cursor 共享" : group === "trae" ? "预计兼容" : "已验证支持"}</small></span>{groups.includes(group) && <Check />}</button>)}
+      </div>
+      <div className="project-safety-note"><Info /><span><strong>现在不会创建链接</strong><small>添加后，请在项目 Skill 列表中逐项选择并统一应用。</small></span></div>
+    </div>
+    <footer><button className="project-secondary" onClick={onCancel}>取消</button><button className="project-primary" onClick={onConfirm} disabled={groups.length === 0 || busy}><Plus />添加项目</button></footer>
+  </section></div>;
+}

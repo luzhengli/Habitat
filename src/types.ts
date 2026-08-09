@@ -151,3 +151,77 @@ export type TransactionManifest = MigrationPlan & {
   createdAt: number;
   updatedAt: number;
 };
+
+export type TargetGroupId = "agents_shared" | "claude" | "trae";
+export type ProjectAction = "create" | "remove";
+export type ProjectOperationResult = "pending" | "created" | "removed" | "rolled_back" | "drifted";
+export type ObservedRouteState = "absent" | "matching" | "conflicting" | "broken" | "unsafe";
+export type EffectiveExposureState = "unavailable" | "available" | "duplicate" | "shadowed" | "conflict" | "unknown";
+export type SupportTier = "runtime_verified" | "path_compatible";
+
+export type RouteObservation = {
+  scope: "user" | "project";
+  relativeRoot: string;
+  entryPath: string;
+  condition: "active" | "setting_controlled";
+  state: ObservedRouteState;
+  canonicalTarget: string | null;
+  detail: string;
+};
+
+export type AgentExposureInspection = {
+  agentId: AgentId;
+  targeted: boolean;
+  expectedTarget: string;
+  expectedSatisfied: boolean;
+  effectiveState: EffectiveExposureState;
+  supportTier: SupportTier;
+  runtimeVerified: boolean;
+  routes: RouteObservation[];
+};
+
+export type ProjectExposureInspection = {
+  registryVersion: string;
+  projectRoot: string;
+  skillName: string;
+  sourcePath: string;
+  agents: AgentExposureInspection[];
+};
+
+export type ProjectWorkspaceInspection = {
+  registryVersion: string;
+  projectRoot: string;
+  skills: ProjectExposureInspection[];
+};
+
+export type ProjectDraftSelection = {
+  name: string;
+  selectedAgents: AgentId[];
+};
+
+export type ProjectOperation = {
+  skillName: string;
+  targetGroup: TargetGroupId;
+  action: ProjectAction;
+  sourcePath: string;
+  targetPath: string;
+  relativeLink: string;
+  result: ProjectOperationResult;
+};
+
+export type ProjectExposurePlan = {
+  transactionId: string;
+  registryVersion: string;
+  storeRoot: string;
+  projectRoot: string;
+  manifestPath: string;
+  operations: ProjectOperation[];
+};
+
+export type ProjectTransactionManifest = ProjectExposurePlan & {
+  schemaVersion: number;
+  state: "confirmed" | "applying" | "completed" | "rolling_back" | "rolled_back" | "rollback_partial";
+  createdContainers: string[];
+  createdAt: number;
+  updatedAt: number;
+};

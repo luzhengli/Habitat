@@ -2,12 +2,18 @@ pub mod adapters;
 pub mod migration;
 pub mod skills;
 
-use adapters::{adapter_registry, AgentId};
+use adapters::{
+    adapter_registry, apply_project_exposure_plan, build_project_exposure_plan,
+    inspect_project_exposures, rollback_project_transaction, AgentId, ProjectExposureInspection,
+    ProjectExposurePlan, ProjectSkillSelection, ProjectTransactionManifest,
+};
 use migration::{
     build_import_plan, execute_import, rollback_transaction, scan_inventory, validate_store,
     InventoryRoot, InventorySnapshot, MigrationError, MigrationPlan, TransactionManifest,
 };
+use serde::{Deserialize, Serialize};
 use skills::{AppError, CommandResult, Preflight, ProjectScan, SkillInspection, StoreScan};
+use std::collections::BTreeMap;
 use std::ffi::OsString;
 use std::path::PathBuf;
 use std::sync::Mutex;
@@ -23,6 +29,30 @@ struct FirstRunSession {
 
 #[derive(Default)]
 struct FirstRunState(Mutex<FirstRunSession>);
+
+#[derive(Default)]
+struct ProjectSession {
+    plan: Option<ProjectExposurePlan>,
+    manifest: Option<ProjectTransactionManifest>,
+}
+
+#[derive(Default)]
+struct ProjectState(Mutex<ProjectSession>);
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct ProjectDraftSelection {
+    name: String,
+    selected_agents: Vec<AgentId>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct ProjectWorkspaceInspection {
+    registry_version: String,
+    project_root: PathBuf,
+    skills: Vec<ProjectExposureInspection>,
+}
 
 fn first_run_error(code: &str, message: &str, recovery: &str) -> MigrationError {
     MigrationError::new(
@@ -47,6 +77,64 @@ fn lock_first_run(
             "重新打开 Habitat 后重新扫描。",
         )
     })
+}
+
+fn project_error(code: &str, message: &str, recovery: &str) -> MigrationError {
+    MigrationError::new(code, "project", message, None, None, None, recovery, false)
+}
+
+fn lock_project(
+    state: &ProjectState,
+) -> Result<std::sync::MutexGuard<'_, ProjectSession>, MigrationError> {
+    state.0.lock().map_err(|_| {
+        project_error(
+            "project_state_unavailable",
+            "项目设置状态暂时不可用。",
+            "重新打开 Habitat 后重新检查项目。",
+        )
+    })
+}
+
+fn migration_error_from_app(error: AppError) -> MigrationError {
+    MigrationError::new(
+        &error.code,
+        "project",
+        error.message,
+        None,
+        None,
+        Some(error.stderr),
+        error.recovery,
+        false,
+    )
+}
+
+fn project_selections(
+    store_path: &str,
+    drafts: &[ProjectDraftSelection],
+) -> Result<Vec<ProjectSkillSelection>, MigrationError> {
+    let store = skills::scan_store(store_path).map_err(migration_error_from_app)?;
+    let sources = store
+        .skills
+        .into_iter()
+        .map(|skill| (skill.name, PathBuf::from(skill.source_path)))
+        .collect::<BTreeMap<_, _>>();
+    drafts
+        .iter()
+        .map(|draft| {
+            let source_path = sources.get(&draft.name).cloned().ok_or_else(|| {
+                project_error(
+                    "unknown_store_skill",
+                    "项目草稿包含当前 Skill Store 中不存在的 Skill。",
+                    "重新检查 Skill Store 后再调整项目设置。",
+                )
+            })?;
+            Ok(ProjectSkillSelection {
+                name: draft.name.clone(),
+                source_path,
+                selected_agents: draft.selected_agents.clone(),
+            })
+        })
+        .collect()
 }
 
 fn agent_key(agent: AgentId) -> &'static str {
@@ -243,6 +331,139 @@ fn rollback_first_run_migration_command(
 }
 
 #[tauri::command]
+fn inspect_project_workspace_command(
+    store_path: String,
+    project_path: String,
+) -> Result<ProjectWorkspaceInspection, MigrationError> {
+    let store = skills::scan_store(&store_path).map_err(migration_error_from_app)?;
+    let all_agents = vec![
+        AgentId::Codex,
+        AgentId::ClaudeCode,
+        AgentId::Pi,
+        AgentId::Cursor,
+        AgentId::Trae,
+    ];
+    let selections = store
+        .skills
+        .iter()
+        .map(|skill| ProjectSkillSelection {
+            name: skill.name.clone(),
+            source_path: PathBuf::from(&skill.source_path),
+            selected_agents: all_agents.clone(),
+        })
+        .collect::<Vec<_>>();
+
+    // The empty plan is also the project/store boundary preflight when a Store has no Skills.
+    let validation = build_project_exposure_plan(
+        PathBuf::from(&store_path).as_path(),
+        PathBuf::from(&project_path).as_path(),
+        &[],
+    )?;
+    let skills = selections
+        .iter()
+        .map(|selection| {
+            inspect_project_exposures(
+                PathBuf::from(&store_path).as_path(),
+                PathBuf::from(&project_path).as_path(),
+                selection,
+            )
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    Ok(ProjectWorkspaceInspection {
+        registry_version: validation.registry_version,
+        project_root: validation.project_root,
+        skills,
+    })
+}
+
+#[tauri::command]
+fn plan_project_settings_command(
+    store_path: String,
+    project_path: String,
+    selections: Vec<ProjectDraftSelection>,
+    state: State<'_, ProjectState>,
+) -> Result<ProjectExposurePlan, MigrationError> {
+    let selections = project_selections(&store_path, &selections)?;
+    let plan = build_project_exposure_plan(
+        PathBuf::from(store_path).as_path(),
+        PathBuf::from(project_path).as_path(),
+        &selections,
+    )?;
+    let mut session = lock_project(&state)?;
+    session.plan = Some(plan.clone());
+    session.manifest = None;
+    Ok(plan)
+}
+
+#[tauri::command]
+fn apply_project_settings_command(
+    transaction_id: String,
+    state: State<'_, ProjectState>,
+) -> Result<ProjectTransactionManifest, MigrationError> {
+    let plan = {
+        let session = lock_project(&state)?;
+        let plan = session.plan.as_ref().ok_or_else(|| {
+            project_error(
+                "project_plan_required",
+                "当前没有可应用的项目设置。",
+                "返回项目页面重新检查更改。",
+            )
+        })?;
+        if plan.transaction_id != transaction_id {
+            return Err(project_error(
+                "project_plan_mismatch",
+                "项目设置已经变化。",
+                "返回项目页面重新检查更改。",
+            ));
+        }
+        plan.clone()
+    };
+    let manifest = apply_project_exposure_plan(&plan)?;
+    let mut session = lock_project(&state)?;
+    session.manifest = Some(manifest.clone());
+    Ok(manifest)
+}
+
+#[tauri::command]
+fn rollback_project_settings_command(
+    transaction_id: String,
+    state: State<'_, ProjectState>,
+) -> Result<ProjectTransactionManifest, MigrationError> {
+    let manifest_path = {
+        let session = lock_project(&state)?;
+        let manifest = session.manifest.as_ref().ok_or_else(|| {
+            project_error(
+                "project_manifest_required",
+                "当前没有可撤销的项目设置记录。",
+                "重新检查项目状态。",
+            )
+        })?;
+        if manifest.transaction_id != transaction_id {
+            return Err(project_error(
+                "project_manifest_mismatch",
+                "项目设置记录与当前事务不一致。",
+                "重新检查项目状态。",
+            ));
+        }
+        session
+            .plan
+            .as_ref()
+            .map(|plan| plan.manifest_path.clone())
+            .ok_or_else(|| {
+                project_error(
+                    "project_plan_required",
+                    "无法定位当前项目设置记录。",
+                    "重新检查项目状态。",
+                )
+            })?
+    };
+    let manifest = rollback_project_transaction(&manifest_path)?;
+    let mut session = lock_project(&state)?;
+    session.manifest = Some(manifest.clone());
+    Ok(manifest)
+}
+
+#[tauri::command]
 fn scan_store(store_path: String) -> Result<StoreScan, AppError> {
     skills::scan_store(&store_path)
 }
@@ -316,6 +537,7 @@ fn preview_git_diff(project_path: String) -> Result<CommandResult, AppError> {
 pub fn run() {
     tauri::Builder::default()
         .manage(FirstRunState::default())
+        .manage(ProjectState::default())
         .plugin(tauri_plugin_dialog::init())
         .invoke_handler(tauri::generate_handler![
             scan_known_inventory_command,
@@ -323,6 +545,10 @@ pub fn run() {
             plan_first_run_migration_command,
             execute_first_run_migration_command,
             rollback_first_run_migration_command,
+            inspect_project_workspace_command,
+            plan_project_settings_command,
+            apply_project_settings_command,
+            rollback_project_settings_command,
             scan_store,
             scan_project,
             inspect_skill,
@@ -336,4 +562,94 @@ pub fn run() {
         ])
         .run(tauri::generate_context!())
         .expect("failed to run Habitat");
+}
+
+#[cfg(test)]
+mod project_command_tests {
+    use super::*;
+    use std::fs;
+    use tempfile::TempDir;
+
+    fn write_skill(path: &std::path::Path, name: &str) {
+        fs::create_dir_all(path).unwrap();
+        fs::write(
+            path.join("SKILL.md"),
+            format!(
+                "---\nname: {name}\ndescription: project command fixture\nversion: 1.0.0\n---\n"
+            ),
+        )
+        .unwrap();
+    }
+
+    #[test]
+    fn project_command_selection_reaches_all_targets_and_can_remove_them() {
+        let fixture = TempDir::new().unwrap();
+        let store = fixture.path().join("Skill Store");
+        let project = fixture.path().join("media");
+        fs::create_dir(&store).unwrap();
+        fs::create_dir(&project).unwrap();
+        write_skill(&store.join("project-harness"), "project-harness");
+
+        let enabled = vec![ProjectDraftSelection {
+            name: "project-harness".into(),
+            selected_agents: vec![
+                AgentId::Codex,
+                AgentId::Pi,
+                AgentId::Cursor,
+                AgentId::ClaudeCode,
+                AgentId::Trae,
+            ],
+        }];
+        let selections = project_selections(store.to_str().unwrap(), &enabled).unwrap();
+        let plan = build_project_exposure_plan(&store, &project, &selections).unwrap();
+        assert_eq!(plan.operations.len(), 3);
+        apply_project_exposure_plan(&plan).unwrap();
+        for relative in [
+            ".agents/skills/project-harness",
+            ".claude/skills/project-harness",
+            ".trae/skills/project-harness",
+        ] {
+            let target = project.join(relative);
+            assert!(fs::symlink_metadata(&target)
+                .unwrap()
+                .file_type()
+                .is_symlink());
+            assert!(!fs::read_link(target).unwrap().is_absolute());
+        }
+
+        let inspection = inspect_project_exposures(&store, &project, &selections[0]).unwrap();
+        assert!(inspection
+            .agents
+            .iter()
+            .all(|agent| agent.expected_satisfied));
+
+        let disabled = vec![ProjectDraftSelection {
+            name: "project-harness".into(),
+            selected_agents: Vec::new(),
+        }];
+        let selections = project_selections(store.to_str().unwrap(), &disabled).unwrap();
+        let plan = build_project_exposure_plan(&store, &project, &selections).unwrap();
+        assert_eq!(plan.operations.len(), 3);
+        apply_project_exposure_plan(&plan).unwrap();
+        assert!(fs::symlink_metadata(project.join(".agents/skills/project-harness")).is_err());
+        assert!(fs::symlink_metadata(project.join(".claude/skills/project-harness")).is_err());
+        assert!(fs::symlink_metadata(project.join(".trae/skills/project-harness")).is_err());
+        assert!(store.join("project-harness/SKILL.md").is_file());
+    }
+
+    #[test]
+    fn project_command_rejects_names_not_present_in_current_store_scan() {
+        let fixture = TempDir::new().unwrap();
+        let store = fixture.path().join("store");
+        fs::create_dir(&store).unwrap();
+        let error = project_selections(
+            store.to_str().unwrap(),
+            &[ProjectDraftSelection {
+                name: "unknown".into(),
+                selected_agents: vec![AgentId::Codex],
+            }],
+        )
+        .unwrap_err();
+        assert_eq!(error.code, "unknown_store_skill");
+    }
 }

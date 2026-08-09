@@ -1,6 +1,80 @@
 # Habitat Design QA
 
-## Current target and evidence
+## Project Skills V2 target and evidence
+
+**Source visual truth**
+
+- `docs/prototypes/mvp/project-skills-round2-selected-v2.png`.
+- Source pixels: 1440×1024.
+- State: `media` project selected, `project-harness` focused, common and Claude entries pending
+  addition, one Trae entry pending removal, common-entry explanation visible, and the conditional
+  draft bar ready to review.
+
+**Rendered implementation**
+
+- `docs/qa/project-skills-v2-pass2.png`.
+- CSS viewport and capture: 1440×1024 at device scale factor 1.
+- Exact original-pixel comparison: `docs/qa/project-skills-v2-comparison-final.png`, source on the
+  left and implementation on the right.
+- Review surface: `docs/qa/project-skills-v2-review.png`.
+- Add-project surface: `docs/qa/project-add-dialog.png`.
+- Responsive evidence: `docs/qa/project-skills-v2-1024.png` at 1024×768.
+
+No actionable P0/P1/P2 findings remain for the approved project-management surface or its core
+draft → review → apply journey.
+
+- [P3] The implementation fixture contains one managed project instead of the reference image's
+  three sidebar examples.
+  - Impact: none on the selected project's task; it avoids implying that unverified projects are
+    already managed.
+  - Disposition: accepted content-fixture difference.
+- [P3] Browser captures omit the macOS traffic lights while the selected reference includes them.
+  - Impact: none on the app-owned layout; the packaged Tauri window retains native window chrome.
+  - Disposition: expected capture-surface difference.
+
+Required fidelity checks passed:
+
+- Layout: 264px sidebar, flexible project ledger, 380px incremental inspector, 98px stable rows,
+  and a project-owned conditional draft bar. No global bottom status strip is present.
+- Visual system: warm canvas, stone separators, coral only for selection/pending primary action,
+  no gradients, glass, card wall, or decorative texture.
+- Agent controls: Lobe static SVG assets render at 14–15px; Codex/Pi/Cursor remain one coupled
+  control, Claude Code and Trae remain independent; state markers are separate from brand marks.
+- Copy: primary surfaces use `适用于`, `本次更改`, `检查结果`, `项目入口`, `检查并应用`, and
+  `应用项目设置`; adapter, exposure, route, canonical, precedence, and fingerprint stay hidden.
+- Inspector: only incremental information appears—pending effects, checks, relative targets, and
+  collapsed technical details. It repeats neither description nor Store/version table columns.
+- Commit boundary: Agent clicks edit a draft only. The only filesystem path is the conditional
+  `检查并应用` action followed by the separate `应用项目设置` confirmation.
+- Responsiveness: at 1024×768 the inspector becomes an overlay drawer and the ledger has zero
+  horizontal overflow; its closed state leaves the full list task usable.
+- Accessibility: Agent buttons have action-and-state labels, brand images are not the only status
+  carrier, buttons keep visible focus rings, and the review surface uses modal dialog semantics.
+
+Interaction and runtime checks:
+
+- The deterministic browser fixture starts with 2 affected Skills, 2 additions, and 1 removal.
+- The add-project confirmation exposes the three Agent target groups, explicitly says no links are
+  created yet, and disables `添加项目` when all Agent groups are deselected.
+- `检查并应用` opens the review surface grouped into additions and removals with 3 concrete target
+  paths; `应用项目设置` closes the review, clears the pending bar, and reports local-link success.
+- Main ledger and body both report zero horizontal overflow at 1440×1024 and 1024×768.
+- Fresh browser execution reported no console errors.
+- Rust command-boundary fixtures use real temporary Store/project directories. They pass a
+  name-only project draft through the same source-resolution and adapter plan used by Tauri,
+  create three relative links, inspect all five Agents as satisfied, remove the three links, and
+  prove the Store source remains intact. Unknown Store names are rejected before planning.
+
+### Project comparison history
+
+- Pass 1 established the three-pane proportions, icon scale, pending bar, responsive drawer, and
+  review flow. Evidence: `docs/qa/project-skills-v2-pass1.png` and
+  `docs/qa/project-skills-v2-review.png`.
+- Pass 2 forced the common-target explanation into the exact selected comparison state and was
+  compared at original 1440×1024 pixels. Evidence: `docs/qa/project-skills-v2-pass2.png` and
+  `docs/qa/project-skills-v2-comparison-final.png`.
+
+## First-run target and evidence
 
 **Source visual truth**
 
@@ -124,7 +198,7 @@ width.
 
 - Keep the selected-count wording tied to safely importable logical Skills rather than forcing the
   generated image's internally inconsistent count before its last conflict is resolved.
-- When project-management V2 replaces the old Spike shell, reuse the same Agent icon group and
-  focus behavior rather than adding another representation.
+- Keep the first-run and project-management Agent icon assets synchronized when package versions
+  change; business-state markers must remain independent from the brand SVGs.
 
 final result: passed

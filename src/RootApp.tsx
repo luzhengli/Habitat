@@ -6,7 +6,9 @@ const qaMode = import.meta.env.DEV ? new URLSearchParams(window.location.search)
 
 export default function RootApp() {
   const [setupComplete, setSetupComplete] = useState(
-    qaMode?.startsWith("first-run-") ? false : window.localStorage.getItem("habitat.setupComplete") === "true",
+    qaMode?.startsWith("first-run-")
+      ? false
+      : qaMode?.startsWith("project-") || window.localStorage.getItem("habitat.setupComplete") === "true",
   );
 
   if (!setupComplete) {

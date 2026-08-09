@@ -4,7 +4,11 @@ import type {
   InventorySnapshot,
   MigrationPlan,
   Preflight,
+  ProjectDraftSelection,
+  ProjectExposurePlan,
   ProjectScan,
+  ProjectTransactionManifest,
+  ProjectWorkspaceInspection,
   StoreScan,
   TransactionManifest,
 } from "./types";
@@ -20,6 +24,14 @@ export const api = {
     invoke<TransactionManifest>("execute_first_run_migration_command", { transactionId }),
   rollbackFirstRunMigration: (transactionId: string) =>
     invoke<TransactionManifest>("rollback_first_run_migration_command", { transactionId }),
+  inspectProjectWorkspace: (storePath: string, projectPath: string) =>
+    invoke<ProjectWorkspaceInspection>("inspect_project_workspace_command", { storePath, projectPath }),
+  planProjectSettings: (storePath: string, projectPath: string, selections: ProjectDraftSelection[]) =>
+    invoke<ProjectExposurePlan>("plan_project_settings_command", { storePath, projectPath, selections }),
+  applyProjectSettings: (transactionId: string) =>
+    invoke<ProjectTransactionManifest>("apply_project_settings_command", { transactionId }),
+  rollbackProjectSettings: (transactionId: string) =>
+    invoke<ProjectTransactionManifest>("rollback_project_settings_command", { transactionId }),
   scanStore: (storePath: string) => invoke<StoreScan>("scan_store", { storePath }),
   scanProject: (projectPath: string, storePath: string) =>
     invoke<ProjectScan>("scan_project", { projectPath, storePath }),

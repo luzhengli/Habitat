@@ -179,6 +179,20 @@ function App() {
       .catch((error: Error) => setNotice({ tone: "error", title: "无法载入 QA 状态", detail: error.message }));
   }, []);
 
+  useEffect(() => {
+    if (qaMode || store) return;
+    const savedStore = window.localStorage.getItem("habitat.storeRoot");
+    if (!savedStore) return;
+    setBusy("store");
+    api.scanStore(savedStore)
+      .then((nextStore) => setStore(nextStore))
+      .catch((error) => {
+        const detail = toError(error);
+        setNotice({ tone: "error", title: "无法重新打开技能库", detail: detail.recovery ?? detail.message });
+      })
+      .finally(() => setBusy(null));
+  }, [store]);
+
   const refreshProject = useCallback(async (
     storeRoot = store?.root,
     projectRoot = project?.root,

@@ -119,6 +119,13 @@ Skill 清单、右侧单项版本选择、Agent 图标组与溢出浮层、以�
 迁移安全内核注册为有界 Tauri 命令并实现 F0–F6；不得把项目链接、项目 Agent 开关或旧 Spike
 的项目上下文带入首次设置。
 
+首次设置 F0–F6 已落地：已知用户 roots 的只读扫描、同名版本选择、Store 校验与计划、事务
+执行、完成结果和精确 rollback 都通过后端持有的 snapshot/plan/manifest 状态连接；前端不传
+任意扫描 root，也不能执行不匹配的事务 id。同内容副本现在只导入一次，但所有等价旧入口均
+进入 Recovery。1440×1024 与 1024×768 视觉/交互 QA 已通过，`design-qa.md` 为 passed，
+`npm run check` 通过（Rust 31 tests + debug Habitat.app）。M8 仍未完成：下一步需将迁移后的
+项目管理旧 Spike 替换为已确认的项目 Skills V2，并为真实临时 fixture 补齐 UI 层端到端验收。
+
 ## M9. 发布准备与观察 — todo
 
 Done when: 发布目标、签名/分发方式、数据升级与回滚路径、支持等级和发布后观察指标已经

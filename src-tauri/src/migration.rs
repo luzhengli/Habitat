@@ -998,7 +998,7 @@ pub fn build_import_plan(
                 })
         })
         .collect::<Result<Vec<_>, _>>()?;
-    let mut names = BTreeMap::<String, String>::new();
+    let mut choices = BTreeMap::<String, (&CanonicalArtifact, String)>::new();
     let mut imports = Vec::new();
     let mut recoveries = Vec::new();
     for artifact in selected {
@@ -1015,31 +1015,51 @@ pub fn build_import_plan(
             ));
         }
         let name = artifact.declared_name.as_ref().expect("non-blocked name");
-        if let Some(existing) = names.insert(name.clone(), artifact.artifact_id.clone()) {
-            return Err(MigrationError::new(
-                "variant_requires_choice",
-                "preflight",
-                "同名不同内容的 Skill 不能同时导入。",
-                Some(artifact.canonical_path.clone()),
-                Some(existing),
-                Some(artifact.artifact_id.clone()),
-                "只选择一个明确的内容变体。",
-                false,
-            ));
+        if let Some((existing, fingerprint)) = choices.get(name) {
+            if fingerprint != &artifact.content_fingerprint {
+                return Err(MigrationError::new(
+                    "variant_requires_choice",
+                    "preflight",
+                    "同名不同内容的 Skill 不能同时导入。",
+                    Some(artifact.canonical_path.clone()),
+                    Some(existing.artifact_id.clone()),
+                    Some(artifact.artifact_id.clone()),
+                    "只选择一个明确的内容变体。",
+                    false,
+                ));
+            }
+            continue;
         }
+        choices.insert(
+            name.clone(),
+            (artifact, artifact.content_fingerprint.clone()),
+        );
+    }
+
+    for (name, (artifact, fingerprint)) in choices {
         imports.push(ImportOperation {
             artifact_id: artifact.artifact_id.clone(),
             source_path: artifact.canonical_path.clone(),
             expected_fingerprint: artifact.content_fingerprint.clone(),
-            staging_path: staging_root.join(name),
-            final_path: store_root.join(name),
+            staging_path: staging_root.join(&name),
+            final_path: store_root.join(&name),
             result: OperationResult::Pending,
         });
-        for route in snapshot
-            .routes
+        let equivalent_ids = snapshot
+            .artifacts
             .iter()
-            .filter(|route| route.artifact_id.as_ref() == Some(&artifact.artifact_id))
-        {
+            .filter(|candidate| {
+                candidate.declared_name.as_deref() == artifact.declared_name.as_deref()
+                    && candidate.content_fingerprint == fingerprint
+            })
+            .map(|candidate| candidate.artifact_id.as_str())
+            .collect::<std::collections::BTreeSet<_>>();
+        for route in snapshot.routes.iter().filter(|route| {
+            route
+                .artifact_id
+                .as_deref()
+                .is_some_and(|id| equivalent_ids.contains(id))
+        }) {
             let Some(expected_identity) = route.identity.clone() else {
                 continue;
             };
@@ -2202,6 +2222,45 @@ mod tests {
         )
         .unwrap_err();
         assert_eq!(error.code, "blocked_skill_declaration");
+    }
+
+    #[test]
+    fn identical_copies_import_once_and_move_every_matching_route_to_recovery() {
+        let fixture = TempDir::new().unwrap();
+        let root_a = fixture.path().join("codex");
+        let root_b = fixture.path().join("claude");
+        let store = fixture.path().join("store");
+        fs::create_dir_all(&root_a).unwrap();
+        fs::create_dir_all(&root_b).unwrap();
+        fs::create_dir(&store).unwrap();
+        write_skill(&root_a.join("alpha"), "alpha", "same");
+        write_skill(&root_b.join("alpha-copy"), "alpha", "same");
+        let roots = vec![root("codex", &root_a), root("claude", &root_b)];
+        let snapshot = scan_inventory(&roots).unwrap();
+        assert_eq!(snapshot.artifacts.len(), 2);
+        assert_eq!(snapshot.duplicate_fingerprint_groups.len(), 1);
+
+        let plan = build_import_plan(
+            &snapshot,
+            &store,
+            &roots,
+            &[],
+            &[snapshot.artifacts[0].artifact_id.clone()],
+        )
+        .unwrap();
+
+        assert_eq!(plan.imports.len(), 1);
+        assert_eq!(plan.recoveries.len(), 2);
+        let canonical_root_a = fs::canonicalize(&root_a).unwrap();
+        let canonical_root_b = fs::canonicalize(&root_b).unwrap();
+        assert!(plan
+            .recoveries
+            .iter()
+            .any(|operation| operation.original_path == canonical_root_a.join("alpha")));
+        assert!(plan
+            .recoveries
+            .iter()
+            .any(|operation| operation.original_path == canonical_root_b.join("alpha-copy")));
     }
 
     #[test]

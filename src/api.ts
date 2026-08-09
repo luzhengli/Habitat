@@ -1,7 +1,25 @@
 import { invoke } from "@tauri-apps/api/core";
-import type { CommandResult, Preflight, ProjectScan, StoreScan } from "./types";
+import type {
+  CommandResult,
+  InventorySnapshot,
+  MigrationPlan,
+  Preflight,
+  ProjectScan,
+  StoreScan,
+  TransactionManifest,
+} from "./types";
 
 export const api = {
+  scanKnownInventory: () =>
+    invoke<InventorySnapshot>("scan_known_inventory_command"),
+  validateFirstRunStore: (storePath: string) =>
+    invoke<string>("validate_first_run_store_command", { storePath }),
+  planFirstRunMigration: (storePath: string, selectedArtifactIds: string[]) =>
+    invoke<MigrationPlan>("plan_first_run_migration_command", { storePath, selectedArtifactIds }),
+  executeFirstRunMigration: (transactionId: string) =>
+    invoke<TransactionManifest>("execute_first_run_migration_command", { transactionId }),
+  rollbackFirstRunMigration: (transactionId: string) =>
+    invoke<TransactionManifest>("rollback_first_run_migration_command", { transactionId }),
   scanStore: (storePath: string) => invoke<StoreScan>("scan_store", { storePath }),
   scanProject: (projectPath: string, storePath: string) =>
     invoke<ProjectScan>("scan_project", { projectPath, storePath }),

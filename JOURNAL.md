@@ -3,6 +3,27 @@
 最新记录在最上方；每个 session 一条。超过约 150 行时，将最新五条之前的内容压缩到
 Digest。
 
+## 2026-08-10 — M8: 实现首次设置 F0–F6 与迁移命令
+
+- Backend: 注册仅使用 adapter registry 已知用户 roots 的只读扫描、Store 校验、计划、执行
+  与 rollback 命令；snapshot、plan 与 manifest 由 Rust session state 持有，执行/恢复要求
+  transaction id 精确匹配。
+- Canonical copy: `build_import_plan` 允许同名同指纹副本作为一个逻辑选择，只向 Store 导入
+  一份，同时把所有等价 artifact 的旧入口纳入 Recovery；新增临时 fixture 测试锁定该行为。
+- UI: 新增无项目上下文的五步首次设置 shell，覆盖扫描、问题优先分组、同名版本选择、Agent
+  图标组与 `+n` 浮层、Store 目录选择、迁移确认、执行、完成与撤销。完成后才切入项目页，
+  Store 路径与 setup 状态保存在本地 WebView 存储并在后端操作前重新校验。
+- Icons: Agent 品牌图标来自无运行时依赖的 `@lobehub/icons-static-svg`；保持约 15px 图形与
+  28px 目标，未引入 Lobe UI/Ant Design 依赖。
+- QA: 1440×1024 原图/实现并排比较经两轮收敛；修复横向溢出、嵌套交互控件与版本卡层级。
+  1024×768 改用 420px 可关闭/重开的检查器抽屉。完整开发 fixture 流程验证选择前禁用、选择
+  后放行、29 个导入/40 个恢复移动/2 个保持不变、完成与撤销，fresh tabs 无 console error。
+- Evidence: `design-qa.md` → `final result: passed`；`npm run check` → exit 0，Rust 31 passed，
+  Vite 1593 modules transformed，并生成 debug `Habitat.app`。
+- State: M8 继续 `doing`。首次设置切片已通过；项目管理仍是旧 Spike，尚未达到 M8 完成条件。
+- Next: 按已确认的项目 Skills V2 实现 Agent 图标草稿、条件式待应用栏与增量详情，并在临时
+  Store/项目 fixture 上补齐 UI 层端到端证据。
+
 ## 2026-08-10 — M8: 选择首次设置方案 1 并授权实现
 
 - Approval: 产品负责人从同一“扫描完成后整理 Skills”状态的三份新原型中选择方案 1；选中图

@@ -59,3 +59,95 @@ export type AppError = {
   stderr?: string;
   recovery?: string;
 };
+
+export type ParseStatus = "valid" | "warning" | "blocked";
+export type EntryKind = "directory" | "symlink" | "broken_symlink" | "file" | "unreadable";
+
+export type MigrationDiagnostic = {
+  code: string;
+  message: string;
+  blocking: boolean;
+};
+
+export type CanonicalArtifact = {
+  artifactId: string;
+  canonicalPath: string;
+  declaredName: string | null;
+  directoryName: string;
+  description: string | null;
+  version: string | null;
+  manifest: Array<{
+    relativePath: string;
+    kind: "directory" | "file" | "symlink";
+    mode: number;
+    size: number;
+    linkText: string | null;
+    contentHash: string | null;
+  }>;
+  contentFingerprint: string;
+  parseStatus: ParseStatus;
+  diagnostics: MigrationDiagnostic[];
+};
+
+export type ExposureRoute = {
+  routeId: string;
+  rootId: string;
+  agentId: AgentId;
+  edition: string | null;
+  entryPath: string;
+  entryKind: EntryKind;
+  canonicalTarget: string | null;
+  artifactId: string | null;
+  identity: { device: number; inode: number; mode: number } | null;
+  linkText: string | null;
+  diagnostic: MigrationDiagnostic | null;
+};
+
+export type AgentId = "codex" | "claude_code" | "pi" | "cursor" | "trae";
+
+export type InventorySnapshot = {
+  snapshotId: string;
+  capturedAt: number;
+  artifacts: CanonicalArtifact[];
+  routes: ExposureRoute[];
+  duplicateFingerprintGroups: string[][];
+  variantGroups: string[][];
+  diagnostics: MigrationDiagnostic[];
+};
+
+export type MigrationPlan = {
+  transactionId: string;
+  snapshotId: string;
+  storeRoot: string;
+  manifestPath: string;
+  imports: Array<{
+    artifactId: string;
+    sourcePath: string;
+    expectedFingerprint: string;
+    stagingPath: string;
+    finalPath: string;
+    result: string;
+  }>;
+  recoveries: Array<{
+    routeId: string;
+    originalPath: string;
+    recoveryPath: string;
+    result: string;
+  }>;
+};
+
+export type TransactionManifest = MigrationPlan & {
+  schemaVersion: number;
+  state:
+    | "confirmed"
+    | "staging"
+    | "imported"
+    | "quarantined"
+    | "verifying"
+    | "completed"
+    | "failed_partial"
+    | "rolling_back"
+    | "rolled_back";
+  createdAt: number;
+  updatedAt: number;
+};

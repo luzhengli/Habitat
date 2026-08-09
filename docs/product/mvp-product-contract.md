@@ -10,18 +10,23 @@ Habitat helps a macOS user turn a confusing set of user-level Agent Skills expos
 one neutral local Store, expose selected skills only to selected projects, and understand
 what Codex, Claude Code, Pi, Cursor, and Trae will actually see.
 
-The trustworthy loop is:
+The trustworthy lifecycle has two loops:
 
 ```text
-discover read-only state
+first run: discover user-level state read-only
   -> explain canonical artifacts and effective exposure
-  -> let the user choose a migration plan
+  -> choose a neutral Store and machine-level migration plan
   -> preflight every operation
   -> import to a neutral Store
-  -> optionally quarantine confirmed user-level entries
-  -> create the minimum project adapter links
-  -> verify and report expected versus effective state
+  -> immediately quarantine the migrated user-level entries
+  -> verify Store content and recovery evidence
   -> offer exact rollback from the transaction manifest
+
+ongoing: add or select a project
+  -> choose intended Agent availability per Skill
+  -> preview the minimum project target set
+  -> create or remove relative project links
+  -> verify and report expected versus effective state
 ```
 
 Habitat never claims that a path is runtime-verified when only its discovery location is
@@ -37,7 +42,7 @@ Included:
 - supported read-only policy and precedence interpretation;
 - neutral Store validation and initial Store creation;
 - explicit import through transaction staging;
-- optional, item-by-item, reversible quarantine of selected user entries;
+- immediate, manifest-driven, reversible quarantine of successfully imported user entries;
 - minimum project adapter coverage for the selected Agents;
 - expected/effective comparison, support tier, transaction report, and rollback;
 - local persistence of Store, known projects, and completed transaction manifests.
@@ -161,21 +166,23 @@ catalogMeasurements[]
 Refreshing inventory creates a new snapshot. A transaction must reject execution when a
 selected source no longer matches the snapshot lstat identity or fingerprint.
 
-### 3.6 MigrationPlan
+### 3.6 FirstRunMigrationPlan
 
 A migration plan is editable until confirmation and immutable afterward.
 
-Each selected artifact has one decision:
+Each discovered artifact has one decision:
 
-- `project-managed`: import to Store and expose to selected projects;
-- `keep-global`: do not move the selected user entries;
+- `import`: import one selected canonical variant to Store and move its migrated user entries
+  to recovery after the Store fingerprint is verified;
 - `defer`: make no change;
 - `variant-review`: choose one canonical variant; leave others untouched or quarantine
   them only through separate explicit selections.
 
-The plan records selected Agents, projects, source entries, destination name, expected
-quarantine operations, expected adapter targets, warnings, and blocking conflicts. It
-must preview the post-transaction effective exposure for all five Agents.
+The plan records the inventory snapshot, observed Agents, selected source entries, canonical
+variant choices, Store destination, expected recovery operations, warnings, and blocking
+conflicts. It contains no project and no project adapter target. The review states explicitly
+that no project links will be created and that migrated user-level entries become unavailable
+from their former global roots after completion.
 
 ### 3.7 MigrationTransaction and manifest
 
@@ -183,17 +190,16 @@ Transaction states:
 
 ```text
 draft -> preflighting -> ready -> confirmed -> staging -> imported
-      -> project-linked -> quarantined -> verifying -> completed
+      -> quarantined -> verifying -> completed
 
 Any executing state may enter:
 failed-partial -> rollback-ready -> rolling-back -> rolled-back
                                        \-> rollback-partial
 ```
 
-The implementation may reorder `project-linked` and `quarantined` only if the preflight
-and rollback proof remains equivalent. Before any user entry is quarantined, at least one
-selected project must have a verified expected link plan and the canonical Store copy
-must match the captured fingerprint.
+Before any user entry is quarantined, its canonical Store copy must match the captured
+fingerprint and the recovery destination must pass canonical-boundary and lstat preflight.
+No project link is required or permitted in this transaction.
 
 The manifest records, for every operation:
 
@@ -210,6 +216,15 @@ is still absent or still matches the transaction-created entry. Drift stops roll
 reports partial state; it never triggers overwrite or broader cleanup.
 
 ### 3.8 ProjectExposurePlan
+
+A ProjectExposurePlan is drafted only after first-run migration completes. It records one
+project, its selected Agent families, and each Skill's intended Agent availability. Icon-toggle
+changes update this draft and never write immediately.
+
+Codex, Pi, and Cursor are one coupled UI toggle group because they share `.agents/skills`.
+Claude Code maps independently to `.claude/skills`; Trae maps independently to
+`.trae/skills`. The UI must not promise that one Agent in a shared target group can be disabled
+while another remains enabled.
 
 The plan contains a complete preflight for every required adapter target before writing:
 
@@ -241,19 +256,26 @@ Cursor and Trae remain path-compatible/Beta until their release-version matrices
 
 The MVP flow must make these states observable:
 
-1. No Store: read-only discovery can start; mutation cannot.
+1. No Store: machine-level read-only discovery can start; mutation cannot.
 2. Unsafe Store proposal: block and explain the conflicting discovery/project root.
-3. Inventory ready: show artifacts, routes, effective state, and unresolved diagnostics.
-4. Duplicate route: group routes under one artifact; do not inflate the skill count.
+3. Inventory ready: show unique artifacts, observed Agents, duplicate routes, variants, and
+   unresolved diagnostics without requiring a project.
+4. Duplicate route: group routes under one artifact; do not inflate the Skill count.
 5. Variant conflict: require explicit canonical choice; do not preselect.
-6. Migration plan ready: show exact copies, quarantines, project links, and support limits.
-7. Plan blocked: identify the operation and recovery; confirmation remains disabled.
-8. Running: show the current transaction phase; cancellation is offered only at a safe
-   boundary and never implies an automatic rollback succeeded.
-9. Partial failure: preserve evidence, distinguish completed/unchanged/unknown operations,
-   and offer rollback when the manifest proves it is safe.
-10. Completed: compare before/expected/effective counts and show required Agent reloads.
-11. Rollback completed or partial: prove restored fingerprints or show exact drift.
+6. First-run migration ready: show exact Store imports, immediate recovery moves, deferrals,
+   and the explicit absence of project links.
+7. First-run plan blocked: identify the operation and recovery; confirmation remains disabled.
+8. First-run running: show staging, import, recovery, and verification phases; cancellation is
+   offered only at a safe boundary and never implies rollback succeeded.
+9. First-run completed: prove Store and recovery fingerprints, state that no project has access,
+   and offer `添加第一个项目`.
+10. Project draft changed: icon toggles show selected, pending, blocked, and verified states;
+    the filesystem remains unchanged until apply.
+11. Project plan ready: show exact relative link additions/removals and shared Agent target
+    effects, with collisions blocking apply.
+12. Project apply partial or failed: preserve evidence, keep failed rows actionable, and never
+    remove a pre-existing, foreign, or drifted entry.
+13. Rollback completed or partial: prove restored fingerprints or show exact drift.
 
 ## 5. Persistence boundary
 
@@ -290,21 +312,30 @@ truncation are blocking or explicitly partial states. They are not converted to 
 
 ## 7. Prototype comparison contract
 
-All three M5 directions use the same fixture:
+The next comparable prototype set must use two explicitly separate fixtures.
+
+First-run fixture:
 
 - 44 user-root entries resolving to 31 canonical artifacts;
-- 6 duplicate routes;
-- 2 same-name/different-content variant conflicts;
-- 3 disabled/manual-only policies;
-- one selected project, `media`;
-- selected Agents: Codex, Claude Code, Pi, Cursor, and Trae China;
-- 12 proposed project-managed skills, 8 retained globally, the rest deferred;
-- Cursor and Trae shown as path-compatible/Beta, not runtime-verified;
-- one simulated target-directory conflict that blocks confirmation until resolved.
+- 6 duplicate routes and 2 same-name/different-content variant conflicts;
+- observed Agents: Codex, Claude Code, Pi, Cursor, and Trae China;
+- no selected or managed project;
+- selected imports move their former user-level entries immediately to recovery;
+- Cursor and Trae shown as `预计兼容`, not runtime-verified;
+- one unsafe Store proposal or source drift that blocks confirmation until resolved.
 
-Each direction must show the same primary task: review inventory, resolve a variant,
-inspect the migration plan, and reach a trustworthy confirmation point. Visual options
-may differ in hierarchy and navigation, not in feature scope or truthfulness.
+Project-management fixture, shown only after first-run completion:
+
+- selected project `media` and the same five Agent families;
+- Codex, Pi, and Cursor shown as one coupled icon-toggle group;
+- Claude Code and Trae shown as independent target groups;
+- icon toggles create a draft rather than immediate filesystem writes;
+- no redundant `是否已经链接` column;
+- one simulated target collision that blocks apply until resolved.
+
+Each visual direction must cover the same task and lifecycle boundary. Existing migration-plan
+images that include a selected project during first-run migration are decision history, not
+valid candidates for implementation.
 
 ## 8. M6-M8 acceptance hooks
 

@@ -3,6 +3,37 @@
 最新记录在最上方；每个 session 一条。超过约 150 行时，将最新五条之前的内容压缩到
 Digest。
 
+## 2026-08-09 — M5: 确认首次迁移与项目链接的生命周期边界
+
+- Decision: 首次使用是机器级流程：只读扫描本机 Agent 用户级 Skills、整理 canonical
+  内容、导入自定义 Store，并在验证 Store 指纹后立即将迁移过的原用户入口移入恢复区；
+  首次迁移不选择项目、不创建项目链接。
+- Project flow: 首次迁移完成后才添加项目。每个 Skill 通过可点击的 Agent 图标组形成
+  待应用方案；不再设置“是否已链接”列，点击图标也不会立即写文件。
+- Shared target: 产品负责人确认 Codex、Pi、Cursor 因共享 `.agents/skills` 作为一个
+  同步切换组；Claude Code 与 Trae 保持独立。亮暗之外还需勾、待应用点、错误标记、
+  tooltip、焦点和可访问名称。
+- Contract: 新增 `docs/product/mvp-user-flow.md`，并修正产品合同中的 first-run plan、
+  transaction、project exposure 与 prototype fixture；此前含项目上下文的迁移图均失效。
+- Boundary: 本轮只同步产品动线、合同与原型状态，没有继续生成图片，没有修改生产 UI，
+  也没有触碰真实用户 Skill Store、项目或 Agent 配置。
+- Next: 等产品负责人要求后，再基于已批准生命周期生成新的可比较视觉方向。
+
+## 2026-08-09 — M5: 否决 2.1 迁移页并生成 Migration Review V3
+
+- Feedback: 产品负责人认为 2.1 迁移计划仍不可接受，明确指出 Agent 等枚举值缺少组件化
+  表达、页面底部错位且定义不清、检查与执行动线混杂，并要求参考 `baoyu-design` 后重做。
+- Audit: 当前页把四类处理结果平铺为同权长清单；Agent、兼容性、安全说明、统计和操作
+  分散在多个区域；四段进度条混合检查与执行状态。截图可见的可访问性风险也已记录。
+- Method: 阅读 `baoyu-design` 的主 skill、hi-fi 与 interactive prototype 方法；采用其
+  “真实上下文优先、设计系统为约束、方向必须有结构差异、选择后再做交互原型”的原则，
+  不照搬其视觉皮肤或代码。
+- Prototype: 新增 3 个 1440×1024 独立方向：结果先行、分步检查、变更路径图。三者均
+  使用 Agent 图标组与溢出浮层、唯一工作流底栏，并将检查导航与执行进度分开。
+- Boundary: 本轮仍只更新静态原型和评审记录，未修改 `src/`、`src-tauri/`、真实用户
+  Skill Store、项目或 Agent 配置；M5 保持 `doing`，生产 UI 未获准实现。
+- Next: 等待产品负责人从本轮三张图中选择方向，或继续指出要组合与修订的部分。
+
 ## 2026-08-09 — M5: 修订原方案 2 为三屏 Option 2.1 动线
 
 - Feedback: 产品负责人保留原 Inventory workbench，要求删除顶部计数、统一折叠行高、

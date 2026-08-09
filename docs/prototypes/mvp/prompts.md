@@ -1,7 +1,7 @@
 # Habitat MVP ImageGen Prompt Set
 
-Generated: 2026-08-09  
-Mode: built-in ImageGen, three independent generations  
+Generated: 2026-08-09
+Mode: built-in ImageGen, three independent generations
 Use case: `ui-mockup`
 
 ## References attached to every generation
@@ -105,3 +105,50 @@ report remain secondary actions. Use the exact outcome copy `仅用于当前项�
 embedding the project name in that policy label or explanatory sentence.
 
 Output: `inventory-workbench-v2-1-complete.png`.
+
+## Migration Review V3 exploration
+
+Status: rejected as a lifecycle reference after the product owner clarified that first-run
+migration has no project context. Retained for prompt and decision history only.
+
+Generated: 2026-08-09
+Mode: built-in ImageGen, three independent generations
+References attached to every generation:
+
+- the product-owner-provided rejected migration-plan screenshot;
+- `inventory-workbench.png` for the approved management-shell proportions;
+- `docs/qa/habitat-1440x1024.png` for real implementation density and tokens.
+
+Shared constraints: 1440×1024; retain the 268px project sidebar and Habitat Quiet Native;
+replace raw Agent text enumeration with a reusable icon-tile group, three inline items, `+n`
+overflow, and named status popover; use one aligned workflow footer; separate plan review from
+transaction execution; keep internal path, adapter, canonical, exposure, and quarantine terms
+behind technical details.
+
+### Direction A delta
+
+Lead with the migration outcome, then show three icon-led destination summaries, an Agent icon
+group, one grouped accordion for detailed changes, one quiet safety note, and a single footer
+whose primary action starts migration.
+
+Output: `migration-review-v3-a.png`.
+
+### Direction B delta
+
+Use a three-step internal inspection rail (`使用范围`, `文件处理`, `确认开始`) that is explicitly
+separate from execution progress. Show only the active step, a before/after file-treatment view,
+recoverable old entries, Agent icon group, and a footer action that advances review rather than
+starting migration early.
+
+Output: `migration-review-v3-b.png`.
+
+### Direction C delta
+
+Use a restrained three-column change map (`当前位置 → 统一存放 → 迁移后`) plus a right-side
+preflight rail. Make one Skill Store the visual anchor, show relative-link and recovery routes,
+embed the Agent icon group in the current-project destination, and retain one footer.
+
+Output: `migration-review-v3-c.png`.
+
+Methodology reference: <https://github.com/JimLiu/baoyu-design>. The reference informed process
+and verification, not Habitat's visual identity.

@@ -1,6 +1,6 @@
 # Habitat MVP Prototype Brief
 
-Status: Option 2.1 revision awaiting product-owner confirmation before implementation
+Status: first-run lifecycle approved; new visual comparison deferred
 Viewport: 1440×1024 macOS desktop  
 Visual source: `DESIGN.md`, `docs/references/habitat-prototype.png`, and the current
 `docs/qa/habitat-1440x1024.png` implementation evidence.
@@ -105,6 +105,25 @@ simplification. Option 2.1 therefore makes only the requested local changes:
 - after completion, return through `查看当前项目中的 Skills` to the selected project's
   three-column management state.
 
-The three Option 2.1 images are one connected flow and the current candidate visual target.
-Production UI remains blocked until the product owner explicitly confirms this set or asks
-for another revision.
+The product owner rejected the Option 2.1 migration-plan visual hierarchy. Its images remain as
+decision history, not as the current candidate.
+
+## Migration Review V3
+
+After auditing the rejected migration-plan page and reviewing the public `baoyu-design`
+methodology, three independent migration-review directions were generated:
+
+- `migration-review-v3-a.png`;
+- `migration-review-v3-b.png`;
+- `migration-review-v3-c.png`.
+
+All three preserve the selected project's sidebar and Habitat Quiet Native, replace raw Agent
+enumeration with an icon-tile group and overflow behavior, use exactly one workflow footer, and
+separate review navigation from transaction progress. Their structural differences and audit
+evidence are recorded in `migration-review-v3.md`.
+
+The product owner later clarified that first-run migration is machine-level and must finish
+before any project is added or linked. These three images therefore remain decision history and
+are not valid candidates. The approved lifecycle and Agent-toggle contract are recorded in
+`docs/product/mvp-user-flow.md`. Production UI remains blocked pending a new comparison set and
+explicit visual selection.

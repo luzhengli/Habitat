@@ -17,6 +17,8 @@ Digest。
   transaction、project exposure 与 prototype fixture；此前含项目上下文的迁移图均失效。
 - Boundary: 本轮只同步产品动线、合同与原型状态，没有继续生成图片，没有修改生产 UI，
   也没有触碰真实用户 Skill Store、项目或 Agent 配置。
+- Checkpoint: `9503c39` 保存两段式生命周期、Agent 同步切换合同和失效原型记录；M5
+  仍等待基于新动线的视觉比较与产品负责人明确选择。
 - Next: 等产品负责人要求后，再基于已批准生命周期生成新的可比较视觉方向。
 
 ## 2026-08-09 — M5: 否决 2.1 迁移页并生成 Migration Review V3

@@ -9,7 +9,8 @@ Digest。
   skills；Codex、Claude Code、Pi Agent 等仅作为下游消费者，Habitat 不介入其运行时。
 - Scope: 首个 MVP 仍只管理 skills；MCP、Rules 等项目 harness 资产仅记录为未来扩展
   方向，不进入当前实现范围。
-- Updated: `AGENTS.md`、`README.md` 与 `PLAN.md` 已消除 `Codex-only` 定位冲突。
+- Checkpoint: `01c7d34` 更新 `AGENTS.md`、`README.md` 与 `PLAN.md`，消除
+  `Codex-only` 定位冲突；`git diff --check` 通过。
 - Next: 产品负责人继续明确首个 MVP 的具体用户价值、可观察验收标准与非目标；M4
   继续保持 `doing`，不启动实现。
 

@@ -1,3 +1,4 @@
+pub mod adapters;
 pub mod migration;
 pub mod skills;
 

@@ -91,6 +91,13 @@ runtime QA 时只显示批准的有条件等级；`npm run check` 通过。
 
 当前进展：M6 已提供不可覆盖、可回滚的事务基础；下一步先把五 Agent 的路径、共享目标组、
 只读支持证据和最小目标集固化为 adapter registry 与 fixture 测试，再接入项目级多目标事务。
+现已实现版本化五 Agent registry、Codex/Pi/Cursor 共享目标组、Claude/Trae 独立目标、项目级
+全量预检、相对链接应用、事务 manifest 和保守回滚；8 个 fixture 证明未选择目标不创建也不
+触碰其冲突、任一已选目标冲突会在写入前阻断、中途失败只回滚本事务仍符合预期的更改，漂移
+则保留并报告 partial。Claude Code 2.1.207 已在真实进程中发现临时项目的相对 symlink Skill，
+但模型调用被外部 CodingPlan 订阅 400 阻断，尚不能完成 invocation/reload/dedupe/conflict/
+unlink 验收；因此 Claude 保持 `targeted`、M7 继续 `doing`。Cursor 与 Trae 本机未安装，继续
+保持 `path-compatible`。
 
 ## M8. 实现已确认 UI 并完成 MVP QA — todo
 

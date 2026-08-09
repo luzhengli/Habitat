@@ -21,8 +21,20 @@ Digest。
 - Evidence: `cargo test --manifest-path src-tauri/Cargo.toml` → 18 passed；`npm run check` →
   exit 0，Vite 1583 modules transformed，并生成 debug `Habitat.app`。
 - Checkpoint: `5393356` 保存可回滚迁移内核、临时 fixture 证据及 M6→M7 状态。
-- Next: M7 先固化五 Agent adapter registry、共享目标组与只读支持证据，再实现项目级多目标
-  预检和安全回滚；M8 前不修改生产 UI。
+- M7 kernel: 新增版本化五 Agent adapter registry 与项目 exposure 事务；共享 `.agents`、
+  独立 `.claude`/`.trae` 目标由所选 Agent 的最小集合计算，所有目标先预检，应用只创建
+  相对 symlink，并用 Store 内 manifest 对本事务创建/移除的链接和空容器做保守回滚。
+- M7 fixtures: 新增 8 个测试，覆盖 registry 支持边界、共享目标去重、仅 Trae 不创建其他
+  adapter、已选目标冲突全量阻断、未选目标冲突保持不动、中途失败自动回滚、漂移 partial
+  与 create/remove 的显式 rollback；Rust 当前共 26 个测试通过。
+- Runtime QA: 本机 Codex `0.139.0`、Claude Code `2.1.207`、Pi `0.81.1`；Cursor/Trae 未安装。
+  Claude 真实进程已从临时项目的相对目录 symlink 发现并注册 fixture Skill，但模型调用被
+  外部 CodingPlan 订阅状态以 HTTP 400 阻断，`total_cost_usd: 0`。证据记录在
+  `docs/qa/runtime-compatibility.md`；Claude 仍为 `targeted`，M7 不得标为完成。
+- Evidence: `npm run check` → exit 0；Rust 26 passed，Vite 1583 modules transformed，并生成
+  debug `Habitat.app`。
+- Next: 保存 M7 内核检查点；外部订阅恢复后补齐 Claude invocation/reload/dedupe/conflict/
+  unlink 验收。M8 前不修改生产 UI。
 
 ## 2026-08-10 — M5: 选择三栏方向并生成首份修订稿
 

@@ -28,7 +28,7 @@ pub struct MigrationError {
 }
 
 impl MigrationError {
-    fn new(
+    pub(crate) fn new(
         code: &str,
         phase: &str,
         message: impl Into<String>,
@@ -51,7 +51,7 @@ impl MigrationError {
         }
     }
 
-    fn io(
+    pub(crate) fn io(
         code: &str,
         phase: &str,
         message: impl Into<String>,
@@ -72,7 +72,7 @@ impl MigrationError {
         )
     }
 
-    fn for_transaction(mut self, transaction_id: &str) -> Self {
+    pub(crate) fn for_transaction(mut self, transaction_id: &str) -> Self {
         self.transaction_id = Some(transaction_id.into());
         self
     }

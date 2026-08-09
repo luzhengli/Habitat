@@ -21,9 +21,11 @@ Digest。
 - Evidence: `npm run check` → exit 0；Rust 30 passed，Vite 1583 modules transformed，并生成
   debug `Habitat.app`。所有 runtime fixture 都位于 `/private/tmp`，未使用真实项目或 Store。
 - Checkpoint: `299227c` 保存 effective exposure 检查、3 个新增 fixture 与 Claude 初始化矩阵。
+- Checkpoint: `e419ef7` 保存 Claude invocation、用户级 precedence、shadowed exposure 与 M7
+  完成状态。
 - State: M7 done；Cursor/Trae 继续 `path-compatible`。M8 doing，但首先补齐首次设置的 3 个
   可比较视觉原型，确认前不修改生产 React/Tauri UI。
-- Next: 保存 M7 runtime 检查点，然后按已批准 IA 与 V2 视觉系统开始首次设置视觉探索。
+- Next: 按已批准 IA 与 V2 视觉系统开始首次设置视觉探索。
 
 ## 2026-08-10 — M5→M7: 确认 V2，完成迁移内核
 

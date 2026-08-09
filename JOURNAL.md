@@ -3,6 +3,20 @@
 最新记录在最上方；每个 session 一条。超过约 150 行时，将最新五条之前的内容压缩到
 Digest。
 
+## 2026-08-10 — M8: 选择首次设置方案 1 并授权实现
+
+- Approval: 产品负责人从同一“扫描完成后整理 Skills”状态的三份新原型中选择方案 1；选中图
+  已归档为 `docs/prototypes/mvp/first-run-organize-selected-v1.png`（1440×1024）。
+- Direction: 首次设置使用无项目上下文的五步 shell；主区按“需要你决定 / 可直接整理 /
+  暂不导入”分组，右侧一次只处理一个同名差异，底部只有一个页面级操作栏。
+- Boundary: Agent 只用小尺寸真实图标组表示，最多 3 个内联并通过浮层显示其余；原始路径、
+  fingerprint、adapter、precedence 等只进入技术详情。首次设置不创建项目链接，也不显示项目
+  侧栏或项目 Agent 开关。
+- State: M8 继续 `doing`；视觉门槛已通过，生产 React/Tauri UI 现在仅对上述首次设置范围和
+  先前确认的项目 Skills V2 开放。
+- Next: 注册迁移内核的有界命令，先用临时 fixture 接通 F0–F6 与错误恢复，再完成同视口视觉
+  QA、完整 gate 和检查点提交。
+
 ## 2026-08-10 — M7→M8: 完成 effective exposure 与 Claude runtime QA
 
 - Exposure: 新增只读项目 exposure inspection，分别返回 Agent 是否 targeted、预期入口是否

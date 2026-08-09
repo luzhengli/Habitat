@@ -60,6 +60,16 @@ production UI until the product owner selects one direction or requests a revise
 - `project-exposure.png` — 1440×1024.
 - `prompts.md` — shared grounding, direction deltas, and generation references.
 
+### Approved first-run revision
+
+- `first-run-organize-selected-v1.png` — 1440×1024 selected first-run F2 direction.
+
+The product owner selected the first of the 2026-08-10 F2 comparison set. It uses a project-free
+five-step setup shell, an issue-first grouped inventory, one contextual variant decision, compact
+Agent icon groups, and one page-owned footer. This approval authorizes production UI work only
+within the first-run lifecycle defined in `docs/product/mvp-information-architecture.md`; it does
+not authorize project linking during setup.
+
 All three are static decision artifacts. They are not proof of implemented behavior or
 runtime compatibility.
 

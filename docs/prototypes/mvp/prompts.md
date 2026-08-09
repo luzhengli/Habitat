@@ -71,3 +71,37 @@ owns `查看更改`, and migration never starts directly from this inventory sta
 Agent support and the label `重新扫描` for local discovery.
 
 Output: `inventory-workbench-v2r.png`.
+
+## Inventory workbench 2.1 connected-flow revision
+
+Mode: built-in ImageGen edits grounded in the original `inventory-workbench.png`. Preserve
+the original three-column visual system and project sidebar; do not use the broader 2R
+reframing.
+
+### Management page
+
+Remove the top count pill and priority column. Use fixed-height collapsed Skill rows. Rename
+`暴露给` to `适用于`; render no more than three Agent names inline and demonstrate the
+overflow popover. Add an on-demand explanation to `策略`. Keep the conflict inspector and
+replace the bottom dashboard with a compact draft sentence plus `处理 1 个待决定项`.
+
+Output: `inventory-workbench-v2-1-management.png`.
+
+### Dedicated migration-plan page
+
+Retain the left project sidebar and replace the center/right workbench with one calm review
+page: select, review, execute, complete. Group planned effects as import to Store, `仅用于当前
+项目`, continue for all projects, and move old entries to recovery. State that no file is
+changed before confirmation, Agent settings stay unchanged, and rollback remains available.
+
+Output: `inventory-workbench-v2-1-plan.png`.
+
+### Completion page
+
+Use the same shell and progress model. Summarize imported, linked to current project, retained
+global, moved to recovery, and unfinished results. The primary action is `查看当前项目中的
+Skills`, returning to the selected project's stable three-column page; rollback and technical
+report remain secondary actions. Use the exact outcome copy `仅用于当前项目` and avoid
+embedding the project name in that policy label or explanatory sentence.
+
+Output: `inventory-workbench-v2-1-complete.png`.

@@ -3,6 +3,21 @@
 最新记录在最上方；每个 session 一条。超过约 150 行时，将最新五条之前的内容压缩到
 Digest。
 
+## 2026-08-09 — M5: 修订原方案 2 为三屏 Option 2.1 动线
+
+- Feedback: 产品负责人保留原 Inventory workbench，要求删除顶部计数、统一折叠行高、
+  将“暴露给”改为“适用于”并限制内联 Agent 数、补充策略说明、移除优先级，同时继续
+  研究更清晰的迁移动线；策略文案统一为“仅用于当前项目”，不嵌入项目名。
+- Flow: 管理页只形成迁移草案并处理待决定项；`迁移计划`使用保留项目侧栏的独立主页面
+  承担检查与确认；完成页汇总可恢复结果，再由`查看当前项目中的 Skills`返回稳定的
+  项目—Skills—Skill 详情三栏管理页。
+- Prototype: 新增 `inventory-workbench-v2-1-management.png`、
+  `inventory-workbench-v2-1-plan.png` 和 `inventory-workbench-v2-1-complete.png`，均为
+  1440×1024；2R 不再是当前候选，三屏 2.1 动线等待产品负责人最终确认。
+- Boundary: 本轮仅更新静态决策原型与文档，没有修改 `src/`、`src-tauri/`、真实用户
+  Skill Store、项目或 Agent 配置；M5 保持 `doing`，生产 UI 仍未获准实现。
+- Next: 等待产品负责人确认三屏 2.1 动线或指出下一轮具体屏幕修改。
+
 ## 2026-08-09 — M5: 生成 Inventory workbench 2R 修订原型
 
 - Feedback: 产品负责人倾向原方案 2 的三栏布局，但要求交互更自然，并避免向用户暴露

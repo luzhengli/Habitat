@@ -1,6 +1,6 @@
 # Habitat MVP Prototype Brief
 
-Status: generating; product owner selection required before implementation  
+Status: Option 2.1 revision awaiting product-owner confirmation before implementation
 Viewport: 1440×1024 macOS desktop  
 Visual source: `DESIGN.md`, `docs/references/habitat-prototype.png`, and the current
 `docs/qa/habitat-1440x1024.png` implementation evidence.
@@ -53,7 +53,10 @@ production UI until the product owner selects one direction or requests a revise
 - `guided-migration.png` — 1440×1024.
 - `inventory-workbench.png` — 1440×1024.
 - `inventory-workbench-v2r.png` — 1440×1024 revision after product-owner preference and
-  read-only UX review; awaiting final confirmation.
+  read-only UX review; superseded by the narrower 2.1 revision below.
+- `inventory-workbench-v2-1-management.png` — 1440×1024 stable management page.
+- `inventory-workbench-v2-1-plan.png` — 1440×1024 dedicated migration-plan page.
+- `inventory-workbench-v2-1-complete.png` — 1440×1024 migration result and return path.
 - `project-exposure.png` — 1440×1024.
 - `prompts.md` — shared grounding, direction deltas, and generation references.
 
@@ -86,5 +89,22 @@ three-column Habitat shell while changing the primary experience to:
   review step rather than immediate migration;
 - text labels for Agent availability instead of unexplained status icons.
 
-`inventory-workbench-v2r.png` is the current candidate visual target. Production UI remains
-blocked until the product owner explicitly confirms it or requests another revision.
+## Option 2.1 focused revision
+
+The product owner retained the original Inventory workbench rather than the broader 2R
+simplification. Option 2.1 therefore makes only the requested local changes:
+
+- remove the opaque top count summary and the priority column;
+- keep every collapsed Skill row at one fixed height;
+- rename `暴露给` to `适用于`, show at most three Agents inline, and reveal the rest in a
+  hover/focus/click popover;
+- explain `策略` on demand instead of exposing more internal terminology;
+- use the exact project-neutral copy `仅用于当前项目`;
+- keep the three-column management page stable, but move review, execution, and completion
+  into a dedicated migration flow that preserves the project sidebar;
+- after completion, return through `查看当前项目中的 Skills` to the selected project's
+  three-column management state.
+
+The three Option 2.1 images are one connected flow and the current candidate visual target.
+Production UI remains blocked until the product owner explicitly confirms this set or asks
+for another revision.

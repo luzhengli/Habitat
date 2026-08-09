@@ -3,6 +3,28 @@
 最新记录在最上方；每个 session 一条。超过约 150 行时，将最新五条之前的内容压缩到
 Digest。
 
+## 2026-08-09 — M4: 扩展 Cursor 与 Trae 兼容范围
+
+- Finding: Cursor 原生扫描 `.agents/skills`，无需新增 `.cursor` adapter，但也会扫描
+  Habitat 为 Claude 创建的 `.claude/skills`；官方未声明同 realpath 去重，必须验证双
+  route 是否重复。Trae 的 `.agents/skills` 支持受用户设置控制，确定性项目覆盖应使用
+  原生 `.trae/skills`，且不静默修改 Agent 配置。
+- Product model: 固定双 adapter 应升级为“所选 Agent 的最小覆盖集”：`.agents` 覆盖
+  Codex/Pi/Cursor，`.claude` 覆盖 Claude Code，`.trae` 覆盖 Trae。五者全选时才创建
+  三个目标；安装仍沿用已批准的全量预检与安全回滚语义。
+- Runtime boundary: Cursor Skills 始于 2.4，但本机 Cursor 仅 1.2.4；本机没有 Trae
+  app/CLI。两者目前只能标记 path-compatible，symlink、重启、同名与禁用语义在选定
+  release runtime 验证前不能标记 runtime-verified。
+- Local evidence: `~/.cursor/skills` 不存在；`~/.trae/skills` 与
+  `~/.trae-cn/skills` 各有 20 个 symlink，均指向 `~/.agents/skills` 下相同的 lark
+  skills。首次迁移必须区分 Trae 国际版/中国版，并按 canonical target 合并重复入口。
+- Scope: 产品负责人确认兼容目标扩展为 Codex、Claude Code、Pi、Cursor、Trae；本轮只
+  更新研究与 harness 状态，未实现新 adapter，未修改真实用户 skills 或 Agent 配置。
+- Checkpoint: `68f1f0f` 更新五 Agent 兼容矩阵、effective exposure、迁移 roots、README、
+  AGENTS 与 PLAN；`git diff --cached --check` 通过。
+- Next: 批准最小覆盖集、Trae 原生 adapter、Cursor/Trae runtime QA 门槛和 Trae edition
+  范围，并继续评审首次导入/quarantine 的五项既有决定；M4 保持 `doing`。
+
 ## 2026-08-09 — M4: 调研项目级 Skills 暴露面与首次迁移
 
 - Finding: Codex、Claude Code 与 Pi 都采用 progressive disclosure；全局 skills 的主要

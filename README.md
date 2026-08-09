@@ -59,7 +59,7 @@ Debug 应用输出到：
 src-tauri/target/debug/bundle/macos/Habitat.app
 ```
 
-Rust 测试覆盖合法相对 symlink、失效 symlink、未知链接/名称冲突、普通文件、真实目录、Store 越界、项目越界、重复添加幂等与解除后保留源文件。
+Rust 测试覆盖合法相对 symlink、失效 symlink、未知链接/名称冲突、普通文件、真实目录、Store 越界、项目越界、重复添加幂等、解除后保留源文件，以及固定外部命令 allowlist 的精确签名与拒绝执行语义。
 
 ## 受限命令
 

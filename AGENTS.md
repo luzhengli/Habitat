@@ -30,6 +30,9 @@ Done 表示 milestone 的可观察 done-criteria 成立、上述 gate 通过，�
 - 真实用户 Skill Store 和真实项目不得用于可变测试；使用临时 fixture。
 - 生产构建不得通过 QA 路由自动选择或修改任何路径；`docs/qa/state/*.json` 只服务于
   Vite 开发模式视觉状态。
+- 涉及 UI、交互或文案的 milestone，开始前阅读 `DESIGN.md` 相关章节；重要界面修改
+  按第 14 节复验，并更新 `design-qa.md` 与截图证据。`DESIGN.md` 是规范，
+  `design-qa.md` 是最近一次验收证据。
 
 ## Boundaries
 

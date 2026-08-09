@@ -844,24 +844,29 @@ fn run_command(cwd: &Path, program: &str, args: &[&str]) -> Result<CommandResult
     })
 }
 
+fn project_command_is_allowed(program: &str, args: &[&str]) -> bool {
+    matches!(
+        (program, args),
+        ("git", ["status", "--short"])
+            | ("git", ["diff"])
+            | ("npx", ["skills", "list", "--project", "--json"])
+    )
+}
+
 pub fn run_project_command(
     project_path: &str,
     program: &str,
     args: &[&str],
 ) -> Result<CommandResult, AppError> {
     let project = canonical_directory(project_path, "项目")?;
-    match (program, args) {
-        ("git", ["status", "--short"])
-        | ("git", ["diff"])
-        | ("npx", ["skills", "list", "--project", "--json"]) => {
-            run_command(&project, program, args)
-        }
-        _ => Err(AppError::new(
+    if !project_command_is_allowed(program, args) {
+        return Err(AppError::new(
             "command_not_allowed",
             "请求的程序或参数不在 Habitat 允许列表中。",
             "只能使用界面提供的 Git 与 npx skills 检查操作。",
-        )),
+        ));
     }
+    run_command(&project, program, args)
 }
 
 pub fn inspect_git_status_for_capture(project_path: &str) -> Result<CommandResult, AppError> {
@@ -1001,5 +1006,45 @@ mod tests {
         unlink_skill(store, project, "example").unwrap();
         assert!(fixture.source.join("SKILL.md").is_file());
         assert!(fs::symlink_metadata(&fixture.target).is_err());
+    }
+
+    #[test]
+    fn project_command_allowlist_accepts_only_exact_signatures() {
+        let allowed: &[(&str, &[&str])] = &[
+            ("git", &["status", "--short"]),
+            ("git", &["diff"]),
+            ("npx", &["skills", "list", "--project", "--json"]),
+        ];
+        let rejected: &[(&str, &[&str])] = &[
+            ("git", &["status"]),
+            ("git", &["status", "--short", "--branch"]),
+            ("git", &["diff", "--cached"]),
+            ("npx", &["skills", "list", "--project"]),
+            ("npx", &["--yes", "skills", "list", "--project", "--json"]),
+            ("sh", &["-c", "true"]),
+        ];
+
+        for (program, args) in allowed {
+            assert!(project_command_is_allowed(program, args));
+        }
+        for (program, args) in rejected {
+            assert!(!project_command_is_allowed(program, args));
+        }
+    }
+
+    #[test]
+    fn rejected_project_command_is_not_executed() {
+        let fixture = Fixture::new();
+        let marker = fixture.project.join("unexpected-command-output");
+        let shell_command = format!("touch {}", marker.display());
+        let error = run_project_command(
+            fixture.project.to_str().unwrap(),
+            "sh",
+            &["-c", shell_command.as_str()],
+        )
+        .unwrap_err();
+
+        assert_eq!(error.code, "command_not_allowed");
+        assert!(!marker.exists());
     }
 }

@@ -56,3 +56,18 @@ policy/precedence, and support tier. Include the minimum targets `.agents/skills
 project-level value and the effect on connected versus unconnected projects.
 
 Output: `project-exposure.png`.
+
+## Inventory workbench 2R revision delta
+
+Edit target: `inventory-workbench.png`.
+
+Preserve the three-column shell, but replace internal concepts with user tasks. Group the
+list by `需要你决定`, `将只用于 media`, `继续供所有项目使用`, and `本次不更改`. Replace
+the conflict inspector with the question `media 应使用哪个版本？`, offer the two human-
+readable sources plus `稍后决定`, preselect nothing, and move paths/fingerprints into a
+collapsed `技术详情`. Replace the dashboard-like migration tray and dead migration button
+with a quiet sentence summary and the contextual action `处理 1 个待决定项`; a later screen
+owns `查看更改`, and migration never starts directly from this inventory state. Use text for
+Agent support and the label `重新扫描` for local discovery.
+
+Output: `inventory-workbench-v2r.png`.

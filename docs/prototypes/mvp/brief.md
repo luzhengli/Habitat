@@ -52,6 +52,8 @@ production UI until the product owner selects one direction or requests a revise
 
 - `guided-migration.png` — 1440×1024.
 - `inventory-workbench.png` — 1440×1024.
+- `inventory-workbench-v2r.png` — 1440×1024 revision after product-owner preference and
+  read-only UX review; awaiting final confirmation.
 - `project-exposure.png` — 1440×1024.
 - `prompts.md` — shared grounding, direction deltas, and generation references.
 
@@ -69,3 +71,20 @@ runtime compatibility.
 Working recommendation: use Guided migration for the first-run MVP shell, then reuse the
 Inventory workbench's grouped table as the post-onboarding management surface. This is not
 an implementation decision until the product owner selects or requests a composite.
+
+## Option 2R review revision
+
+The product owner preferred the Inventory workbench structure but requested more natural
+interaction and less internal terminology. The 2R revision therefore preserves the existing
+three-column Habitat shell while changing the primary experience to:
+
+- problem-first groups: needs a decision, only for the current project, all projects, and
+  no change;
+- plain-language version choice with no default selection;
+- technical paths and fingerprints behind a collapsed detail control;
+- one contextual action that resolves the remaining decision, followed later by a separate
+  review step rather than immediate migration;
+- text labels for Agent availability instead of unexplained status icons.
+
+`inventory-workbench-v2r.png` is the current candidate visual target. Production UI remains
+blocked until the product owner explicitly confirms it or requests another revision.

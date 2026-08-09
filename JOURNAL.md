@@ -3,6 +3,21 @@
 最新记录在最上方；每个 session 一条。超过约 150 行时，将最新五条之前的内容压缩到
 Digest。
 
+## 2026-08-09 — M5: 生成 Inventory workbench 2R 修订原型
+
+- Feedback: 产品负责人倾向原方案 2 的三栏布局，但要求交互更自然，并避免向用户暴露
+  entry、exposure、policy、precedence、canonical、fingerprint 等内部产品模型。
+- Review: 只读 subagent 与主 agent 均建议保留三栏骨架，改为“问题优先 + 渐进披露”；
+  默认按需要决定、仅用于当前项目、所有项目可用和本次不改分组，技术字段收进详情。
+- Prototype: 新增 `docs/prototypes/mvp/inventory-workbench-v2r.png`，使用自然版本选择、
+  无默认选项、文字化 Agent 状态和 `处理 1 个待决定项` 的连续动作；生成依据已回写 brief
+  与 prompt set。
+- Boundary: 本轮未修改 `src/`、`src-tauri/` 或真实用户文件；2R 仍是待确认静态原型，
+  不代表 M5 完成或生产 UI 获准实现。
+- Evidence: 2R PNG 已验证为 1440×1024；`git diff --check` 通过，diff 未包含 `src/`
+  或 `src-tauri/`。
+- Next: 等待产品负责人确认 2R 或提出下一轮具体修改；确认前 M5 保持 `doing`。
+
 ## 2026-08-09 — M5: 完成产品合同草案与三方向原型
 
 - Contract: 新增 `docs/product/mvp-product-contract.md`，定义 adapter、canonical artifact、

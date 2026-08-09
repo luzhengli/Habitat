@@ -15,6 +15,7 @@ Digest。
   `doing`，生产 UI 仍未获准实现。
 - Evidence: 原始生成图使用已偏好的三栏稿与真实 Spike 截图作为视觉参考；归档副本统一为
   1440×1024，生成约束与比较轴记录在 `docs/prototypes/mvp/project-skills-round2.md`。
+- Checkpoint: `9498914` 保存三份视觉方向、比较合同与 M5 当前状态。
 - Next: 等待产品负责人选择 1、2、3，或明确要组合和修订的部分。
 
 ## 2026-08-09 — M5: 固定 MVP 页面信息架构

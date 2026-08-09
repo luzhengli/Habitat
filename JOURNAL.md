@@ -16,6 +16,8 @@ Digest。
   不代表 M5 完成或生产 UI 获准实现。
 - Evidence: 2R PNG 已验证为 1440×1024；`git diff --check` 通过，diff 未包含 `src/`
   或 `src-tauri/`。
+- Checkpoint: `e92da7c` 保存 2R 修订原型、评审结论、选择状态和生成 prompt；M5 仍等待
+  产品负责人最终确认。
 - Next: 等待产品负责人确认 2R 或提出下一轮具体修改；确认前 M5 保持 `doing`。
 
 ## 2026-08-09 — M5: 完成产品合同草案与三方向原型

@@ -14,6 +14,8 @@ Digest。
   也没有触碰真实用户 Skill Store、项目或 Agent 配置。
 - Evidence: `npm run check` → exit 0；Rust tests 11 passed，Vite 1583 modules
   transformed，并生成 `src-tauri/target/debug/bundle/macos/Habitat.app`。
+- Checkpoint: `b05499b` 批准 MVP 产品合同、拆分后续 milestones，并将多原型确认设为
+  生产 UI 实现前的硬门槛。
 - Next: M5 先固定产品数据合同并生成 onboarding 到 rollback 的多个交互原型；等待产品
   负责人确认后，才允许后续 milestone 实现生产 UI。
 

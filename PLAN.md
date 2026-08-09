@@ -24,6 +24,10 @@ Done when: UI 类任务能从 `AGENTS.md` 找到 `DESIGN.md` 的规范与验收�
 Done when: 产品负责人写明用户价值、可观察验收标准和明确非目标；在此之前不从
 `SPIKE.md` 的建议自行启动实现。
 
+已确认定位：Habitat 应面向通用目录项目，并与消费项目级 skills 的具体 Agent 解耦；
+macOS-only 描述应用运行平台，不限制 Codex、Claude Code、Pi Agent 等下游消费者。
+首个 MVP 仍只管理 skills，MCP、Rules 等项目 harness 资产仅作为未来扩展方向。
+
 ## M5. 交付已批准产品目标 — todo
 
 Done when: 在 M4 批准的范围内完成实现与针对性测试，`npm run check` 通过并记录实际

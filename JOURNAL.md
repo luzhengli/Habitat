@@ -3,6 +3,16 @@
 最新记录在最上方；每个 session 一条。超过约 150 行时，将最新五条之前的内容压缩到
 Digest。
 
+## 2026-08-09 — M4: 确认 Agent-agnostic 产品定位
+
+- Confirmed: Habitat 运行平台仍为 macOS，但管理对象是通用目录项目中的项目级
+  skills；Codex、Claude Code、Pi Agent 等仅作为下游消费者，Habitat 不介入其运行时。
+- Scope: 首个 MVP 仍只管理 skills；MCP、Rules 等项目 harness 资产仅记录为未来扩展
+  方向，不进入当前实现范围。
+- Updated: `AGENTS.md`、`README.md` 与 `PLAN.md` 已消除 `Codex-only` 定位冲突。
+- Next: 产品负责人继续明确首个 MVP 的具体用户价值、可观察验收标准与非目标；M4
+  继续保持 `doing`，不启动实现。
+
 ## 2026-08-09 — M2–M3: 接入设计规范并加固命令安全基线
 
 - Done: `c38e7c4` 将 UI 类任务路由到 `DESIGN.md` 第 14 节验收入口；抽取固定命令

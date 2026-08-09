@@ -1,8 +1,10 @@
 # Habitat
 
-Habitat 是一个 macOS-only、Codex-only 的 Tauri 2 桌面原型，用本地 Skill Store
-和项目内相对符号链接管理 skills。可行性 Spike 已完成；下一阶段产品目标尚未批准，
-当前工作重点是保住已验证的路径安全边界并让后续开发可以可靠接力。
+Habitat 是一个 macOS-only、Agent-agnostic 的 Tauri 2 桌面原型，用本地 Skill Store
+和项目内相对符号链接管理通用目录项目中的项目级 skills。Codex、Claude Code、
+Pi Agent 等 Agent 仍按各自规则读取项目资产，Habitat 不介入 Agent 运行时。可行性
+Spike 已完成；下一阶段产品目标尚未批准，当前工作重点是保住已验证的路径安全边界
+并让后续开发可以可靠接力。
 
 ## Session protocol
 
@@ -38,5 +40,7 @@ Done 表示 milestone 的可观察 done-criteria 成立、上述 gate 通过，�
 
 - 未经明确批准，不进入正式 MVP 功能开发，不发布应用，也不修改真实用户项目或
   Skill Store。
+- 首个 MVP 只管理项目级 skills；MCP、Rules 等其他项目 harness 资产属于未来可能的
+  扩展方向，未经单独批准不得并入当前范围。
 - 当 milestone 的验收标准含糊，或变更会扩大命令 allowlist、放宽路径安全语义、
   改变外部 schema 契约或可能触及 Store 源文件时，停止并询问。

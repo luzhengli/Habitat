@@ -12,8 +12,9 @@ Digest。
   symlink；`skills 1.5.22 list --project --json` 的 agent 映射与 Pi 运行时能力存在漂移。
 - Decision: 推荐“统一 Agent Skills 源内容 + 版本化项目 adapter”，首个候选 adapter 为
   `.agents/skills` 和 `.claude/skills`；本轮只记录研究，不扩大写路径或进入 MVP 实现。
-- Artifact: `docs/research/agent-skill-compatibility.md`；同步修正 `AGENTS.md`、`README.md`
-  与 `PLAN.md` 中对当前原型兼容性的过度表述。
+- Checkpoint: `e67928d` 新增 `docs/research/agent-skill-compatibility.md`，并同步修正
+  `AGENTS.md`、`README.md` 与 `PLAN.md` 中对当前原型兼容性的过度表述；
+  `git diff --check` 通过。
 - Next: 产品负责人批准首个兼容矩阵、默认 adapter、多目标失败语义与最低验证版本；M4
   继续保持 `doing`。
 

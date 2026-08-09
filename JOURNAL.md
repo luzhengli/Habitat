@@ -3,6 +3,22 @@
 最新记录在最上方；每个 session 一条。超过约 150 行时，将最新五条之前的内容压缩到
 Digest。
 
+## 2026-08-10 — M7: 补齐 effective exposure 与 Claude 初始化矩阵
+
+- Exposure: 新增只读项目 exposure inspection，分别返回 Agent 是否 targeted、预期入口是否
+  满足、effective state、支持等级和 runtime-verified，不再用单一链接状态代替实际可见性。
+- Cases: fixture 覆盖 Cursor `.agents`＋`.claude` 同源 duplicate、Cursor 次级路径异源
+  conflict、Trae 只有设置控制 `.agents` 路径时 unknown；adapter 测试由 8 增至 11。
+- Claude: 2.1.207 真实进程证明用户级＋项目级同 realpath 入口合并为 1 个 unique Skill；
+  同 basename 不同 realpath 会加载 2 个来源但只显示一个 slash-command 名称，因此不能猜测
+  winner；移除项目入口后新进程不再列出 fixture。
+- Blocker: 模型调用仍在 0 token、0 美元时被外部 CodingPlan HTTP 400 阻断；覆盖第三方
+  provider 后本机没有另一份可用 Claude 登录。初始化、去重、冲突可见性和 unlink/reload
+  已验证，但指令执行与同名 winner 尚未验证，Claude 保持 `targeted`，M7 保持 `doing`。
+- Evidence: `npm run check` → exit 0；Rust 29 passed，Vite 1583 modules transformed，并生成
+  debug `Habitat.app`。所有 runtime fixture 都位于 `/private/tmp`，未使用真实项目或 Store。
+- Next: 保存检查点；外部订阅恢复后只补实际 Skill invocation 与同名冲突 winner 验收。
+
 ## 2026-08-10 — M5→M7: 确认 V2，完成迁移内核
 
 - Approval: 产品负责人确认 `project-skills-round2-selected-v2.png`，M5 结束；V2 是项目

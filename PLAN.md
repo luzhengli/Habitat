@@ -95,9 +95,16 @@ runtime QA 时只显示批准的有条件等级；`npm run check` 通过。
 全量预检、相对链接应用、事务 manifest 和保守回滚；8 个 fixture 证明未选择目标不创建也不
 触碰其冲突、任一已选目标冲突会在写入前阻断、中途失败只回滚本事务仍符合预期的更改，漂移
 则保留并报告 partial。Claude Code 2.1.207 已在真实进程中发现临时项目的相对 symlink Skill，
-但模型调用被外部 CodingPlan 订阅 400 阻断，尚不能完成 invocation/reload/dedupe/conflict/
-unlink 验收；因此 Claude 保持 `targeted`、M7 继续 `doing`。Cursor 与 Trae 本机未安装，继续
-保持 `path-compatible`。
+但模型调用被外部 CodingPlan 订阅 400 阻断；因此 Claude 保持 `targeted`、M7 继续
+`doing`。Cursor 与 Trae 本机未安装，继续保持 `path-compatible`。
+
+只读 exposure inspection 现已把 `targeted`、预期入口是否满足、effective 的
+`available/duplicate/conflict/unknown` 与 `runtime_verified` 分开返回；Cursor 的
+`.agents`＋`.claude` 同源双入口会显示 duplicate，次级路径指向其他内容时显示 conflict；
+Trae 仅从设置控制的 `.agents` 路径可见时显示 unknown。新增 3 个 fixture 后 Rust 共 29 个
+测试，完整 `npm run check` 通过。Claude 初始化级 QA 已进一步证明跨用户/项目 scope 的同
+realpath 去重、同名不同 realpath 双来源和 unlink 后 reload；现在唯一未完成的是模型实际执行
+Skill 指令以及由此确认同名冲突 winner。
 
 ## M8. 实现已确认 UI 并完成 MVP QA — todo
 

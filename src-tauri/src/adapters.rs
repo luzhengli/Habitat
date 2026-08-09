@@ -1214,6 +1214,274 @@ pub fn effective_target_summary(
         .collect()
 }
 
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum RouteCondition {
+    Active,
+    SettingControlled,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum ObservedRouteState {
+    Absent,
+    Matching,
+    Conflicting,
+    Broken,
+    Unsafe,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub struct RouteObservation {
+    pub relative_root: String,
+    pub entry_path: PathBuf,
+    pub condition: RouteCondition,
+    pub state: ObservedRouteState,
+    pub canonical_target: Option<PathBuf>,
+    pub detail: String,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum EffectiveExposureState {
+    Unavailable,
+    Available,
+    Duplicate,
+    Conflict,
+    Unknown,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub struct AgentExposureInspection {
+    pub agent_id: AgentId,
+    pub targeted: bool,
+    pub expected_target: PathBuf,
+    pub expected_satisfied: bool,
+    pub effective_state: EffectiveExposureState,
+    pub support_tier: SupportTier,
+    pub runtime_verified: bool,
+    pub routes: Vec<RouteObservation>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub struct ProjectExposureInspection {
+    pub registry_version: String,
+    pub project_root: PathBuf,
+    pub skill_name: String,
+    pub source_path: PathBuf,
+    pub agents: Vec<AgentExposureInspection>,
+}
+
+fn route_condition(agent: AgentId, relative_root: &str) -> RouteCondition {
+    if agent == AgentId::Trae && relative_root == ".agents/skills" {
+        RouteCondition::SettingControlled
+    } else {
+        RouteCondition::Active
+    }
+}
+
+fn observe_route(
+    project: &Path,
+    source: &Path,
+    skill_name: &str,
+    relative_root: &str,
+    condition: RouteCondition,
+) -> RouteObservation {
+    let container = project.join(relative_root);
+    if let Err(error) = inspect_container_chain(project, &container) {
+        return RouteObservation {
+            relative_root: relative_root.into(),
+            entry_path: container.join(skill_name),
+            condition,
+            state: ObservedRouteState::Unsafe,
+            canonical_target: None,
+            detail: error.message,
+        };
+    }
+    let entry_path = container.join(skill_name);
+    let metadata = match fs::symlink_metadata(&entry_path) {
+        Ok(metadata) => metadata,
+        Err(error) if error.kind() == io::ErrorKind::NotFound => {
+            return RouteObservation {
+                relative_root: relative_root.into(),
+                entry_path,
+                condition,
+                state: ObservedRouteState::Absent,
+                canonical_target: None,
+                detail: "入口不存在。".into(),
+            }
+        }
+        Err(error) => {
+            return RouteObservation {
+                relative_root: relative_root.into(),
+                entry_path,
+                condition,
+                state: ObservedRouteState::Unsafe,
+                canonical_target: None,
+                detail: error.to_string(),
+            }
+        }
+    };
+    if !metadata.file_type().is_symlink() {
+        return RouteObservation {
+            relative_root: relative_root.into(),
+            entry_path,
+            condition,
+            state: ObservedRouteState::Conflicting,
+            canonical_target: None,
+            detail: "同名入口存在，但不是 Habitat 可验证的符号链接。".into(),
+        };
+    }
+    match fs::canonicalize(&entry_path) {
+        Ok(target) if target == source => RouteObservation {
+            relative_root: relative_root.into(),
+            entry_path,
+            condition,
+            state: ObservedRouteState::Matching,
+            canonical_target: Some(target),
+            detail: "入口指向当前 Store Skill。".into(),
+        },
+        Ok(target) => RouteObservation {
+            relative_root: relative_root.into(),
+            entry_path,
+            condition,
+            state: ObservedRouteState::Conflicting,
+            canonical_target: Some(target),
+            detail: "同名入口指向其他内容。".into(),
+        },
+        Err(error) if error.kind() == io::ErrorKind::NotFound => RouteObservation {
+            relative_root: relative_root.into(),
+            entry_path,
+            condition,
+            state: ObservedRouteState::Broken,
+            canonical_target: None,
+            detail: "入口是失效符号链接。".into(),
+        },
+        Err(error) => RouteObservation {
+            relative_root: relative_root.into(),
+            entry_path,
+            condition,
+            state: ObservedRouteState::Unsafe,
+            canonical_target: None,
+            detail: error.to_string(),
+        },
+    }
+}
+
+pub fn inspect_project_exposures(
+    store_path: &Path,
+    project_path: &Path,
+    selection: &ProjectSkillSelection,
+) -> Result<ProjectExposureInspection, MigrationError> {
+    if !safe_name(&selection.name) {
+        return Err(MigrationError::new(
+            "invalid_skill_name",
+            "discovery",
+            "Skill 名称不是安全的单一路径段。",
+            Some(selection.source_path.clone()),
+            Some("safe path segment".into()),
+            Some(selection.name.clone()),
+            "修正 Skill name 后重新扫描。",
+            false,
+        ));
+    }
+    let (store, _) = canonical_real_directory(store_path, "Skill Store")?;
+    let (project, _) = canonical_real_directory(project_path, "项目")?;
+    let (source, _) = canonical_real_directory(&selection.source_path, "Store Skill")?;
+    if source.parent() != Some(store.as_path())
+        || source.file_name() != Some(OsStr::new(&selection.name))
+    {
+        return Err(MigrationError::new(
+            "store_boundary",
+            "discovery",
+            "所选 Skill 不是 Skill Store 的直接 canonical 条目。",
+            Some(source),
+            Some(store.join(&selection.name).display().to_string()),
+            Some(selection.source_path.display().to_string()),
+            "从当前 Skill Store 重新选择。",
+            false,
+        ));
+    }
+
+    let desired_groups = minimum_target_groups(&selection.selected_agents)
+        .into_iter()
+        .collect::<BTreeSet<_>>();
+    let registry = adapter_registry();
+    let mut agents = Vec::new();
+    for adapter in &registry.adapters {
+        let targeted = desired_groups.contains(&adapter.habitat_target_group);
+        let expected_root = target_relative_path(adapter.habitat_target_group);
+        let expected_target = project.join(expected_root).join(&selection.name);
+        let routes = adapter
+            .project_discovery_paths
+            .iter()
+            .map(|relative_root| {
+                observe_route(
+                    &project,
+                    &source,
+                    &selection.name,
+                    relative_root,
+                    route_condition(adapter.agent_id, relative_root),
+                )
+            })
+            .collect::<Vec<_>>();
+        let expected_satisfied = routes.iter().any(|route| {
+            route.relative_root == expected_root && route.state == ObservedRouteState::Matching
+        });
+        let active_routes = routes
+            .iter()
+            .filter(|route| route.condition == RouteCondition::Active)
+            .collect::<Vec<_>>();
+        let active_matching = active_routes
+            .iter()
+            .filter(|route| route.state == ObservedRouteState::Matching)
+            .count();
+        let has_active_conflict = active_routes.iter().any(|route| {
+            matches!(
+                route.state,
+                ObservedRouteState::Conflicting
+                    | ObservedRouteState::Broken
+                    | ObservedRouteState::Unsafe
+            )
+        });
+        let conditional_matching = routes.iter().any(|route| {
+            route.condition == RouteCondition::SettingControlled
+                && route.state == ObservedRouteState::Matching
+        });
+        let effective_state = if has_active_conflict {
+            EffectiveExposureState::Conflict
+        } else if active_matching > 1 {
+            EffectiveExposureState::Duplicate
+        } else if active_matching == 1 {
+            EffectiveExposureState::Available
+        } else if conditional_matching {
+            EffectiveExposureState::Unknown
+        } else {
+            EffectiveExposureState::Unavailable
+        };
+        agents.push(AgentExposureInspection {
+            agent_id: adapter.agent_id,
+            targeted,
+            expected_target,
+            expected_satisfied,
+            effective_state,
+            support_tier: adapter.support_tier,
+            runtime_verified: adapter.support_tier == SupportTier::RuntimeVerified,
+            routes,
+        });
+    }
+    Ok(ProjectExposureInspection {
+        registry_version: registry.version,
+        project_root: project,
+        skill_name: selection.name.clone(),
+        source_path: source,
+        agents,
+    })
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -1440,5 +1708,120 @@ mod tests {
         assert_eq!(manifest.state, ProjectTransactionState::RolledBack);
         assert!(fs::symlink_metadata(&existing).is_ok());
         assert!(fs::symlink_metadata(project.join(".claude/skills/alpha")).is_err());
+    }
+
+    #[test]
+    fn inspection_keeps_expected_effective_and_runtime_states_distinct() {
+        let fixture = TempDir::new().unwrap();
+        let store = fixture.path().join("store");
+        let project = fixture.path().join("project");
+        let source = store.join("alpha");
+        fs::create_dir(&store).unwrap();
+        fs::create_dir(&project).unwrap();
+        write_skill(&source, "alpha");
+        let selected = selection(
+            &source,
+            vec![
+                AgentId::Codex,
+                AgentId::ClaudeCode,
+                AgentId::Pi,
+                AgentId::Cursor,
+                AgentId::Trae,
+            ],
+        );
+        let plan = build_project_exposure_plan(&store, &project, &[selected.clone()]).unwrap();
+        apply_project_exposure_plan(&plan).unwrap();
+
+        let inspection = inspect_project_exposures(&store, &project, &selected).unwrap();
+        let agents = inspection
+            .agents
+            .iter()
+            .map(|agent| (agent.agent_id, agent))
+            .collect::<BTreeMap<_, _>>();
+        assert_eq!(
+            agents[&AgentId::Codex].effective_state,
+            EffectiveExposureState::Available
+        );
+        assert_eq!(
+            agents[&AgentId::ClaudeCode].effective_state,
+            EffectiveExposureState::Available
+        );
+        assert_eq!(
+            agents[&AgentId::Pi].effective_state,
+            EffectiveExposureState::Available
+        );
+        assert_eq!(
+            agents[&AgentId::Cursor].effective_state,
+            EffectiveExposureState::Duplicate
+        );
+        assert_eq!(
+            agents[&AgentId::Trae].effective_state,
+            EffectiveExposureState::Available
+        );
+        assert!(agents.values().all(|agent| agent.targeted));
+        assert!(agents[&AgentId::Codex].runtime_verified);
+        assert!(agents[&AgentId::Pi].runtime_verified);
+        assert!(!agents[&AgentId::ClaudeCode].runtime_verified);
+        assert!(!agents[&AgentId::Cursor].runtime_verified);
+        assert!(!agents[&AgentId::Trae].runtime_verified);
+    }
+
+    #[test]
+    fn trae_agents_route_is_unknown_when_its_setting_is_not_observed() {
+        let fixture = TempDir::new().unwrap();
+        let store = fixture.path().join("store");
+        let project = fixture.path().join("project");
+        let source = store.join("alpha");
+        fs::create_dir(&store).unwrap();
+        fs::create_dir(&project).unwrap();
+        write_skill(&source, "alpha");
+        let selected = selection(&source, vec![AgentId::Codex]);
+        let plan = build_project_exposure_plan(&store, &project, &[selected.clone()]).unwrap();
+        apply_project_exposure_plan(&plan).unwrap();
+
+        let inspection = inspect_project_exposures(&store, &project, &selected).unwrap();
+        let trae = inspection
+            .agents
+            .iter()
+            .find(|agent| agent.agent_id == AgentId::Trae)
+            .unwrap();
+        assert!(!trae.targeted);
+        assert!(!trae.expected_satisfied);
+        assert_eq!(trae.effective_state, EffectiveExposureState::Unknown);
+        assert!(trae.routes.iter().any(|route| {
+            route.relative_root == ".agents/skills"
+                && route.condition == RouteCondition::SettingControlled
+                && route.state == ObservedRouteState::Matching
+        }));
+    }
+
+    #[test]
+    fn conflicting_secondary_cursor_route_is_reported_without_guessing_a_winner() {
+        let fixture = TempDir::new().unwrap();
+        let store = fixture.path().join("store");
+        let project = fixture.path().join("project");
+        let source = store.join("alpha");
+        let other = store.join("other");
+        fs::create_dir(&store).unwrap();
+        fs::create_dir(&project).unwrap();
+        write_skill(&source, "alpha");
+        write_skill(&other, "other");
+        let selected = selection(&source, vec![AgentId::Cursor]);
+        let plan = build_project_exposure_plan(&store, &project, &[selected.clone()]).unwrap();
+        apply_project_exposure_plan(&plan).unwrap();
+        let cursor_root = project.join(".cursor/skills");
+        fs::create_dir_all(&cursor_root).unwrap();
+        symlink(&other, cursor_root.join("alpha")).unwrap();
+
+        let inspection = inspect_project_exposures(&store, &project, &selected).unwrap();
+        let cursor = inspection
+            .agents
+            .iter()
+            .find(|agent| agent.agent_id == AgentId::Cursor)
+            .unwrap();
+        assert!(cursor.targeted);
+        assert!(cursor.expected_satisfied);
+        assert_eq!(cursor.effective_state, EffectiveExposureState::Conflict);
+        assert!(!cursor.runtime_verified);
     }
 }

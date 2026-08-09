@@ -106,27 +106,30 @@ realpath 冲突、unlink/reload 与 Skill invocation。调用使用只监听 loo
 升级为 `runtime-verified`。Rust 共 30 个测试及完整 `npm run check` 通过；Cursor/Trae 因
 本机无 runtime 继续保持 `path-compatible`。M7 完成。
 
-## M8. 实现已确认 UI 并完成 MVP QA — doing
+## M8. 实现已确认 UI 并完成 MVP QA — done
 
 Done when: 只实现 M5 明确确认的方向，覆盖首次使用到 rollback 的完整界面状态、选择持久化、
 错误恢复和可访问性；按 `DESIGN.md` 第 14 节复验并更新 `design-qa.md` 与截图，迁移前后
 effective set 在目标/未连接项目 fixture 上符合 M4 价值门槛，`npm run check` 通过。
 
-当前进展：项目 Skills 工作台已有产品负责人确认的 V2 视觉方向；首次设置已按同一视觉系统
-生成 3 个“扫描完成后整理 Skills”可比较原型，产品负责人于 2026-08-10 选择方案 1 的
-“问题优先双栏”方向。允许实现的首次设置范围是：无项目侧栏的五步设置 shell、按问题分组的
-Skill 清单、右侧单项版本选择、Agent 图标组与溢出浮层、以及页面唯一操作底栏。当前开始把
-迁移安全内核注册为有界 Tauri 命令并实现 F0–F6；不得把项目链接、项目 Agent 开关或旧 Spike
-的项目上下文带入首次设置。
+完成情况：首次设置 F0–F6 已覆盖已知用户 roots 的只读扫描、同名版本选择、Store 校验、计划、
+事务执行、完成与精确 rollback；项目管理旧 Spike 已替换为确认的三栏 V2。添加项目只保存
+项目与 Agent 范围，不创建链接；Agent 图标只编辑项目草稿，统一经过条件式待应用栏、独立确认
+与后端持有的 adapter plan 后，才创建或移除相对链接。项目和 Agent 范围持久化在本地 WebView
+存储，切换 dirty project 会被阻止，不会静默应用。
 
-首次设置 F0–F6 已落地：已知用户 roots 的只读扫描、同名版本选择、Store 校验与计划、事务
-执行、完成结果和精确 rollback 都通过后端持有的 snapshot/plan/manifest 状态连接；前端不传
-任意扫描 root，也不能执行不匹配的事务 id。同内容副本现在只导入一次，但所有等价旧入口均
-进入 Recovery。1440×1024 与 1024×768 视觉/交互 QA 已通过，`design-qa.md` 为 passed，
-`npm run check` 通过（Rust 31 tests + debug Habitat.app）。M8 仍未完成：下一步需将迁移后的
-项目管理旧 Spike 替换为已确认的项目 Skills V2，并为真实临时 fixture 补齐 UI 层端到端验收。
+1440×1024 原图/实现并排、项目确认层、添加项目层和 1024×768 抽屉布局均已复验；
+`design-qa.md` 为 passed。浏览器 fixture 走通 2 个 Skill / 3 个链接操作的草稿、检查、应用与
+成功反馈；Rust 临时 Store/项目 fixture 通过同一 name-only command boundary 创建三组相对
+链接、验证五 Agent effective exposure、再移除链接并证明 Store 源保持完整，未知 Store 名称
+在计划前阻断。`npm run check` 通过（Rust 33 tests + Vite 1595 modules + debug Habitat.app）。
+检查点 `efaf495` 保存项目 Skills V2、QA 证据与 DESIGN 合同同步。M8 完成。
 
-## M9. 发布准备与观察 — todo
+## M9. 发布准备与观察 — doing
 
 Done when: 发布目标、签名/分发方式、数据升级与回滚路径、支持等级和发布后观察指标已经
 明确并验证；提升为 `doing` 时再根据已批准发布范围细化。
+
+当前状态：MVP 本地实现与 QA 已完成，但发布目标、签名/分发方式和发布范围尚未获得产品负责人
+批准。未经明确批准不发布应用、不修改真实用户项目或 Skill Store；下一步先形成发布决策清单，
+等待产品负责人确认后再进行任何外部分发。

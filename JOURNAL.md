@@ -3,6 +3,31 @@
 最新记录在最上方；每个 session 一条。超过约 150 行时，将最新五条之前的内容压缩到
 Digest。
 
+## 2026-08-10 — M8→M9: 完成项目 Skills V2 与 MVP QA
+
+- UI: 用产品负责人确认的 V2 替换旧项目 Spike。三栏工作台使用真实小尺寸 Agent 图标；
+  Codex/Pi/Cursor 同步切换共享入口，Claude Code 与 Trae 独立切换；点击只形成项目草稿，
+  条件式待应用栏汇总受影响 Skill、添加/移除操作和阻断数。
+- Flow: 新增添加项目确认层，先选择项目和 Agent 管理范围并明确暂不创建链接；新增独立项目
+  设置确认层，按添加/移除分组展示真实目标。dirty project 切换被阻止，项目与 Agent 范围
+  保存到本地 WebView 存储。
+- Backend: 注册 inspect/plan/apply/rollback 项目命令。前端只提交 Store Skill 名称和 Agent
+  选择；Rust 从当前 Store scan 解析源路径、持有计划/manifest，并要求 transaction id 精确
+  匹配，实际写入继续复用 M7 的 canonical path、lstat、全量预检和相对链接事务。
+- Fixture: 新增 command-boundary 临时目录测试，真实创建 `.agents`、`.claude`、`.trae` 三组
+  相对链接，验证五 Agent 均满足，再移除三组链接并证明 Store source 不变；未知 Store 名称
+  在计划前阻断。Rust 总计 33 tests。
+- Visual QA: `project-skills-v2-comparison-final.png` 在原始 1440×1024 像素并排比较确认稿与
+  实现；另有项目确认层、添加项目层和 1024×768 抽屉证据。浏览器完成草稿 → 检查 → 应用，
+  pending bar 清空且无 console error；`design-qa.md` 为 `final result: passed`。
+- Evidence: `npm run check` → exit 0；Rust 33 passed，Vite 1595 modules transformed，并生成
+  debug `Habitat.app`。
+- Checkpoint: `efaf495` 保存项目 Skills V2、安全命令、真实 fixture、视觉/交互证据与 DESIGN
+  稳定组件规则。
+- State: M8 done；M9 doing。MVP 本地实现已完成，尚未批准发布、签名或修改任何真实用户
+  项目/Skill Store。
+- Next: 先由产品负责人确认发布目标、分发方式和支持范围；批准前只准备决策，不进行外部分发。
+
 ## 2026-08-10 — M8: 实现首次设置 F0–F6 与迁移命令
 
 - Backend: 注册仅使用 adapter registry 已知用户 roots 的只读扫描、Store 校验、计划、执行

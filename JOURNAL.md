@@ -3,7 +3,7 @@
 最新记录在最上方；每个 session 一条。超过约 150 行时，将最新五条之前的内容压缩到
 Digest。
 
-## 2026-08-10 — M7: 补齐 effective exposure 与 Claude 初始化矩阵
+## 2026-08-10 — M7→M8: 完成 effective exposure 与 Claude runtime QA
 
 - Exposure: 新增只读项目 exposure inspection，分别返回 Agent 是否 targeted、预期入口是否
   满足、effective state、支持等级和 runtime-verified，不再用单一链接状态代替实际可见性。
@@ -12,13 +12,18 @@ Digest。
 - Claude: 2.1.207 真实进程证明用户级＋项目级同 realpath 入口合并为 1 个 unique Skill；
   同 basename 不同 realpath 会加载 2 个来源但只显示一个 slash-command 名称，因此不能猜测
   winner；移除项目入口后新进程不再列出 fixture。
-- Blocker: 模型调用仍在 0 token、0 美元时被外部 CodingPlan HTTP 400 阻断；覆盖第三方
-  provider 后本机没有另一份可用 Claude 登录。初始化、去重、冲突可见性和 unlink/reload
-  已验证，但指令执行与同名 winner 尚未验证，Claude 保持 `targeted`，M7 保持 `doing`。
-- Evidence: `npm run check` → exit 0；Rust 29 passed，Vite 1583 modules transformed，并生成
+- Runtime: 使用只监听 `127.0.0.1` 的临时 Anthropic 协议 mock，真实 Claude Code 2.1.207
+  成功展开相对 symlink Skill、发送 streaming 请求并完成响应；没有连接外部模型。用户/项目
+  同名不同 realpath 时，请求只注入用户级 fixture，证明该版本由用户级来源遮蔽项目级。
+- Contract: registry 将 Claude 2.1.207 CLI 升为 `runtime-verified`，并记录同 realpath 去重、
+  用户级 precedence、调用与 unlink/reload 证据；effective exposure 新增 `shadowed`，调用方
+  可传入用户级 route，避免把已被用户来源遮蔽的项目入口显示为可用。
+- Evidence: `npm run check` → exit 0；Rust 30 passed，Vite 1583 modules transformed，并生成
   debug `Habitat.app`。所有 runtime fixture 都位于 `/private/tmp`，未使用真实项目或 Store。
 - Checkpoint: `299227c` 保存 effective exposure 检查、3 个新增 fixture 与 Claude 初始化矩阵。
-- Next: 外部订阅恢复后只补实际 Skill invocation 与同名冲突 winner 验收。
+- State: M7 done；Cursor/Trae 继续 `path-compatible`。M8 doing，但首先补齐首次设置的 3 个
+  可比较视觉原型，确认前不修改生产 React/Tauri UI。
+- Next: 保存 M7 runtime 检查点，然后按已批准 IA 与 V2 视觉系统开始首次设置视觉探索。
 
 ## 2026-08-10 — M5→M7: 确认 V2，完成迁移内核
 

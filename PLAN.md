@@ -83,34 +83,38 @@ Store 文件身份、源 canonical path、lstat 身份、链接文本与内容�
 Store/recovery 内容未漂移时精确恢复。全部验证只使用临时 fixture；未注册生产 UI command，
 未访问真实用户路径。新增 7 个迁移测试，Rust 共 18 个测试及 `npm run check` 全部通过。
 
-## M7. 实现多 Agent exposure 与项目 adapter — doing
+## M7. 实现多 Agent exposure 与项目 adapter — done
 
 Done when: 五 Agent adapter registry、只读 policy/precedence 解释、所选 Agent 最小目标集、
 多目标预检和安全回滚均可观察；Codex/Claude/Pi 完成 runtime 验收，Cursor/Trae 未完成
 runtime QA 时只显示批准的有条件等级；`npm run check` 通过。
 
-当前进展：M6 已提供不可覆盖、可回滚的事务基础；下一步先把五 Agent 的路径、共享目标组、
-只读支持证据和最小目标集固化为 adapter registry 与 fixture 测试，再接入项目级多目标事务。
-现已实现版本化五 Agent registry、Codex/Pi/Cursor 共享目标组、Claude/Trae 独立目标、项目级
-全量预检、相对链接应用、事务 manifest 和保守回滚；8 个 fixture 证明未选择目标不创建也不
+完成情况：实现版本化五 Agent registry、Codex/Pi/Cursor 共享目标组、Claude/Trae 独立目标、
+项目级全量预检、相对链接应用、事务 manifest 和保守回滚。fixture 证明未选择目标不创建也不
 触碰其冲突、任一已选目标冲突会在写入前阻断、中途失败只回滚本事务仍符合预期的更改，漂移
-则保留并报告 partial。Claude Code 2.1.207 已在真实进程中发现临时项目的相对 symlink Skill，
-但模型调用被外部 CodingPlan 订阅 400 阻断；因此 Claude 保持 `targeted`、M7 继续
-`doing`。Cursor 与 Trae 本机未安装，继续保持 `path-compatible`。
+则保留并报告 partial。
 
-只读 exposure inspection 现已把 `targeted`、预期入口是否满足、effective 的
-`available/duplicate/conflict/unknown` 与 `runtime_verified` 分开返回；Cursor 的
-`.agents`＋`.claude` 同源双入口会显示 duplicate，次级路径指向其他内容时显示 conflict；
-Trae 仅从设置控制的 `.agents` 路径可见时显示 unknown。新增 3 个 fixture 后 Rust 共 29 个
-测试，完整 `npm run check` 通过。Claude 初始化级 QA 已进一步证明跨用户/项目 scope 的同
-realpath 去重、同名不同 realpath 双来源和 unlink 后 reload；现在唯一未完成的是模型实际执行
-Skill 指令以及由此确认同名冲突 winner。
+只读 exposure inspection 将 `targeted`、预期入口是否满足、effective 的
+`available/duplicate/shadowed/conflict/unknown` 与 `runtime_verified` 分开返回。Cursor 的
+`.agents`＋`.claude` 同源双入口显示 duplicate，次级路径异源显示 conflict；Trae 仅从设置
+控制的 `.agents` 路径可见时显示 unknown；Claude 2.1.207 的异源用户入口会将项目入口标为
+shadowed。
 
-## M8. 实现已确认 UI 并完成 MVP QA — todo
+Claude Code 2.1.207 真实进程已通过相对 symlink 发现、跨 scope realpath 去重、同名不同
+realpath 冲突、unlink/reload 与 Skill invocation。调用使用只监听 loopback 的临时 Anthropic
+协议 mock：请求只注入用户级冲突来源，证明用户级遮蔽项目级。registry 已将该 CLI surface
+升级为 `runtime-verified`。Rust 共 30 个测试及完整 `npm run check` 通过；Cursor/Trae 因
+本机无 runtime 继续保持 `path-compatible`。M7 完成。
+
+## M8. 实现已确认 UI 并完成 MVP QA — doing
 
 Done when: 只实现 M5 明确确认的方向，覆盖首次使用到 rollback 的完整界面状态、选择持久化、
 错误恢复和可访问性；按 `DESIGN.md` 第 14 节复验并更新 `design-qa.md` 与截图，迁移前后
 effective set 在目标/未连接项目 fixture 上符合 M4 价值门槛，`npm run check` 通过。
+
+当前进展：项目 Skills 工作台已有产品负责人确认的 V2 视觉方向；首次设置虽有批准的信息架构，
+但尚未按同一视觉系统补齐可比较的具体页面状态。M8 先生成至少 3 个首次设置视觉原型并等待
+产品负责人确认，不在确认前修改生产 React/Tauri UI。
 
 ## M9. 发布准备与观察 — todo
 

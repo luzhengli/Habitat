@@ -97,9 +97,19 @@ pub fn adapter_registry() -> AdapterRegistry {
                 project_discovery_paths: vec![".claude/skills".into()],
                 habitat_target_group: TargetGroupId::Claude,
                 condition: "项目原生 Skills 路径；不读取 .agents/skills。".into(),
-                precedence: "同一真实目标按 realpath 去重；更完整优先级以命名版本 QA 为准。".into(),
-                support_tier: SupportTier::Targeted,
-                runtime_evidence: None,
+                precedence: "2.1.207：同 realpath 跨用户/项目 scope 去重；同名不同 realpath 的 slash invocation 使用用户级来源。".into(),
+                support_tier: SupportTier::RuntimeVerified,
+                runtime_evidence: Some(RuntimeEvidence {
+                    version: "2.1.207".into(),
+                    surface: "Claude Code CLI with local Anthropic-protocol mock".into(),
+                    verified_behaviors: vec![
+                        "relative-directory-symlink".into(),
+                        "discover-and-invoke".into(),
+                        "cross-scope-realpath-dedupe".into(),
+                        "user-scope-shadows-project-conflict".into(),
+                        "unlink-and-reload".into(),
+                    ],
+                }),
             },
             AgentAdapter {
                 agent_id: AgentId::Pi,
@@ -1223,6 +1233,13 @@ pub enum RouteCondition {
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
+pub enum ExposureScope {
+    User,
+    Project,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
 pub enum ObservedRouteState {
     Absent,
     Matching,
@@ -1234,6 +1251,7 @@ pub enum ObservedRouteState {
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
 pub struct RouteObservation {
+    pub scope: ExposureScope,
     pub relative_root: String,
     pub entry_path: PathBuf,
     pub condition: RouteCondition,
@@ -1248,8 +1266,19 @@ pub enum EffectiveExposureState {
     Unavailable,
     Available,
     Duplicate,
+    Shadowed,
     Conflict,
     Unknown,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub struct UserExposureRoute {
+    pub agent_id: AgentId,
+    pub entry_path: PathBuf,
+    pub state: ObservedRouteState,
+    pub canonical_target: Option<PathBuf>,
+    pub detail: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
@@ -1293,6 +1322,7 @@ fn observe_route(
     let container = project.join(relative_root);
     if let Err(error) = inspect_container_chain(project, &container) {
         return RouteObservation {
+            scope: ExposureScope::Project,
             relative_root: relative_root.into(),
             entry_path: container.join(skill_name),
             condition,
@@ -1306,6 +1336,7 @@ fn observe_route(
         Ok(metadata) => metadata,
         Err(error) if error.kind() == io::ErrorKind::NotFound => {
             return RouteObservation {
+                scope: ExposureScope::Project,
                 relative_root: relative_root.into(),
                 entry_path,
                 condition,
@@ -1316,6 +1347,7 @@ fn observe_route(
         }
         Err(error) => {
             return RouteObservation {
+                scope: ExposureScope::Project,
                 relative_root: relative_root.into(),
                 entry_path,
                 condition,
@@ -1327,6 +1359,7 @@ fn observe_route(
     };
     if !metadata.file_type().is_symlink() {
         return RouteObservation {
+            scope: ExposureScope::Project,
             relative_root: relative_root.into(),
             entry_path,
             condition,
@@ -1337,6 +1370,7 @@ fn observe_route(
     }
     match fs::canonicalize(&entry_path) {
         Ok(target) if target == source => RouteObservation {
+            scope: ExposureScope::Project,
             relative_root: relative_root.into(),
             entry_path,
             condition,
@@ -1345,6 +1379,7 @@ fn observe_route(
             detail: "入口指向当前 Store Skill。".into(),
         },
         Ok(target) => RouteObservation {
+            scope: ExposureScope::Project,
             relative_root: relative_root.into(),
             entry_path,
             condition,
@@ -1353,6 +1388,7 @@ fn observe_route(
             detail: "同名入口指向其他内容。".into(),
         },
         Err(error) if error.kind() == io::ErrorKind::NotFound => RouteObservation {
+            scope: ExposureScope::Project,
             relative_root: relative_root.into(),
             entry_path,
             condition,
@@ -1361,6 +1397,7 @@ fn observe_route(
             detail: "入口是失效符号链接。".into(),
         },
         Err(error) => RouteObservation {
+            scope: ExposureScope::Project,
             relative_root: relative_root.into(),
             entry_path,
             condition,
@@ -1375,6 +1412,15 @@ pub fn inspect_project_exposures(
     store_path: &Path,
     project_path: &Path,
     selection: &ProjectSkillSelection,
+) -> Result<ProjectExposureInspection, MigrationError> {
+    inspect_project_exposures_with_user_routes(store_path, project_path, selection, &[])
+}
+
+pub fn inspect_project_exposures_with_user_routes(
+    store_path: &Path,
+    project_path: &Path,
+    selection: &ProjectSkillSelection,
+    user_routes: &[UserExposureRoute],
 ) -> Result<ProjectExposureInspection, MigrationError> {
     if !safe_name(&selection.name) {
         return Err(MigrationError::new(
@@ -1415,7 +1461,7 @@ pub fn inspect_project_exposures(
         let targeted = desired_groups.contains(&adapter.habitat_target_group);
         let expected_root = target_relative_path(adapter.habitat_target_group);
         let expected_target = project.join(expected_root).join(&selection.name);
-        let routes = adapter
+        let mut routes = adapter
             .project_discovery_paths
             .iter()
             .map(|relative_root| {
@@ -1428,8 +1474,24 @@ pub fn inspect_project_exposures(
                 )
             })
             .collect::<Vec<_>>();
+        routes.extend(
+            user_routes
+                .iter()
+                .filter(|route| route.agent_id == adapter.agent_id)
+                .map(|route| RouteObservation {
+                    scope: ExposureScope::User,
+                    relative_root: "user".into(),
+                    entry_path: route.entry_path.clone(),
+                    condition: RouteCondition::Active,
+                    state: route.state,
+                    canonical_target: route.canonical_target.clone(),
+                    detail: route.detail.clone(),
+                }),
+        );
         let expected_satisfied = routes.iter().any(|route| {
-            route.relative_root == expected_root && route.state == ObservedRouteState::Matching
+            route.scope == ExposureScope::Project
+                && route.relative_root == expected_root
+                && route.state == ObservedRouteState::Matching
         });
         let active_routes = routes
             .iter()
@@ -1451,7 +1513,16 @@ pub fn inspect_project_exposures(
             route.condition == RouteCondition::SettingControlled
                 && route.state == ObservedRouteState::Matching
         });
-        let effective_state = if has_active_conflict {
+        let user_conflict_shadows_project = adapter.agent_id == AgentId::ClaudeCode
+            && expected_satisfied
+            && routes.iter().any(|route| {
+                route.scope == ExposureScope::User
+                    && route.condition == RouteCondition::Active
+                    && route.state == ObservedRouteState::Conflicting
+            });
+        let effective_state = if user_conflict_shadows_project {
+            EffectiveExposureState::Shadowed
+        } else if has_active_conflict {
             EffectiveExposureState::Conflict
         } else if active_matching > 1 {
             EffectiveExposureState::Duplicate
@@ -1515,7 +1586,7 @@ mod tests {
             .map(|adapter| (adapter.agent_id, adapter.support_tier))
             .collect::<BTreeMap<_, _>>();
         assert_eq!(tiers[&AgentId::Codex], SupportTier::RuntimeVerified);
-        assert_eq!(tiers[&AgentId::ClaudeCode], SupportTier::Targeted);
+        assert_eq!(tiers[&AgentId::ClaudeCode], SupportTier::RuntimeVerified);
         assert_eq!(tiers[&AgentId::Pi], SupportTier::RuntimeVerified);
         assert_eq!(tiers[&AgentId::Cursor], SupportTier::PathCompatible);
         assert_eq!(tiers[&AgentId::Trae], SupportTier::PathCompatible);
@@ -1761,7 +1832,7 @@ mod tests {
         assert!(agents.values().all(|agent| agent.targeted));
         assert!(agents[&AgentId::Codex].runtime_verified);
         assert!(agents[&AgentId::Pi].runtime_verified);
-        assert!(!agents[&AgentId::ClaudeCode].runtime_verified);
+        assert!(agents[&AgentId::ClaudeCode].runtime_verified);
         assert!(!agents[&AgentId::Cursor].runtime_verified);
         assert!(!agents[&AgentId::Trae].runtime_verified);
     }
@@ -1823,5 +1894,42 @@ mod tests {
         assert!(cursor.expected_satisfied);
         assert_eq!(cursor.effective_state, EffectiveExposureState::Conflict);
         assert!(!cursor.runtime_verified);
+    }
+
+    #[test]
+    fn claude_user_conflict_shadows_the_expected_project_entry() {
+        let fixture = TempDir::new().unwrap();
+        let store = fixture.path().join("store");
+        let project = fixture.path().join("project");
+        let source = store.join("alpha");
+        let user_variant = fixture.path().join("user-variant");
+        fs::create_dir(&store).unwrap();
+        fs::create_dir(&project).unwrap();
+        write_skill(&source, "alpha");
+        write_skill(&user_variant, "alpha");
+        fs::write(user_variant.join("variant.txt"), "different").unwrap();
+        let selected = selection(&source, vec![AgentId::ClaudeCode]);
+        let plan = build_project_exposure_plan(&store, &project, &[selected.clone()]).unwrap();
+        apply_project_exposure_plan(&plan).unwrap();
+        let user_route = UserExposureRoute {
+            agent_id: AgentId::ClaudeCode,
+            entry_path: fixture.path().join("claude-user/alpha"),
+            state: ObservedRouteState::Conflicting,
+            canonical_target: Some(fs::canonicalize(&user_variant).unwrap()),
+            detail: "2.1.207 user-level route with the same command name".into(),
+        };
+
+        let inspection =
+            inspect_project_exposures_with_user_routes(&store, &project, &selected, &[user_route])
+                .unwrap();
+        let claude = inspection
+            .agents
+            .iter()
+            .find(|agent| agent.agent_id == AgentId::ClaudeCode)
+            .unwrap();
+        assert!(claude.targeted);
+        assert!(claude.expected_satisfied);
+        assert_eq!(claude.effective_state, EffectiveExposureState::Shadowed);
+        assert!(claude.runtime_verified);
     }
 }

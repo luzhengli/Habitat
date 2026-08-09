@@ -10,7 +10,7 @@
 | Agent | 命令结果 | 本轮结论 |
 | --- | --- | --- |
 | Codex | `codex-cli 0.139.0` | 版本与既有已验证 fixture 基线一致。 |
-| Claude Code | `2.1.207` | 相对目录 symlink 的发现与注册通过；完整调用未通过。 |
+| Claude Code | `2.1.207` | 相对 symlink、调用、去重、冲突 precedence 与 unlink/reload 已验证。 |
 | Pi | `0.81.1` | 版本与既有源码和 fixture 基线一致。 |
 | Cursor | 未安装 | 继续保持 `path-compatible`。 |
 | Trae | 未安装 | 继续保持 `path-compatible`。 |
@@ -46,12 +46,29 @@ symlink 并注册 Skill；fixture 未使用真实项目或真实 Skill Store。
 同名不同内容测试说明 frontmatter `name` 不能单独代表 Claude 的唯一入口；Habitat 必须继续
 保留所有 route，并在 winner 未经 invocation 证明时显示冲突或未知。
 
-模型调用在生成任何 token 前被当前外部 provider 拒绝：HTTP 400，CodingPlan 订阅无效，
-`total_cost_usd: 0`。覆盖用户 `settings.json` 中第三方 provider 后，本机没有另一份可用的
-Claude 登录，因此不能完成 Skill 指令执行。Claude Code adapter 继续保持 `targeted`，不得
-升级为 `runtime-verified`。
+外部 provider 的第一次模型调用在生成任何 token 前被拒绝：HTTP 400，CodingPlan 订阅无效，
+`total_cost_usd: 0`。该外部状态不再作为 runtime 验收的依赖。
+
+### Claude Code 真实调用与 precedence
+
+为验证 Claude Code 客户端本身的 Skill 展开，不依赖外部付费模型，启动了只监听
+`127.0.0.1:18765` 的临时 Anthropic Messages 协议 mock。真实 2.1.207 进程通过隔离的
+`CLAUDE_CONFIG_DIR` 和本机 base URL 调用 `/habitat-runtime-qa`，成功完成 streaming 请求与
+响应；mock 随后停止，未连接外部模型。
+
+对请求体只做布尔断言，不保存或展示系统提示：
+
+- 单个项目 Skill，以及用户/项目同 realpath 双入口：请求包含项目 fixture 的唯一指令标记，
+  不包含冲突 fixture 标记；
+- 用户级与项目级同 basename、不同 realpath：项目入口指向 A、用户入口指向 B，请求只包含
+  B 的指令标记；因此 2.1.207 的 slash invocation 是用户级来源遮蔽项目级来源；
+- Claude Code 返回 mock 的固定 streaming 响应并以 `is_error: false`、`end_turn` 完成。
+
+这覆盖 add、discover、invoke、跨 scope realpath dedupe、同名冲突 precedence、unlink 与
+reload。Claude Code 2.1.207 的 CLI surface 可以标记为 `runtime-verified`。此结论只针对命名
+版本和 Skill 加载/展开合同，不声称本地 mock 验证了任何模型的语义质量。
 
 ### 下一次复验
 
-外部订阅恢复后，在新的临时 fixture 中执行两个同名不同内容来源，确认实际 winner/冲突提示，
-并验证单入口 Skill 指令结果。命名版本变化时重跑整张初始化矩阵。完成前 M7 保持 `doing`。
+Claude Code 命名版本变化时，重跑初始化矩阵与本机协议 mock 调用；Cursor、Trae 安装后补齐
+各自发布版本矩阵。在此之前二者继续保持 `path-compatible`。

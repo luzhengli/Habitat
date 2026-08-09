@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "check": "git diff --check && cargo test --manifest-path src-tauri/Cargo.toml && npm run tauri build -- --debug",
     "tauri": "tauri",
     "fixture": "bash scripts/create-demo-fixture.sh"
   },

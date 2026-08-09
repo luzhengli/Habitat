@@ -47,10 +47,11 @@ npm run fixture
 ## 验证
 
 ```bash
-npm run build
-cargo test --manifest-path src-tauri/Cargo.toml
-npm run tauri build -- --debug
+npm run check
 ```
+
+该 gate 依次检查 Git diff 空白错误、运行 Rust 测试，并完成前端 TypeScript/Vite
+生产构建与 debug macOS 应用打包。
 
 Debug 应用输出到：
 

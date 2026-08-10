@@ -1001,7 +1001,7 @@ pub fn build_import_plan(
         .collect::<Result<Vec<_>, _>>()?;
     let mut choices = BTreeMap::<String, (&CanonicalArtifact, String)>::new();
     let mut imports = Vec::new();
-    let mut recoveries = Vec::new();
+    let mut recoveries_by_path = BTreeMap::<PathBuf, RecoveryOperation>::new();
     for artifact in selected {
         if artifact.parse_status == ParseStatus::Blocked {
             return Err(MigrationError::new(
@@ -1067,7 +1067,7 @@ pub fn build_import_plan(
             if !matches!(route.entry_kind, EntryKind::Directory | EntryKind::Symlink) {
                 continue;
             }
-            recoveries.push(RecoveryOperation {
+            let operation = RecoveryOperation {
                 route_id: route.route_id.clone(),
                 original_path: route.entry_path.clone(),
                 original_parent: route
@@ -1081,9 +1081,31 @@ pub fn build_import_plan(
                 expected_fingerprint: artifact.content_fingerprint.clone(),
                 recovery_path: recovery_root.join(&route.route_id),
                 result: OperationResult::Pending,
-            });
+            };
+            if let Some(existing) = recoveries_by_path.get(&operation.original_path) {
+                if existing.original_parent != operation.original_parent
+                    || existing.entry_kind != operation.entry_kind
+                    || existing.expected_identity != operation.expected_identity
+                    || existing.expected_link_text != operation.expected_link_text
+                    || existing.expected_fingerprint != operation.expected_fingerprint
+                {
+                    return Err(MigrationError::new(
+                        "duplicate_recovery_conflict",
+                        "preflight",
+                        "同一 Skill 入口的重复扫描记录互相冲突。",
+                        Some(operation.original_path.clone()),
+                        Some(existing.route_id.clone()),
+                        Some(operation.route_id.clone()),
+                        "重新扫描并创建新的迁移计划。",
+                        false,
+                    ));
+                }
+                continue;
+            }
+            recoveries_by_path.insert(operation.original_path.clone(), operation);
         }
     }
+    let mut recoveries = recoveries_by_path.into_values().collect::<Vec<_>>();
     recoveries.sort_by_key(|operation| match operation.entry_kind {
         EntryKind::Symlink => 0,
         EntryKind::Directory => 1,
@@ -2407,6 +2429,68 @@ mod tests {
         );
         assert_eq!(fingerprint_tree(&source).unwrap().1, expected_fingerprint);
         assert!(fs::symlink_metadata(store.join("alpha")).is_err());
+    }
+
+    #[test]
+    fn overlapping_agent_roots_move_each_physical_entry_once_and_rollback() {
+        let fixture = TempDir::new().unwrap();
+        let root_path = fixture.path().join("shared-skills");
+        let store = fixture.path().join("store");
+        let source = root_path.join("alpha");
+        fs::create_dir(&store).unwrap();
+        write_skill(&source, "alpha", "hello");
+        let roots = vec![
+            root("codex", &root_path),
+            root("pi", &root_path),
+            root("cursor", &root_path),
+        ];
+        let snapshot = scan_inventory(&roots).unwrap();
+        assert_eq!(snapshot.routes.len(), 3);
+        let plan = build_import_plan(
+            &snapshot,
+            &store,
+            &roots,
+            &[],
+            &[snapshot.artifacts[0].artifact_id.clone()],
+        )
+        .unwrap();
+
+        assert_eq!(plan.recoveries.len(), 1);
+        let manifest = execute_import(&plan).unwrap();
+        assert_eq!(manifest.state, TransactionState::Completed);
+        assert!(store.join("alpha/SKILL.md").is_file());
+        assert!(fs::symlink_metadata(&source).is_err());
+
+        let rolled_back = rollback_transaction(&plan.manifest_path).unwrap();
+        assert_eq!(rolled_back.state, TransactionState::RolledBack);
+        assert!(source.join("SKILL.md").is_file());
+        assert!(fs::symlink_metadata(store.join("alpha")).is_err());
+    }
+
+    #[test]
+    fn conflicting_duplicate_recovery_routes_block_planning() {
+        let fixture = TempDir::new().unwrap();
+        let root_path = fixture.path().join("shared-skills");
+        let store = fixture.path().join("store");
+        let source = root_path.join("alpha");
+        fs::create_dir(&store).unwrap();
+        write_skill(&source, "alpha", "hello");
+        let roots = vec![root("codex", &root_path), root("pi", &root_path)];
+        let mut snapshot = scan_inventory(&roots).unwrap();
+        let canonical_source = fs::canonicalize(&source).unwrap();
+        snapshot.routes[1].identity.as_mut().unwrap().inode += 1;
+
+        let error = build_import_plan(
+            &snapshot,
+            &store,
+            &roots,
+            &[],
+            &[snapshot.artifacts[0].artifact_id.clone()],
+        )
+        .unwrap_err();
+
+        assert_eq!(error.code, "duplicate_recovery_conflict");
+        assert_eq!(error.path, Some(canonical_source));
     }
 
     #[test]

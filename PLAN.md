@@ -130,7 +130,7 @@ effective set 在目标/未连接项目 fixture 上符合 M4 价值门槛，`npm
 Done when: 发布目标、签名/分发方式、数据升级与回滚路径、支持等级和发布后观察指标已经
 明确并验证；提升为 `doing` 时再根据已批准发布范围细化。
 
-当前状态：真实首次迁移发现的内部 symlink 非默认权限误报已修复；确定性 fixture 与真实
-`github-trending` 只读克隆均完成 staging、Store 导入、Recovery 移动、最终验证和 rollback，
-完整 `npm run check` 通过。M9 继续等待发布目标、签名/分发方式和发布范围确认；未经明确批准
-不发布应用、不修改真实用户项目或 Skill Store。
+当前状态：内部 symlink 权限误报已修复，但真实重试暴露共享 discovery root 会把同一物理入口
+重复加入 Recovery；当前事务已导入 43 个 canonical Skill、移动 2 个入口后安全停在
+`failed_partial`。M9 正在以临时 fixture 修复物理入口去重，通过完整 gate 后再按 manifest
+精确 rollback；期间不发布应用、不猜测或覆盖真实用户文件。

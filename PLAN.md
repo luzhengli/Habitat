@@ -130,7 +130,7 @@ effective set 在目标/未连接项目 fixture 上符合 M4 价值门槛，`npm
 Done when: 发布目标、签名/分发方式、数据升级与回滚路径、支持等级和发布后观察指标已经
 明确并验证；提升为 `doing` 时再根据已批准发布范围细化。
 
-当前状态：内部 symlink 权限误报已修复，但真实重试暴露共享 discovery root 会把同一物理入口
-重复加入 Recovery；当前事务已导入 43 个 canonical Skill、移动 2 个入口后安全停在
-`failed_partial`。M9 正在以临时 fixture 修复物理入口去重，通过完整 gate 后再按 manifest
-精确 rollback；期间不发布应用、不猜测或覆盖真实用户文件。
+当前状态：内部 symlink 权限误报与共享 discovery root 重复 Recovery 均已修复；重叠 Agent
+routes 仍保留在 inventory，但迁移计划只生成一次物理移动，不一致重复记录会阻断。真实失败
+事务已精确 rollback：43 个 Store 导入移除、2 个原 symlink 恢复，Store 顶层回到空状态；
+`npm run check` 通过。M9 继续等待发布目标、签名/分发方式和发布范围确认。

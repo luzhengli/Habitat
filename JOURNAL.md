@@ -3,6 +3,27 @@
 最新记录在最上方；每个 session 一条。超过约 150 行时，将最新五条之前的内容压缩到
 Digest。
 
+## 2026-08-11 — M9: 修复重复 Recovery 并精确回滚真实事务
+
+- Root cause: Codex/Pi/Cursor 等 adapter 会把共享 discovery root 分别记为 Agent route；
+  inventory 应保留这些语义 route，但 `build_import_plan` 错把每条 route 都变成物理 Recovery
+  操作。真实计划含 212 次移动但只有 104 个唯一入口，第二次移动同一路径时源已不存在。
+- Fix: 迁移计划按 canonical `originalPath` 合并一致的物理操作；重复 route 的 entry kind、
+  lstat identity、link text 或 fingerprint 任一不一致即返回
+  `duplicate_recovery_conflict`，不会静默选边。inventory 的多 Agent route 保持不变。
+- TDD: 新增重叠三 Agent roots 的完整迁移与 rollback 回归，以及冲突重复 route 的计划阻断
+  回归。红测先证明 3 条 route 产生 3 次移动，再收敛为 1 次安全移动。
+- Evidence: `npm run check` → exit 0；Rust 36 passed、Vite 1595 modules transformed，并
+  生成 debug `Habitat.app`。Checkpoint `8a7858b` 保存正式修复与测试。
+- Real rollback: 用户明确授权后，只对事务
+  `2a2efc9c-18b6-46c7-a97b-bea1fe8f08c4` 调用 `rollback_transaction`；内核在写入前复验
+  Store identity、43 个导入指纹、2 个 Recovery identity/link text 和原路径缺失状态。
+- Result: manifest 为 `rolled_back`；43 imports 均为 `rolled_back`，2 recoveries 为
+  `restored`、其余 210 个从未执行且保持 `pending`。两个原 symlink 以原 inode 和目标恢复，
+  Store 顶层无 canonical Skill，当前事务的 staging/recovery 容器均为空。
+- State: 两个已知迁移 blocker 均解除，M9 继续 `doing`；下一步可用新 debug App 从全新扫描
+  重新执行首次迁移。
+
 ## 2026-08-11 — M9: 修复首次迁移内部 symlink 权限误报
 
 - Root cause: `github-trending` 的 Python venv 含 4 个 `0700` 内部 symlink；staging 使用

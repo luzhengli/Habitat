@@ -3,6 +3,25 @@
 最新记录在最上方；每个 session 一条。超过约 150 行时，将最新五条之前的内容压缩到
 Digest。
 
+## 2026-08-11 — M9: 修复首次迁移内部 symlink 权限误报
+
+- Root cause: `github-trending` 的 Python venv 含 4 个 `0700` 内部 symlink；staging 使用
+  macOS 默认 `0755` 重建链接，而 v1 指纹包含 lstat mode，导致内容与链接文本相同仍触发
+  `staging_verification_failed`。两次真实失败事务都稳定停在第 6 个 Skill。
+- Fix: `copy_tree` 创建内部链接后通过 `fchmodat(AT_SYMLINK_NOFOLLOW)` 恢复源 mode；继续
+  使用 `habitat-tree-v1` 完整指纹，不忽略权限、不跟随或修改链接目标，也不放宽路径边界。
+- Regression: 新增确定性临时 fixture，锁定 `0700` 内部链接可以完成扫描、staging、Store
+  导入、Recovery 移动、最终指纹验证和完整 rollback，恢复后的入口与 symlink mode 均一致。
+- Real-world QA: 将真实 `github-trending` 作为只读源复制到 `TempDir`；2,534 个条目和 4 个
+  symlink 指纹一致，临时克隆完成完整迁移及 rollback。真实用户级 Skill 未移动或修改。
+- Evidence: `cargo test` → 34 passed；`npm run check` → exit 0，Rust 34 passed、Vite 1595
+  modules transformed，并生成 debug `Habitat.app`。
+- Safety: `/Users/luyao/Project/my-skills` 的两份旧事务仍为 `failed_partial`，各 5 staged、
+  0 imported、0 quarantined；本轮未清理或修改真实 Store，旧记录不阻断新的唯一事务。
+- Checkpoint: `dbff086` 保存 symlink mode 修复、回归测试、依赖锁定与 M9 状态。
+- State: M9 继续 `doing`；迁移发布阻断项已解除，下一步回到发布目标、签名/分发方式和范围
+  确认。
+
 ## 2026-08-10 — M8→M9: 完成项目 Skills V2 与 MVP QA
 
 - UI: 用产品负责人确认的 V2 替换旧项目 Spike。三栏工作台使用真实小尺寸 Agent 图标；

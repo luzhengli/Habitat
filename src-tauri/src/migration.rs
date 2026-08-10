@@ -1,10 +1,11 @@
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use std::collections::{BTreeMap, HashMap};
-use std::ffi::OsStr;
+use std::ffi::{CString, OsStr};
 use std::fmt;
 use std::fs::{self, File, OpenOptions};
 use std::io::{self, Read, Write};
+use std::os::unix::ffi::OsStrExt;
 use std::os::unix::fs::{symlink, MetadataExt, PermissionsExt};
 use std::path::{Path, PathBuf};
 use std::time::{SystemTime, UNIX_EPOCH};
@@ -1433,6 +1434,34 @@ fn ensure_real_directory(path: &Path) -> Result<(), MigrationError> {
     }
 }
 
+fn set_symlink_permissions(path: &Path, mode: u32) -> Result<(), MigrationError> {
+    let path_bytes = CString::new(path.as_os_str().as_bytes())
+        .expect("filesystem paths cannot contain NUL bytes");
+    // SAFETY: `path_bytes` is a valid, NUL-terminated filesystem path and remains
+    // alive for the duration of the call. AT_SYMLINK_NOFOLLOW prevents target mutation.
+    let result = unsafe {
+        libc::fchmodat(
+            libc::AT_FDCWD,
+            path_bytes.as_ptr(),
+            (mode & 0o7777) as libc::mode_t,
+            libc::AT_SYMLINK_NOFOLLOW,
+        )
+    };
+    if result == 0 {
+        Ok(())
+    } else {
+        Err(MigrationError::io(
+            "staging_copy_failed",
+            "staging",
+            "无法保留 Skill 内部链接权限。",
+            path,
+            io::Error::last_os_error(),
+            "从事务清单回滚后重试。",
+            true,
+        ))
+    }
+}
+
 fn copy_tree(source: &Path, destination: &Path) -> Result<(), MigrationError> {
     inspect_absent(destination, "staging", "staging_conflict")?;
     let source_metadata = fs::symlink_metadata(source).map_err(|error| {
@@ -1548,6 +1577,7 @@ fn copy_tree(source: &Path, destination: &Path) -> Result<(), MigrationError> {
                     true,
                 )
             })?;
+            set_symlink_permissions(&destination_entry, metadata.mode())?;
         } else {
             return Err(MigrationError::new(
                 "unsupported_entry_kind",
@@ -2125,6 +2155,19 @@ mod tests {
     use super::*;
     use tempfile::TempDir;
 
+    fn set_symlink_mode(path: &Path, mode: u32) {
+        let path = CString::new(path.as_os_str().as_bytes()).unwrap();
+        let result = unsafe {
+            libc::fchmodat(
+                libc::AT_FDCWD,
+                path.as_ptr(),
+                mode as libc::mode_t,
+                libc::AT_SYMLINK_NOFOLLOW,
+            )
+        };
+        assert_eq!(result, 0, "{}", io::Error::last_os_error());
+    }
+
     fn write_skill(path: &Path, name: &str, body: &str) {
         fs::create_dir_all(path).unwrap();
         fs::write(
@@ -2302,6 +2345,67 @@ mod tests {
             .unwrap()
             .file_type()
             .is_symlink());
+        assert!(fs::symlink_metadata(store.join("alpha")).is_err());
+    }
+
+    #[test]
+    fn import_preserves_internal_symlink_mode_through_migration_and_rollback() {
+        let fixture = TempDir::new().unwrap();
+        let root_path = fixture.path().join("skills");
+        let store = fixture.path().join("store");
+        let source = root_path.join("alpha");
+        let internal_target = source.join("scripts/venv/bin/python3.14");
+        let internal_link = source.join("scripts/venv/bin/python");
+        fs::create_dir(&store).unwrap();
+        write_skill(&source, "alpha", "hello");
+        fs::create_dir_all(internal_target.parent().unwrap()).unwrap();
+        fs::write(&internal_target, "python fixture").unwrap();
+        symlink("python3.14", &internal_link).unwrap();
+        set_symlink_mode(&internal_link, 0o700);
+        assert_eq!(
+            fs::symlink_metadata(&internal_link).unwrap().mode() & 0o7777,
+            0o700
+        );
+
+        let roots = vec![root("codex", &root_path)];
+        let snapshot = scan_inventory(&roots).unwrap();
+        let expected_fingerprint = snapshot.artifacts[0].content_fingerprint.clone();
+        let plan = build_import_plan(
+            &snapshot,
+            &store,
+            &roots,
+            &[],
+            &[snapshot.artifacts[0].artifact_id.clone()],
+        )
+        .unwrap();
+
+        let manifest = execute_import(&plan).unwrap();
+        assert_eq!(manifest.state, TransactionState::Completed);
+        let store_link = store.join("alpha/scripts/venv/bin/python");
+        assert_eq!(
+            fs::symlink_metadata(&store_link).unwrap().mode() & 0o7777,
+            0o700
+        );
+        assert_eq!(
+            fingerprint_tree(&store.join("alpha")).unwrap().1,
+            expected_fingerprint
+        );
+        assert!(fs::symlink_metadata(&source).is_err());
+        assert!(manifest
+            .recoveries
+            .iter()
+            .all(|operation| operation.result == OperationResult::Quarantined));
+
+        let rolled_back = rollback_transaction(&plan.manifest_path).unwrap();
+        assert_eq!(rolled_back.state, TransactionState::RolledBack);
+        assert_eq!(
+            fs::symlink_metadata(source.join("scripts/venv/bin/python"))
+                .unwrap()
+                .mode()
+                & 0o7777,
+            0o700
+        );
+        assert_eq!(fingerprint_tree(&source).unwrap().1, expected_fingerprint);
         assert!(fs::symlink_metadata(store.join("alpha")).is_err());
     }
 

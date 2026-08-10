@@ -1183,6 +1183,7 @@ dependencies = [
 name = "habitat"
 version = "0.1.0"
 dependencies = [
+ "libc",
  "pathdiff",
  "serde",
  "serde_json",

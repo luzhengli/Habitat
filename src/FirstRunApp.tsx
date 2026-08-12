@@ -436,7 +436,7 @@ export default function FirstRunApp({ onFinish }: { onFinish: (storeRoot: string
             {storePath && <div className="selected-path"><span>技能库位置</span><code>{storePath}</code>{validatedStore && <CheckCircle2 aria-label="目录检查通过" />}</div>}
             {error && <ErrorNotice error={error} />}
             <div className="plain-model"><Info /><span><strong>之后会发生什么</strong><small>确认迁移后，所选 Skill 会进入这里；旧的用户级入口会立即进入“恢复”。此阶段不会创建项目链接。</small></span></div>
-            <footer className="page-actions"><button className="setup-secondary" onClick={() => setStep("organize")}>返回整理</button><button className="setup-primary" disabled={!storePath || busy} onClick={validateAndPlan}>{busy ? <LoaderCircle className="spin" /> : <Check />}使用此目录</button></footer>
+            <footer className="page-actions"><button className="setup-secondary" onClick={() => setStep("organize")} disabled={busy}>返回整理</button><button className="setup-primary" disabled={!storePath || busy} onClick={validateAndPlan}>{busy ? <LoaderCircle className="spin" /> : <Check />}{busy ? "正在检查…" : "使用此目录"}</button></footer>
           </section>
         )}
 
@@ -472,7 +472,7 @@ export default function FirstRunApp({ onFinish }: { onFinish: (storeRoot: string
             <div className="result-summary"><span><strong>{manifest.imports.length}</strong>已保存并验证</span><span><strong>{manifest.recoveries.length}</strong>已移到恢复</span><span><strong>{deferred.size + blockedRows.length}</strong>保持不变</span></div>
             {error && <ErrorNotice error={error} />}
             {manifest.state !== "rolled_back" && <div className="trust-panel wide"><Info /><span><strong>下一步再添加项目</strong><small>添加项目本身不会链接任何 Skill；你可以随后按项目选择 Agent 与 Skills。</small></span></div>}
-            <footer className="page-actions"><button className="setup-secondary" onClick={rollback} disabled={busy || manifest.state === "rolled_back"}>{busy ? <LoaderCircle className="spin" /> : <RotateCcw />}撤销本次迁移</button><button className="setup-primary" onClick={() => onFinish(manifest.storeRoot)} disabled={manifest.state === "rolled_back"}>添加第一个项目</button></footer>
+            <footer className="page-actions"><button className="setup-secondary" onClick={rollback} disabled={busy || manifest.state === "rolled_back"}>{busy ? <LoaderCircle className="spin" /> : <RotateCcw />}{busy ? "正在撤销…" : "撤销本次迁移"}</button><button className="setup-primary" onClick={() => onFinish(manifest.storeRoot)} disabled={busy || manifest.state === "rolled_back"}>添加第一个项目</button></footer>
           </section>
         )}
       </main>

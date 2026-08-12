@@ -159,4 +159,8 @@ rollback：全量恢复原用户入口、移除本事务 Store 导入并回到�
 不可访问与身份变化均阻断；执行使用 transaction id + audit revision 再次全量复验。无项目侧栏
 的 Recovery production 状态机、项目工作台交接和全部异常出口已通过 1440×1024、1024×768
 浏览器 QA；Rust 44 tests 与完整 `npm run check` 通过。M9 继续等待发布目标、签名/分发方式和
-发布范围确认。
+发布范围确认。按钮卡住专项审计进一步确认全部 23 个 Tauri command 原先都在主线程执行重
+文件系统/进程工作；现已统一改为 async command 调度且不改变参数或安全语义，并用回归测试
+阻止普通同步 command 回归。项目预检/应用、项目登记与切换、首次回滚、Recovery 对话框、
+诊断复制、Agent overflow 和占位设置按钮的反馈/互锁也已按既有设计模式收敛；浏览器 console
+为 0 warnings / 0 errors，Rust 45 tests 与完整 `npm run check` 通过。M9 仍继续等待发布范围。

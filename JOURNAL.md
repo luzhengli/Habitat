@@ -3,6 +3,37 @@
 最新记录在最上方；每个 session 一条。超过约 150 行时，将最新五条之前的内容压缩到
 Digest。
 
+## 2026-08-12 — M9: 审计并修复按钮卡住状态
+
+- Trigger: 产品负责人观察到多个按钮点击后会进入“卡住”状态，要求先识别全应用触发面，再判断
+  是否可以系统改善。
+- Root cause: 当前 23 个 Tauri command 全部是普通同步 command；扫描目录、计算指纹、项目
+  exposure、事务执行和 Git 子进程因此运行在主线程。Tauri 2 官方合同明确普通同步 command
+  会阻塞主线程，重 I/O 应调度为 async command。这会冻结 WebView 绘制，使现有 spinner、
+  disabled 和错误恢复看起来都没有响应。
+- Secondary findings: 项目登记缺少登记阶段 busy、项目切换在检查成功前提前写 localStorage/
+  Agent 范围、plan/apply 期间仍可修改草稿或关闭事务对话框；首次迁移 rollback 期间仍可进入
+  项目页。4 个自定义 dialog 都没有接管焦点，触发按钮的 focus ring 留在遮罩后；侧栏“设置”是
+  可点击但无 handler 的占位按钮。
+- Scope: 先做不改变 schema、命令参数或文件安全语义的主线程调度修复，并复用现有 busy/
+  disabled/focus token 补齐并发互锁。若需要新增统一进度、超时或取消模式，再按 UI 规则提供
+  3 个可比较方案，不在本轮自行引入新视觉系统。
+- Evidence: 当前审计截图保存在 `docs/qa/button-state-audit/`；实际 DOM 证明项目 review 与
+  Recovery confirm 打开后 active element 仍是遮罩后的触发按钮，“设置”点击前后 URL 和页面
+  内容完全不变。
+- Implementation: 全部 23 个 filesystem/process Tauri commands 改为 `#[tauri::command(async)]`，
+  保留同步内核、参数、Mutex 临界区、manifest 和路径安全合同；新增 source guard，任何普通
+  `#[tauri::command]` 回归都会失败。项目 plan/apply 使用 1.2 秒开发 fixture 证明 WebView 可
+  持续重绘；登记、切换、草稿、Recovery 导航和 rollback 只锁定会导致并发漂移的动作。
+- UX/A11y: busy 按钮使用“正在检查 / 正在应用 / 正在登记 / 正在撤销”明确文本；四个自定义
+  dialog 打开后接管焦点，Recovery 默认聚焦安全的“取消”。诊断复制报告成功/失败；Agent `+N`
+  鼠标点击可展示 popover；无实现的“设置”改为带说明的 disabled 占位。
+- QA: `docs/qa/button-state-audit.md` 记录 7 步截图审计与全 operation inventory；最终浏览器
+  fixture 证明 plan/apply 互锁、完成后恢复和 success notice，0 warnings / 0 errors。
+  `npm run check` → exit 0；Rust 45 tests passed、Vite 1597 modules transformed，debug
+  `Habitat.app` 已打包。未读取或修改真实 Store、真实项目、Agent 配置或未跟踪 `.agents/`。
+- State: 按钮卡住根因和已识别局部交互缺口已完成修复；M9 保持 `doing`，下一步仍是发布范围。
+
 ## 2026-08-12 — M9: 开始实现全局 Recovery 完整动线
 
 - Approval: 产品负责人以 `ok` 确认方案 A 的完整合同，包括权威全项目集合、不可绕过离线或

@@ -1,5 +1,19 @@
 # Habitat Design QA
 
+## Button responsiveness and transaction locking
+
+- Full audit and current-run evidence: `docs/qa/button-state-audit.md` and
+  `docs/qa/button-state-audit/*.jpg`.
+- The fix reuses the already approved button spinner, disabled, modal, focus-ring, notice, and
+  full-page transaction patterns; it does not introduce a new visual direction or layout.
+- All filesystem/process Tauri commands are scheduled off the main thread, so loading states can
+  repaint. Project plan/apply and first-run rollback now lock competing actions, dialog focus enters
+  the modal, the Settings placeholder is truthfully disabled, and diagnostic copy has a result.
+- Browser fixture checks: responsive 1.2-second plan/apply states, exact busy labels, scoped disabled
+  controls, focus inside dialogs, copy feedback, clickable Agent overflow, 0 warnings / 0 errors.
+
+final result: passed
+
 ## Global Recovery implementation and evidence
 
 **Approved source and contract**

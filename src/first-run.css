@@ -53,12 +53,12 @@
 .agent-icon { display: inline-grid; width: 28px; height: 28px; place-items: center; border: 1px solid var(--border-default); border-radius: 7px; background: var(--surface-primary); }
 .agent-icon img, .agent-popover img { display: block; width: 15px; height: 15px; object-fit: contain; }
 .agent-overflow { position: relative; width: 28px; height: 28px; padding: 0; border: 1px solid var(--border-default); border-radius: 7px; background: var(--surface-primary); color: var(--text-secondary); font-size: 12px; cursor: pointer; }
-.agent-overflow:hover, .agent-overflow:focus-visible { border-color: var(--border-strong); background: var(--surface-subtle); }
+.agent-overflow:hover, .agent-overflow:focus { border-color: var(--border-strong); background: var(--surface-subtle); }
 .agent-popover { position: absolute; z-index: 20; top: calc(100% + 10px); left: 50%; display: none; width: 178px; padding: 10px; transform: translateX(-50%); border: 1px solid var(--border-default); border-radius: var(--radius-control); background: var(--surface-primary); box-shadow: 0 12px 32px rgba(32, 33, 36, 0.14); color: var(--text-primary); text-align: left; }
 .agent-popover::before { content: ""; position: absolute; top: -5px; left: calc(50% - 5px); width: 9px; height: 9px; transform: rotate(45deg); border-top: 1px solid var(--border-default); border-left: 1px solid var(--border-default); background: var(--surface-primary); }
 .agent-popover strong { display: block; margin-bottom: 8px; font-size: 12px; font-weight: 600; }
 .agent-popover span { display: flex; align-items: center; gap: 8px; min-height: 28px; font-size: 12px; }
-.agent-overflow:hover .agent-popover, .agent-overflow:focus-visible .agent-popover, .agent-popover.force-open { display: block; }
+.agent-overflow:hover .agent-popover, .agent-overflow:focus .agent-popover, .agent-popover.force-open { display: block; }
 
 .trust-panel, .plain-model { display: flex; align-items: flex-start; gap: 12px; max-width: 600px; margin-bottom: 28px; padding: 14px 16px; border: 1px solid var(--border-default); border-radius: var(--radius-control); background: var(--surface-primary); text-align: left; }
 .trust-panel.wide { max-width: none; }

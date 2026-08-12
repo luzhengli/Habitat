@@ -523,7 +523,9 @@ fn known_inventory_roots() -> Result<Vec<InventoryRoot>, MigrationError> {
     Ok(roots)
 }
 
-#[tauri::command]
+// Every command below performs filesystem or process work. Tauri runs plain synchronous commands
+// on the main thread, so keep these synchronous implementations scheduled as async commands.
+#[tauri::command(async)]
 fn scan_known_inventory_command(
     state: State<'_, FirstRunState>,
 ) -> Result<InventorySnapshot, MigrationError> {
@@ -537,7 +539,7 @@ fn scan_known_inventory_command(
     Ok(snapshot)
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 fn validate_first_run_store_command(
     store_path: String,
     state: State<'_, FirstRunState>,
@@ -558,7 +560,7 @@ fn validate_first_run_store_command(
     validate_store(PathBuf::from(store_path).as_path(), &protected)
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 fn plan_first_run_migration_command(
     store_path: String,
     selected_artifact_ids: Vec<String>,
@@ -584,7 +586,7 @@ fn plan_first_run_migration_command(
     Ok(plan)
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 fn execute_first_run_migration_command(
     transaction_id: String,
     state: State<'_, FirstRunState>,
@@ -613,7 +615,7 @@ fn execute_first_run_migration_command(
     Ok(manifest)
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 fn rollback_first_run_migration_command(
     transaction_id: String,
     state: State<'_, FirstRunState>,
@@ -652,7 +654,7 @@ fn rollback_first_run_migration_command(
     Ok(manifest)
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 fn inspect_recovery_command(
     store_path: String,
     state: State<'_, RecoveryState>,
@@ -678,7 +680,7 @@ fn inspect_recovery_command(
     Ok(Some(plan))
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 fn execute_recovery_command(
     transaction_id: String,
     audit_revision: String,
@@ -739,14 +741,14 @@ fn execute_recovery_command(
     Ok(result)
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 fn list_managed_projects_command(
     store_path: String,
 ) -> Result<Vec<ManagedProjectRecord>, MigrationError> {
     list_managed_projects(PathBuf::from(store_path).as_path())
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 fn register_managed_project_command(
     store_path: String,
     project_path: String,
@@ -759,7 +761,7 @@ fn register_managed_project_command(
     )
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 fn inspect_project_workspace_command(
     store_path: String,
     project_path: String,
@@ -805,7 +807,7 @@ fn inspect_project_workspace_command(
     })
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 fn plan_project_settings_command(
     store_path: String,
     project_path: String,
@@ -824,7 +826,7 @@ fn plan_project_settings_command(
     Ok(plan)
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 fn apply_project_settings_command(
     transaction_id: String,
     state: State<'_, ProjectState>,
@@ -853,7 +855,7 @@ fn apply_project_settings_command(
     Ok(manifest)
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 fn rollback_project_settings_command(
     transaction_id: String,
     state: State<'_, ProjectState>,
@@ -892,17 +894,17 @@ fn rollback_project_settings_command(
     Ok(manifest)
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 fn scan_store(store_path: String) -> Result<StoreScan, AppError> {
     skills::scan_store(&store_path)
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 fn scan_project(project_path: String, store_path: String) -> Result<ProjectScan, AppError> {
     skills::scan_project(&project_path, &store_path)
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 fn inspect_skill(
     store_path: String,
     project_path: String,
@@ -911,7 +913,7 @@ fn inspect_skill(
     skills::inspect_skill(&store_path, &project_path, &skill_name)
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 fn preflight_link(
     store_path: String,
     project_path: String,
@@ -920,7 +922,7 @@ fn preflight_link(
     skills::preflight_link(&store_path, &project_path, &skill_name)
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 fn link_skill(
     store_path: String,
     project_path: String,
@@ -929,7 +931,7 @@ fn link_skill(
     skills::link_skill(&store_path, &project_path, &skill_name)
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 fn unlink_skill(
     store_path: String,
     project_path: String,
@@ -938,12 +940,12 @@ fn unlink_skill(
     skills::unlink_skill(&store_path, &project_path, &skill_name)
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 fn validate_links(project_path: String, store_path: String) -> Result<ProjectScan, AppError> {
     skills::scan_project(&project_path, &store_path)
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 fn list_project_skills(project_path: String) -> Result<CommandResult, AppError> {
     skills::run_project_command(
         &project_path,
@@ -952,12 +954,12 @@ fn list_project_skills(project_path: String) -> Result<CommandResult, AppError> 
     )
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 fn inspect_git_status(project_path: String) -> Result<CommandResult, AppError> {
     skills::run_project_command(&project_path, "git", &["status", "--short"])
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 fn preview_git_diff(project_path: String) -> Result<CommandResult, AppError> {
     skills::run_project_command(&project_path, "git", &["diff"])
 }
@@ -1003,6 +1005,15 @@ mod project_command_tests {
     use super::*;
     use std::fs;
     use tempfile::TempDir;
+
+    #[test]
+    fn every_tauri_command_is_scheduled_off_the_main_thread() {
+        let source = include_str!("lib.rs");
+        assert!(
+            !source.lines().any(|line| line.trim() == "#[tauri::command]"),
+            "plain synchronous Tauri commands freeze the WebView while filesystem work runs"
+        );
+    }
 
     fn write_skill(path: &std::path::Path, name: &str) {
         fs::create_dir_all(path).unwrap();

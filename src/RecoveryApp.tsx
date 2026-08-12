@@ -80,10 +80,12 @@ export default function RecoveryApp({
   const [confirming, setConfirming] = useState(false);
   const [completed, setCompleted] = useState(false);
   const [detailProject, setDetailProject] = useState<RecoveryProjectAudit | null>(null);
+  const [copyStatus, setCopyStatus] = useState<"idle" | "copied" | "failed">("idle");
 
   const inspect = useCallback(async () => {
     setBusy("inspect");
     setError(null);
+    setCopyStatus("idle");
     setConfirming(false);
     try {
       if (qaMode === "recovery-empty") setPlan(null);
@@ -124,6 +126,15 @@ export default function RecoveryApp({
     }
   };
 
+  const copyError = async () => {
+    try {
+      await navigator.clipboard.writeText(JSON.stringify(error, null, 2));
+      setCopyStatus("copied");
+    } catch {
+      setCopyStatus("failed");
+    }
+  };
+
   if (completed || qaMode === "recovery-success") {
     return <div className="recovery-shell"><header><Brand /></header><main className="recovery-centered"><div className="recovery-state-icon success"><Check /></div><span className="recovery-eyebrow">RECOVERY COMPLETE</span><h1>已恢复到首次迁移前</h1><p>原用户入口已精确恢复，本事务导入的 Store 内容已移除。项目链接和 Agent 设置没有被自动修改。</p><section className="recovery-result-card"><div><span>原用户入口</span><strong>已恢复</strong></div><div><span>首次迁移 Store imports</span><strong>已移除</strong></div><div><span>项目注册与事务历史</span><strong>已保留</strong></div></section><button className="recovery-primary" onClick={onComplete}>重新开始设置</button></main></div>;
   }
@@ -137,7 +148,7 @@ export default function RecoveryApp({
   }
 
   if (error && !plan) {
-    return <div className="recovery-shell"><header><Brand /><button className="recovery-secondary" onClick={onExit}>返回项目管理</button></header><main><div className="recovery-page-head"><div><span className="recovery-eyebrow">RECOVERY BLOCKED</span><h1>迁移事务需要人工检查</h1><p>Habitat 无法信任当前事务边界，因此不会提供恢复按钮。</p></div><button className="recovery-secondary" onClick={() => navigator.clipboard.writeText(JSON.stringify(error, null, 2))}><Copy />复制诊断信息</button></div><div className="recovery-centered compact"><div className="recovery-state-icon danger"><AlertCircle /></div><h2>{error.message ?? "无法检查恢复事务"}</h2><p>{error.recovery ?? "保留现场并人工检查事务报告。"}</p><section className="recovery-result-card"><div><span>错误代码</span><strong>{error.code ?? "recovery_error"}</strong></div></section><button className="recovery-secondary" onClick={inspect}><RefreshCw />重新检查</button></div></main></div>;
+    return <div className="recovery-shell"><header><Brand /><button className="recovery-secondary" onClick={onExit}>返回项目管理</button></header><main><div className="recovery-page-head"><div><span className="recovery-eyebrow">RECOVERY BLOCKED</span><h1>迁移事务需要人工检查</h1><p>Habitat 无法信任当前事务边界，因此不会提供恢复按钮。</p></div><button className="recovery-secondary" onClick={copyError} aria-live="polite"><Copy />{copyStatus === "copied" ? "已复制诊断信息" : copyStatus === "failed" ? "复制失败，请重试" : "复制诊断信息"}</button></div><div className="recovery-centered compact"><div className="recovery-state-icon danger"><AlertCircle /></div><h2>{error.message ?? "无法检查恢复事务"}</h2><p>{error.recovery ?? "保留现场并人工检查事务报告。"}</p><section className="recovery-result-card"><div><span>错误代码</span><strong>{error.code ?? "recovery_error"}</strong></div></section><button className="recovery-secondary" onClick={inspect}><RefreshCw />重新检查</button></div></main></div>;
   }
 
   if (!plan) {
@@ -158,8 +169,8 @@ export default function RecoveryApp({
         </div>
       </div>
     </main>
-    {detailProject && <div className="recovery-detail-backdrop"><section className="recovery-detail" role="dialog" aria-modal="true" aria-labelledby="recovery-detail-title"><header><div><small>相关项目链接</small><h2 id="recovery-detail-title">{projectName(detailProject.projectRoot)}</h2></div><button onClick={() => setDetailProject(null)} aria-label="关闭"><X /></button></header><code>{detailProject.projectRoot}</code>{detailProject.relatedLinks.length ? <div className="recovery-link-list">{detailProject.relatedLinks.map((link) => <div key={link}><FolderOpen /><code>{link}</code><span>仍在使用</span></div>)}</div> : <div className="recovery-blocker"><strong>{detailProject.blocker?.message ?? "项目尚未完成检查"}</strong><p>{detailProject.blocker?.recovery}</p></div>}<footer><button className="recovery-secondary" onClick={() => setDetailProject(null)}>返回</button>{detailProject.relatedLinks.length > 0 && <button className="recovery-primary" onClick={() => onHandleProject(detailProject.projectRoot, detailProject.relatedLinks)}>前往项目处理</button>}</footer></section></div>}
-    {confirming && <div className="recovery-confirm-backdrop"><section className="recovery-confirm" role="dialog" aria-modal="true" aria-labelledby="recovery-confirm-title"><header><h2 id="recovery-confirm-title">确认恢复到首次迁移前？</h2><p>Habitat 会再次执行全量预检；任何状态变化都会停止操作。</p></header><div className="recovery-confirm-body"><div><b>1</b><span><strong>恢复 {plan.recoveryCount} 个原用户入口</strong><small>按事务记录恢复原目录或符号链接及原始身份。</small></span></div><div><b>2</b><span><strong>移除 {plan.importCount} 个本事务 Store 导入</strong><small>只移除指纹仍一致、由首次迁移创建的内容。</small></span></div><p>不会修改 Agent 设置，不会自动删除项目链接；项目注册记录和事务历史会保留。成功后 Habitat 返回首次设置。</p></div><footer><button className="recovery-secondary" onClick={() => setConfirming(false)}>取消</button><button className="recovery-danger" onClick={execute}>确认恢复到迁移前</button></footer></section></div>}
+    {detailProject && <div className="recovery-detail-backdrop"><section className="recovery-detail" role="dialog" aria-modal="true" aria-labelledby="recovery-detail-title"><header><div><small>相关项目链接</small><h2 id="recovery-detail-title">{projectName(detailProject.projectRoot)}</h2></div><button onClick={() => setDetailProject(null)} aria-label="关闭" autoFocus><X /></button></header><code>{detailProject.projectRoot}</code>{detailProject.relatedLinks.length ? <div className="recovery-link-list">{detailProject.relatedLinks.map((link) => <div key={link}><FolderOpen /><code>{link}</code><span>仍在使用</span></div>)}</div> : <div className="recovery-blocker"><strong>{detailProject.blocker?.message ?? "项目尚未完成检查"}</strong><p>{detailProject.blocker?.recovery}</p></div>}<footer><button className="recovery-secondary" onClick={() => setDetailProject(null)}>返回</button>{detailProject.relatedLinks.length > 0 && <button className="recovery-primary" onClick={() => onHandleProject(detailProject.projectRoot, detailProject.relatedLinks)}>前往项目处理</button>}</footer></section></div>}
+    {confirming && <div className="recovery-confirm-backdrop"><section className="recovery-confirm" role="dialog" aria-modal="true" aria-labelledby="recovery-confirm-title"><header><h2 id="recovery-confirm-title">确认恢复到首次迁移前？</h2><p>Habitat 会再次执行全量预检；任何状态变化都会停止操作。</p></header><div className="recovery-confirm-body"><div><b>1</b><span><strong>恢复 {plan.recoveryCount} 个原用户入口</strong><small>按事务记录恢复原目录或符号链接及原始身份。</small></span></div><div><b>2</b><span><strong>移除 {plan.importCount} 个本事务 Store 导入</strong><small>只移除指纹仍一致、由首次迁移创建的内容。</small></span></div><p>不会修改 Agent 设置，不会自动删除项目链接；项目注册记录和事务历史会保留。成功后 Habitat 返回首次设置。</p></div><footer><button className="recovery-secondary" onClick={() => setConfirming(false)} autoFocus>取消</button><button className="recovery-danger" onClick={execute}>确认恢复到迁移前</button></footer></section></div>}
   </div>;
 }
 

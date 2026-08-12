@@ -48,6 +48,9 @@ type Notice = { tone: "error" | "success"; title: string; detail: string };
 type ManagedProject = { root: string; groups: TargetGroupId[] };
 
 const qaMode = import.meta.env.DEV ? new URLSearchParams(window.location.search).get("qa") : null;
+const waitForProjectQa = () => qaMode === "project-loading"
+  ? new Promise<void>((resolve) => window.setTimeout(resolve, 1_200))
+  : Promise.resolve();
 const agentMeta: Record<AgentId, { label: string; icon: string }> = {
   codex: { label: "Codex", icon: codexIcon },
   claude_code: { label: "Claude Code", icon: claudeCodeIcon },
@@ -208,7 +211,7 @@ export default function App({ onOpenRecovery, recoveryLinks = [], onReturnRecove
   const blockingCount = useMemo(() => dirty.filter(({ name, group, action }) => action === "create" && groupHasProblem(inspectionByName.get(name)!, group)).length, [dirty, inspectionByName]);
 
   const refresh = useCallback(async (nextStore = store, nextProject = projectRoot) => {
-    if (!nextStore || !nextProject) return;
+    if (!nextStore || !nextProject) return false;
     setBusy("load");
     setNotice(null);
     try {
@@ -223,9 +226,11 @@ export default function App({ onOpenRecovery, recoveryLinks = [], onReturnRecove
       setDraft(nextBase);
       setCollapsedSections({ linked: false, available: false });
       setSelectedName((current) => freshStore.skills.some((skill) => skill.name === current) ? current : freshStore.skills[0]?.name ?? "");
+      return true;
     } catch (error) {
       const detail = toError(error);
       setNotice({ tone: "error", title: detail.message ?? "无法检查项目", detail: detail.recovery ?? detail.stderr ?? "请重新选择项目。" });
+      return false;
     } finally {
       setBusy(null);
     }
@@ -289,22 +294,25 @@ export default function App({ onOpenRecovery, recoveryLinks = [], onReturnRecove
 
   const confirmProject = async () => {
     if (!projectCandidate || candidateGroups.length === 0 || !store) return;
-    if (!projectQaActive) {
-      try {
+    setBusy("load");
+    setNotice(null);
+    try {
+      if (!projectQaActive) {
         await api.registerManagedProject(store.root, projectCandidate, candidateGroups);
-      } catch (error) {
-        const detail = toError(error);
-        setNotice({ tone: "error", title: detail.message ?? "无法登记项目", detail: detail.recovery ?? "检查项目路径后重试。" });
-        return;
       }
+      const nextProjects = [...projects.filter((item) => item.root !== projectCandidate), { root: projectCandidate, groups: candidateGroups }];
+      setProjects(nextProjects);
+      setActiveGroups(candidateGroups);
+      window.localStorage.setItem("habitat.projects", JSON.stringify(nextProjects));
+      window.localStorage.setItem("habitat.projectRoot", projectCandidate);
+      setProjectCandidate(null);
+      await refresh(store, projectCandidate);
+    } catch (error) {
+      const detail = toError(error);
+      setNotice({ tone: "error", title: detail.message ?? "无法登记项目", detail: detail.recovery ?? "检查项目路径后重试。" });
+    } finally {
+      setBusy(null);
     }
-    const nextProjects = [...projects.filter((item) => item.root !== projectCandidate), { root: projectCandidate, groups: candidateGroups }];
-    setProjects(nextProjects);
-    setActiveGroups(candidateGroups);
-    window.localStorage.setItem("habitat.projects", JSON.stringify(nextProjects));
-    window.localStorage.setItem("habitat.projectRoot", projectCandidate);
-    setProjectCandidate(null);
-    await refresh(store, projectCandidate);
   };
 
   const selectProject = async (item: ManagedProject) => {
@@ -313,9 +321,11 @@ export default function App({ onOpenRecovery, recoveryLinks = [], onReturnRecove
       setNotice({ tone: "error", title: "当前项目还有待应用更改", detail: "请先应用或撤销这些更改，再切换项目。" });
       return;
     }
-    setActiveGroups(item.groups);
-    window.localStorage.setItem("habitat.projectRoot", item.root);
-    await refresh(store, item.root);
+    const loaded = await refresh(store, item.root);
+    if (loaded) {
+      setActiveGroups(item.groups);
+      window.localStorage.setItem("habitat.projectRoot", item.root);
+    }
   };
 
   const toggle = (name: string, group: TargetGroupId) => {
@@ -364,6 +374,7 @@ export default function App({ onOpenRecovery, recoveryLinks = [], onReturnRecove
     setBusy("plan");
     setNotice(null);
     try {
+      await waitForProjectQa();
       const plan = projectQaActive
         ? {
             transactionId: "qa-project-plan",
@@ -397,6 +408,7 @@ export default function App({ onOpenRecovery, recoveryLinks = [], onReturnRecove
     setBusy("apply");
     try {
       if (!projectQaActive) await api.applyProjectSettings(reviewPlan.transactionId);
+      else await waitForProjectQa();
       setReviewPlan(null);
       if (projectQaActive) {
         setBase(structuredClone(draft));
@@ -415,7 +427,7 @@ export default function App({ onOpenRecovery, recoveryLinks = [], onReturnRecove
   if (!projectRoot) {
     return (
       <div className="project-empty-shell">
-        <aside><Brand /><StoreNav store={store} onOpenRecovery={onOpenRecovery} /></aside>
+        <aside><Brand /><StoreNav store={store} onOpenRecovery={onOpenRecovery} disabled={busy !== null} /></aside>
         <main>
           <FolderOpen aria-hidden="true" />
           <h1>添加第一个项目</h1>
@@ -433,15 +445,15 @@ export default function App({ onOpenRecovery, recoveryLinks = [], onReturnRecove
       <aside className="project-sidebar">
         <Brand />
         <div className="sidebar-label">项目</div>
-        {projects.map((item) => <button key={item.root} className={`project-nav ${item.root === projectRoot ? "selected" : ""}`} onClick={() => selectProject(item)} title={item.root}>
+        {projects.map((item) => <button key={item.root} className={`project-nav ${item.root === projectRoot ? "selected" : ""}`} onClick={() => selectProject(item)} title={item.root} disabled={busy !== null}>
           <Folder /><span><strong>{item.root.split("/").filter(Boolean).at(-1) ?? "未命名"}</strong><small>{item.root}</small></span>
         </button>)}
-        <button className="sidebar-action" onClick={chooseProject}><Plus />添加项目</button>
-        <StoreNav store={store} onOpenRecovery={onOpenRecovery} />
+        <button className="sidebar-action" onClick={chooseProject} disabled={busy !== null}><Plus />添加项目</button>
+        <StoreNav store={store} onOpenRecovery={onOpenRecovery} disabled={busy !== null} />
       </aside>
 
       <main className="project-main">
-        {onReturnRecovery && <div className="project-recovery-context"><span><strong>正在处理 Recovery 阻断</strong><small>{recoveryLinks.length} 个链接仍依赖首次迁移 Store 内容</small></span><button className="project-secondary" onClick={onReturnRecovery}>返回恢复检查</button></div>}
+        {onReturnRecovery && <div className="project-recovery-context"><span><strong>正在处理 Recovery 阻断</strong><small>{recoveryLinks.length} 个链接仍依赖首次迁移 Store 内容</small></span><button className="project-secondary" onClick={onReturnRecovery} disabled={busy !== null}>返回恢复检查</button></div>}
         <header className="project-header">
           <div><h1>{projectName}</h1><code>{projectRoot}</code><p>管理此项目中的 Skills 与 Agent 入口</p></div>
           <button className="project-secondary" onClick={() => refresh()} disabled={busy !== null}><RefreshCw className={busy === "load" ? "spin" : ""} />重新检查</button>
@@ -459,7 +471,7 @@ export default function App({ onOpenRecovery, recoveryLinks = [], onReturnRecove
             const collapsed = collapsedSections[section.id];
             const contentId = `skill-section-${section.id}`;
             return <section className="skill-section" key={section.id}>
-              <button className="skill-section-toggle" type="button" onClick={() => toggleSection(section.id)} aria-expanded={!collapsed} aria-controls={contentId}>
+              <button className="skill-section-toggle" type="button" onClick={() => toggleSection(section.id)} aria-expanded={!collapsed} aria-controls={contentId} disabled={busy !== null}>
                 <ChevronDown className={collapsed ? "collapsed" : ""} aria-hidden="true" />
                 <strong>{section.title}</strong>
                 <span>{section.skills.length}</span>
@@ -476,7 +488,7 @@ export default function App({ onOpenRecovery, recoveryLinks = [], onReturnRecove
                     <div key={skill.name} className={`skill-row ${selectedName === skill.name ? "selected" : ""}`} onClick={() => { setSelectedName(skill.name); setInspectorOpen(true); }}>
                       <div className="skill-name"><SkillGlyph name={skill.name} /><span><strong>{skill.name}</strong><small>{skill.description}</small></span></div>
                       <div className="skill-agents" onClick={(event) => event.stopPropagation()}>
-                        {(["agents_shared", "claude", "trae"] as TargetGroupId[]).map((group) => <AgentGroupButton key={group} group={group} current={groups[group]} verified={verified[group]} blocked={groupHasProblem(inspection, group)} disabled={!activeGroups.includes(group)} forceHelp={Boolean(qaMode?.startsWith("project-") && qaMode !== "project-grouped" && selectedName === skill.name && group === "agents_shared")} onToggle={() => toggle(skill.name, group)} />)}
+                        {(["agents_shared", "claude", "trae"] as TargetGroupId[]).map((group) => <AgentGroupButton key={group} group={group} current={groups[group]} verified={verified[group]} blocked={groupHasProblem(inspection, group)} disabled={!activeGroups.includes(group) || busy !== null} forceHelp={Boolean(qaMode?.startsWith("project-") && qaMode !== "project-grouped" && selectedName === skill.name && group === "agents_shared")} onToggle={() => toggle(skill.name, group)} />)}
                       </div>
                       <div className="skill-source"><span>Skill Store</span><small>v{skill.version}</small></div>
                       <div className={`skill-status ${skillDirty.length ? "pending" : hasProblem ? "warning" : Object.values(groups).some(Boolean) ? "ok" : "off"}`} title={skillDirty.length ? "有待应用更改" : hasProblem ? "需要处理" : Object.values(groups).some(Boolean) ? "已验证" : "未添加"}>
@@ -492,8 +504,8 @@ export default function App({ onOpenRecovery, recoveryLinks = [], onReturnRecove
         </div>
         {dirty.length > 0 && <div className="pending-bar">
           <div><strong>待应用更改</strong><span>涉及 {new Set(dirty.map((item) => item.name)).size} 个 Skill · 添加 {dirty.filter((item) => item.action === "create").length} · 移除 {dirty.filter((item) => item.action === "remove").length}</span>{blockingCount > 0 && <small>{blockingCount} 项需要先处理</small>}</div>
-          <button className="project-secondary" onClick={() => setDraft(structuredClone(base))}>撤销</button>
-          <button className="project-primary" onClick={review} disabled={blockingCount > 0 || busy !== null}>{busy === "plan" ? <LoaderCircle className="spin" /> : <Check />}检查并应用</button>
+          <button className="project-secondary" onClick={() => setDraft(structuredClone(base))} disabled={busy !== null}>撤销</button>
+          <button className="project-primary" onClick={review} disabled={blockingCount > 0 || busy !== null}>{busy === "plan" ? <LoaderCircle className="spin" /> : <Check />}{busy === "plan" ? "正在检查…" : "检查并应用"}</button>
         </div>}
       </main>
 
@@ -510,14 +522,14 @@ export default function App({ onOpenRecovery, recoveryLinks = [], onReturnRecove
 
       {reviewPlan && <div className="review-backdrop" role="presentation">
         <section className="review-dialog" role="dialog" aria-modal="true" aria-labelledby="review-title">
-          <header><div><small>项目设置</small><h2 id="review-title">检查后应用到 {projectName}</h2></div><button onClick={() => setReviewPlan(null)} aria-label="关闭"><X /></button></header>
+          <header><div><small>项目设置</small><h2 id="review-title">检查后应用到 {projectName}</h2></div><button onClick={() => setReviewPlan(null)} aria-label="关闭" disabled={busy === "apply"} autoFocus><X /></button></header>
           <div className="review-body">
             <p>将只增加或移除当前项目中的相对 Skill 链接；Skill 内容与 Agent 设置不会改变。</p>
             {reviewPlan.operations.filter((operation) => operation.action === "create").length > 0 && <ReviewGroup title="将添加" operations={reviewPlan.operations.filter((operation) => operation.action === "create")} />}
             {reviewPlan.operations.filter((operation) => operation.action === "remove").length > 0 && <ReviewGroup title="将移除" operations={reviewPlan.operations.filter((operation) => operation.action === "remove")} />}
             <div className="review-pass"><CheckCircle2 /><span><strong>预检通过</strong><small>{reviewPlan.operations.length} 个项目入口可以安全更新</small></span></div>
           </div>
-          <footer><button className="project-secondary" onClick={() => setReviewPlan(null)}>返回调整</button><button className="project-primary" onClick={apply} disabled={busy === "apply"}>{busy === "apply" ? <LoaderCircle className="spin" /> : <Check />}应用项目设置</button></footer>
+          <footer><button className="project-secondary" onClick={() => setReviewPlan(null)} disabled={busy === "apply"}>返回调整</button><button className="project-primary" onClick={apply} disabled={busy === "apply"}>{busy === "apply" ? <LoaderCircle className="spin" /> : <Check />}{busy === "apply" ? "正在应用…" : "应用项目设置"}</button></footer>
         </section>
       </div>}
       {projectCandidate && <AddProjectDialog path={projectCandidate} groups={candidateGroups} onGroupsChange={setCandidateGroups} onCancel={() => setProjectCandidate(null)} onConfirm={confirmProject} busy={busy !== null} />}
@@ -529,8 +541,8 @@ function Brand() {
   return <div className="project-brand"><Box /><span><strong>Habitat</strong><small>本地优先 · Skill 管理器</small></span></div>;
 }
 
-function StoreNav({ store, onOpenRecovery }: { store: StoreScan | null; onOpenRecovery: () => void }) {
-  return <div className="store-nav"><div><Database /><span><strong>Skill Store</strong><small>{store ? `${store.skills.length} 个 Skills` : "尚未就绪"}</small></span><i /></div><button onClick={onOpenRecovery} disabled={!store}><RotateCcw />恢复</button><button><Settings />设置</button></div>;
+function StoreNav({ store, onOpenRecovery, disabled = false }: { store: StoreScan | null; onOpenRecovery: () => void; disabled?: boolean }) {
+  return <div className="store-nav"><div><Database /><span><strong>Skill Store</strong><small>{store ? `${store.skills.length} 个 Skills` : "尚未就绪"}</small></span><i /></div><button onClick={onOpenRecovery} disabled={!store || disabled}><RotateCcw />恢复</button><button disabled aria-label="设置（后续版本开放）" title="设置将在后续版本开放"><Settings />设置</button></div>;
 }
 
 function AgentIcons({ group }: { group: TargetGroupId }) {
@@ -559,16 +571,16 @@ function AddProjectDialog({ path, groups, onGroupsChange, onCancel, onConfirm, b
 }) {
   const toggleGroup = (group: TargetGroupId) => onGroupsChange(groups.includes(group) ? groups.filter((item) => item !== group) : [...groups, group]);
   return <div className="review-backdrop" role="presentation"><section className="review-dialog add-project-dialog" role="dialog" aria-modal="true" aria-labelledby="add-project-title">
-    <header><div><small>项目</small><h2 id="add-project-title">添加项目</h2></div><button onClick={onCancel} aria-label="关闭"><X /></button></header>
+    <header><div><small>项目</small><h2 id="add-project-title">添加项目</h2></div><button onClick={onCancel} aria-label="关闭" disabled={busy} autoFocus><X /></button></header>
     <div className="review-body">
       <p>选择这个项目会使用的 Agent 入口。添加项目只保存管理范围，不会自动链接任何 Skill。</p>
       <div className="candidate-path"><FolderOpen /><span><strong>{path.split("/").filter(Boolean).at(-1)}</strong><code>{path}</code></span></div>
       <h3 className="choice-title">项目使用的 Agent</h3>
       <div className="project-agent-choices">
-        {(["agents_shared", "claude", "trae"] as TargetGroupId[]).map((group) => <button key={group} className={groups.includes(group) ? "selected" : ""} onClick={() => toggleGroup(group)} aria-pressed={groups.includes(group)}><AgentIcons group={group} /><span><strong>{group === "agents_shared" ? "通用入口" : groupLabels[group]}</strong><small>{group === "agents_shared" ? "Codex、Pi、Cursor 共享" : group === "trae" ? "预计兼容" : "已验证支持"}</small></span>{groups.includes(group) && <Check />}</button>)}
+        {(["agents_shared", "claude", "trae"] as TargetGroupId[]).map((group) => <button key={group} className={groups.includes(group) ? "selected" : ""} onClick={() => toggleGroup(group)} aria-pressed={groups.includes(group)} disabled={busy}><AgentIcons group={group} /><span><strong>{group === "agents_shared" ? "通用入口" : groupLabels[group]}</strong><small>{group === "agents_shared" ? "Codex、Pi、Cursor 共享" : group === "trae" ? "预计兼容" : "已验证支持"}</small></span>{groups.includes(group) && <Check />}</button>)}
       </div>
       <div className="project-safety-note"><Info /><span><strong>现在不会创建链接</strong><small>添加后，请在项目 Skill 列表中逐项选择并统一应用。</small></span></div>
     </div>
-    <footer><button className="project-secondary" onClick={onCancel}>取消</button><button className="project-primary" onClick={onConfirm} disabled={groups.length === 0 || busy}><Plus />添加项目</button></footer>
+    <footer><button className="project-secondary" onClick={onCancel} disabled={busy}>取消</button><button className="project-primary" onClick={onConfirm} disabled={groups.length === 0 || busy}>{busy ? <LoaderCircle className="spin" /> : <Plus />}{busy ? "正在登记…" : "添加项目"}</button></footer>
   </section></div>;
 }

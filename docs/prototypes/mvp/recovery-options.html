@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Habitat Recovery directions</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --canvas: #fbfbf8;
+      --primary: #ffffff;
+      --sidebar: #f6f6f3;
+      --subtle: #f3f2ef;
+      --selected: #f2efec;
+      --border: #deddd8;
+      --border-strong: #c9c8c2;
+      --text: #282827;
+      --secondary: #6f7378;
+      --muted: #989b9d;
+      --accent: #ff5a49;
+      --accent-soft: #fff0ed;
+      --success: #3b9b59;
+      --success-soft: #edf7ef;
+      --warning: #b7791f;
+      --warning-soft: #fff7e7;
+      --danger: #c83e36;
+      --danger-soft: #fceceb;
+      --shadow: 0 18px 48px rgba(45, 43, 38, .14);
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; width: 1440px; height: 1024px; overflow: hidden; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", sans-serif; color: var(--text); background: #d8d6d0; }
+    button, input { font: inherit; }
+    button { color: inherit; }
+    .view { display: none; width: 1440px; height: 1024px; background: var(--canvas); }
+    body[data-view="ledger"] #ledger,
+    body[data-view="timeline"] #timeline,
+    body[data-view="guided"] #guided { display: block; }
+    .windowbar { height: 42px; display: flex; align-items: center; gap: 11px; padding: 0 18px; border-bottom: 1px solid var(--border); background: #f8f8f5; }
+    .traffic { width: 13px; height: 13px; border-radius: 50%; border: 1px solid rgba(0,0,0,.12); }
+    .traffic.red { background: #ff5f57; }
+    .traffic.yellow { background: #febc2e; }
+    .traffic.green { background: #28c840; }
+    .shell { height: 982px; display: grid; grid-template-columns: 268px minmax(0, 1fr); }
+    .shell.with-inspector { grid-template-columns: 268px minmax(0, 1fr) 364px; }
+    .sidebar { position: relative; display: flex; flex-direction: column; min-width: 0; padding: 34px 16px 18px; border-right: 1px solid var(--border); background: var(--sidebar); }
+    .brand { display: flex; align-items: center; gap: 13px; padding: 8px 14px 36px; }
+    .brand-mark { width: 38px; height: 38px; border: 2px solid var(--text); border-radius: 8px; display: grid; place-items: center; transform: rotate(30deg); }
+    .brand-mark::after { content: ""; width: 15px; height: 15px; border: 2px solid var(--text); border-radius: 3px; }
+    .brand strong { display: block; font-size: 23px; line-height: 1.1; }
+    .brand small { display: block; margin-top: 5px; color: var(--secondary); font-size: 12px; }
+    .side-label { padding: 0 12px 10px; font-size: 12px; font-weight: 650; color: var(--secondary); }
+    .nav-item { position: relative; display: flex; align-items: center; gap: 11px; width: 100%; min-height: 54px; padding: 9px 12px; border: 0; border-radius: 9px; background: transparent; text-align: left; }
+    .nav-item.selected { background: var(--selected); }
+    .nav-item.selected::before { content: ""; position: absolute; left: -16px; top: 8px; bottom: 8px; width: 2px; background: var(--accent); }
+    .nav-icon { width: 22px; height: 22px; display: grid; place-items: center; color: var(--secondary); font-size: 20px; }
+    .nav-copy { min-width: 0; }
+    .nav-copy strong { display: block; font-size: 14px; }
+    .nav-copy small { display: block; margin-top: 3px; overflow: hidden; color: var(--secondary); font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+    .add-project { margin-top: 4px; color: var(--secondary); }
+    .store-block { margin-top: auto; overflow: hidden; border: 1px solid var(--border); border-radius: 10px; background: rgba(255,255,255,.58); }
+    .store-row { display: flex; align-items: center; gap: 11px; min-height: 68px; padding: 12px; border-bottom: 1px solid var(--border); }
+    .store-row::after { content: ""; width: 8px; height: 8px; margin-left: auto; border-radius: 50%; background: var(--success); }
+    .store-action { display: flex; align-items: center; gap: 12px; width: 100%; height: 49px; padding: 0 14px; border: 0; border-top: 1px solid transparent; background: transparent; color: var(--secondary); text-align: left; }
+    .store-action.selected { position: relative; background: var(--primary); color: var(--text); font-weight: 600; }
+    .store-action.selected::before { content: ""; position: absolute; left: 0; top: 8px; bottom: 8px; width: 2px; background: var(--accent); }
+    .main { min-width: 0; background: var(--canvas); }
+    .page-head { height: 112px; display: flex; align-items: center; justify-content: space-between; padding: 24px 28px 20px; border-bottom: 1px solid var(--border); }
+    .eyebrow { display: block; margin-bottom: 5px; color: var(--secondary); font-size: 12px; font-weight: 600; }
+    h1 { margin: 0; font-size: 25px; line-height: 1.2; font-weight: 650; }
+    .page-head p { margin: 7px 0 0; color: var(--secondary); font-size: 13px; }
+    .secondary-button, .quiet-button, .primary-button, .danger-button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 40px; padding: 0 15px; border-radius: 8px; font-weight: 580; }
+    .secondary-button { border: 1px solid var(--border-strong); background: var(--primary); }
+    .quiet-button { border: 0; background: transparent; color: var(--secondary); }
+    .primary-button { height: 44px; border: 1px solid var(--accent); background: var(--accent); color: white; }
+    .danger-button { border: 1px solid #e5b0ac; background: var(--primary); color: var(--danger); }
+    .toolbar { height: 66px; display: flex; align-items: center; gap: 12px; padding: 12px 28px; border-bottom: 1px solid var(--border); }
+    .search { flex: 1; height: 40px; padding: 0 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--primary); color: var(--secondary); font-size: 13px; }
+    .filter { min-width: 150px; height: 40px; display: flex; align-items: center; justify-content: space-between; padding: 0 13px; border: 1px solid var(--border); border-radius: 8px; background: var(--primary); color: var(--secondary); font-size: 13px; }
+    .summary-line { display: flex; align-items: center; gap: 24px; min-height: 70px; padding: 14px 28px; border-bottom: 1px solid var(--border); }
+    .summary-line > div:first-child { flex: 1; }
+    .summary-line strong { font-size: 14px; }
+    .summary-line small { display: block; margin-top: 5px; color: var(--secondary); font-size: 12px; }
+    .metric { min-width: 88px; }
+    .metric b { display: block; font-size: 19px; }
+    .metric span { color: var(--secondary); font-size: 12px; }
+    #ledger .summary-line { display: grid; grid-template-columns: minmax(0, 1fr) 72px 72px 72px; gap: 10px; }
+    #ledger .summary-line > div:first-child { min-width: 0; }
+    #ledger .metric { min-width: 0; }
+    .group-title { height: 46px; display: flex; align-items: center; gap: 8px; padding: 0 28px; border-bottom: 1px solid var(--border); background: rgba(246,246,243,.52); font-size: 13px; }
+    .group-title strong { font-size: 14px; }
+    .count { min-width: 23px; height: 20px; display: inline-grid; place-items: center; padding: 0 6px; border-radius: 10px; background: #e8e7e2; color: var(--secondary); font-size: 11px; }
+    .entry-row { position: relative; min-height: 92px; display: grid; grid-template-columns: minmax(260px, 1.4fr) minmax(190px, .85fr) 125px 128px; align-items: center; gap: 14px; padding: 14px 28px; border-bottom: 1px solid var(--border); background: transparent; }
+    .entry-row.selected { background: var(--selected); }
+    .entry-row.selected::before { content: ""; position: absolute; left: 0; top: 12px; bottom: 12px; width: 2px; background: var(--accent); }
+    .entry-name { display: flex; gap: 12px; align-items: center; min-width: 0; overflow: hidden; }
+    .entry-name > span:last-child { display: block; min-width: 0; overflow: hidden; }
+    .skill-icon { width: 34px; height: 34px; display: grid; place-items: center; flex: 0 0 auto; border: 1px solid var(--border); border-radius: 8px; background: var(--primary); font-size: 16px; }
+    .entry-name strong, .source strong { display: block; font-size: 14px; }
+    .entry-name small, .source small { display: block; margin-top: 5px; overflow: hidden; color: var(--secondary); font: 12px ui-monospace, SFMono-Regular, Menlo, monospace; text-overflow: ellipsis; white-space: nowrap; }
+    .agents { display: flex; align-items: center; gap: 5px; }
+    .agent { width: 27px; height: 27px; display: grid; place-items: center; border: 1px solid var(--border); border-radius: 7px; background: var(--primary); font-size: 10px; font-weight: 700; }
+    .status { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; }
+    .status::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+    .status.safe { color: var(--success); }
+    .status.blocked { color: var(--danger); }
+    .status.done { color: var(--secondary); }
+    .row-action { height: 36px; border: 1px solid var(--border-strong); border-radius: 7px; background: var(--primary); font-size: 12px; font-weight: 600; }
+    .row-action:disabled { border-color: var(--border); color: var(--muted); background: #f6f5f2; }
+    .inspector { display: flex; flex-direction: column; min-width: 0; border-left: 1px solid var(--border); background: var(--primary); }
+    .inspector-head { min-height: 112px; display: flex; align-items: center; gap: 12px; padding: 24px; border-bottom: 1px solid var(--border); }
+    .inspector h2 { margin: 0; font-size: 18px; }
+    .inspector h3 { margin: 0 0 12px; font-size: 13px; }
+    .inspector section { padding: 20px 24px; border-bottom: 1px solid var(--border); }
+    .inspector p { margin: 0; color: var(--secondary); font-size: 12px; line-height: 1.55; }
+    .check { display: flex; gap: 9px; margin: 11px 0; color: var(--secondary); font-size: 12px; }
+    .check i { width: 17px; height: 17px; display: grid; place-items: center; flex: 0 0 auto; border-radius: 50%; background: var(--success-soft); color: var(--success); font-style: normal; font-weight: 700; }
+    .path-box { margin-top: 8px; padding: 10px 11px; border: 1px solid var(--border); border-radius: 8px; background: var(--canvas); color: var(--secondary); font: 11px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace; word-break: break-all; }
+    .trust-note { display: flex; gap: 9px; padding: 12px; border-radius: 8px; background: var(--success-soft); color: #397247; font-size: 12px; line-height: 1.45; }
+    .inspector-footer { margin-top: auto; padding: 18px 24px; border-top: 1px solid var(--border); }
+    .inspector-footer button { width: 100%; }
+
+    /* Timeline direction */
+    .timeline-body { height: 870px; display: grid; grid-template-columns: 284px minmax(0, 1fr); }
+    .transaction-list { padding: 18px 14px; border-right: 1px solid var(--border); background: var(--sidebar); }
+    .transaction-label { margin: 0 10px 10px; color: var(--secondary); font-size: 12px; font-weight: 650; }
+    .transaction { position: relative; width: 100%; padding: 15px 14px 15px 39px; border: 0; border-radius: 9px; background: transparent; text-align: left; }
+    .transaction::before { content: ""; position: absolute; left: 18px; top: 22px; width: 9px; height: 9px; border: 2px solid var(--border-strong); border-radius: 50%; background: var(--sidebar); }
+    .transaction::after { content: ""; position: absolute; left: 22px; top: 33px; bottom: -15px; width: 1px; background: var(--border); }
+    .transaction.selected { background: var(--primary); box-shadow: 0 1px 0 rgba(0,0,0,.03); }
+    .transaction.selected::before { border-color: var(--accent); background: var(--accent); }
+    .transaction:last-child::after { display: none; }
+    .transaction strong { display: block; font-size: 13px; }
+    .transaction small { display: block; margin-top: 5px; color: var(--secondary); font-size: 11px; line-height: 1.4; }
+    .report { min-width: 0; overflow: hidden; background: var(--canvas); }
+    .report-head { min-height: 104px; display: flex; align-items: center; justify-content: space-between; padding: 22px 28px; border-bottom: 1px solid var(--border); }
+    .report-head h2 { margin: 0; font-size: 19px; }
+    .report-head p { margin: 6px 0 0; color: var(--secondary); font-size: 12px; }
+    .report-summary { height: 76px; display: flex; align-items: center; gap: 45px; padding: 13px 28px; border-bottom: 1px solid var(--border); }
+    .report-summary .metric { min-width: 112px; }
+    .report-table-head { height: 42px; display: grid; grid-template-columns: 1.25fr .8fr 120px 120px; align-items: center; gap: 14px; padding: 0 28px; border-bottom: 1px solid var(--border); color: var(--secondary); font-size: 11px; font-weight: 650; }
+    .timeline-entry { min-height: 86px; display: grid; grid-template-columns: 1.25fr .8fr 120px 120px; align-items: center; gap: 14px; padding: 13px 28px; border-bottom: 1px solid var(--border); }
+    .inline-alert { display: flex; align-items: flex-start; gap: 10px; margin: 18px 28px; padding: 13px 15px; border: 1px solid #f0d29e; border-radius: 8px; background: var(--warning-soft); color: #805414; font-size: 12px; line-height: 1.45; }
+
+    /* Guided direction */
+    .guided-main { background: var(--canvas); }
+    .stepbar { height: 70px; display: flex; align-items: center; justify-content: center; gap: 0; border-bottom: 1px solid var(--border); background: var(--primary); }
+    .step { display: flex; align-items: center; gap: 9px; color: var(--secondary); font-size: 12px; font-weight: 600; }
+    .step b { width: 26px; height: 26px; display: grid; place-items: center; border: 1px solid var(--border-strong); border-radius: 50%; background: var(--primary); }
+    .step.active { color: var(--text); }
+    .step.active b { border-color: var(--accent); background: var(--accent); color: white; }
+    .step-line { width: 92px; height: 1px; margin: 0 12px; background: var(--border); }
+    .guided-content { width: 930px; margin: 0 auto; padding: 28px 0 100px; }
+    .guided-content h2 { margin: 0; font-size: 22px; }
+    .guided-content > p { margin: 7px 0 22px; color: var(--secondary); font-size: 13px; }
+    .focus-entry { display: grid; grid-template-columns: 1fr 240px; border: 1px solid var(--border); border-radius: 10px; background: var(--primary); overflow: hidden; }
+    .focus-main { padding: 22px 24px; }
+    .focus-side { padding: 22px; border-left: 1px solid var(--border); background: var(--sidebar); }
+    .focus-title { display: flex; align-items: center; gap: 12px; }
+    .focus-title h3 { margin: 0; font-size: 17px; }
+    .focus-title small { display: block; margin-top: 4px; color: var(--secondary); font-size: 12px; }
+    .impact-map { display: grid; grid-template-columns: 1fr 42px 1fr; align-items: center; gap: 10px; margin-top: 20px; }
+    .impact-node { min-height: 78px; padding: 13px; border: 1px solid var(--border); border-radius: 8px; background: var(--canvas); }
+    .impact-node strong { display: block; font-size: 13px; }
+    .impact-node code { display: block; margin-top: 7px; color: var(--secondary); font-size: 10px; line-height: 1.45; word-break: break-all; }
+    .arrow { color: var(--secondary); text-align: center; }
+    .focus-side h4 { margin: 0 0 12px; font-size: 13px; }
+    .focus-side .check { margin: 12px 0; }
+    .blocked-card { margin-top: 18px; padding: 15px 17px; border: 1px solid #e8b9b5; border-radius: 9px; background: var(--danger-soft); }
+    .blocked-card strong { display: block; color: var(--danger); font-size: 13px; }
+    .blocked-card p { margin: 6px 0 0; color: #87534f; font-size: 12px; line-height: 1.45; }
+    .guided-footer { position: absolute; left: 268px; right: 0; bottom: 0; height: 78px; display: flex; align-items: center; justify-content: space-between; padding: 0 32px; border-top: 1px solid var(--border); background: rgba(255,255,255,.96); }
+    .guided-footer strong { display: block; font-size: 13px; }
+    .guided-footer small { display: block; margin-top: 5px; color: var(--secondary); font-size: 11px; }
+  </style>
+</head>
+<body>
+  <div class="view" id="ledger">
+    <div class="windowbar"><span class="traffic red"></span><span class="traffic yellow"></span><span class="traffic green"></span></div>
+    <div class="shell with-inspector">
+      <aside class="sidebar">
+        <div class="brand"><span class="brand-mark"></span><span><strong>Habitat</strong><small>本地优先 · Skill 管理器</small></span></div>
+        <div class="side-label">项目</div>
+        <button class="nav-item"><span class="nav-icon">▱</span><span class="nav-copy"><strong>Habitat</strong><small>/Users/luyao/Project/Habitat</small></span></button>
+        <button class="nav-item add-project"><span class="nav-icon">＋</span><span class="nav-copy"><strong>添加项目</strong></span></button>
+        <div class="store-block">
+          <div class="store-row"><span class="nav-icon">◉</span><span class="nav-copy"><strong>Skill Store</strong><small>43 个 Skills</small></span></div>
+          <button class="store-action selected"><span class="nav-icon">↶</span>恢复</button>
+          <button class="store-action"><span class="nav-icon">⚙</span>设置</button>
+        </div>
+      </aside>
+      <main class="main">
+        <header class="page-head"><div><span class="eyebrow">SKILL STORE</span><h1>恢复</h1><p>恢复迁移前的用户级入口；Store 内容和项目链接保持不变。</p></div><button class="secondary-button">↻ 重新检查</button></header>
+        <div class="toolbar"><div class="search">⌕　搜索 Skill 或原路径…</div><div class="filter">全部状态　⌄</div></div>
+        <div class="summary-line"><div><strong>首次迁移 · 2026年8月12日 10:42</strong><small>事务 64b7e8a1 · 指纹记录完整</small></div><div class="metric"><b>2</b><span>恢复记录</span></div><div class="metric"><b>1</b><span>可以恢复</span></div><div class="metric"><b>1</b><span>需要处理</span></div></div>
+        <div class="group-title"><span>⌄</span><strong>可以恢复</strong><span class="count">1</span></div>
+        <div class="entry-row selected">
+          <div class="entry-name"><span class="skill-icon">◇</span><span><strong>finding-unknowns</strong><small>~/.agents/skills/finding-unknowns</small></span></div>
+          <div class="source"><div class="agents"><span class="agent">Cx</span><span class="agent">Pi</span><span class="agent">Cu</span></div><small>通用用户入口</small></div>
+          <span class="status safe">可以恢复</span><button class="row-action">查看</button>
+        </div>
+        <div class="group-title"><span>⌄</span><strong>需要处理</strong><span class="count">1</span></div>
+        <div class="entry-row">
+          <div class="entry-name"><span class="skill-icon">□</span><span><strong>project-harness</strong><small>~/.claude/skills/project-harness</small></span></div>
+          <div class="source"><div class="agents"><span class="agent">Cl</span></div><small>Claude Code 用户入口</small></div>
+          <span class="status blocked">原路径被占用</span><button class="row-action" disabled>恢复</button>
+        </div>
+        <div class="group-title"><span>›</span><strong>已恢复</strong><span class="count">1</span></div>
+      </main>
+      <aside class="inspector">
+        <div class="inspector-head"><span class="skill-icon">◇</span><div><span class="eyebrow">恢复详情</span><h2>finding-unknowns</h2></div></div>
+        <section><h3>本次恢复会发生什么</h3><p>把迁移时保存的原入口移回原位置。该 Skill 在 Store 中的 canonical 内容不会删除，Habitat 项目中的相对链接也不会改变。</p></section>
+        <section><h3>当前检查</h3><div class="check"><i>✓</i><span>恢复记录与迁移指纹一致</span></div><div class="check"><i>✓</i><span>原路径当前不存在，可以安全写入</span></div><div class="check"><i>✓</i><span>Store canonical 内容仍可用</span></div></section>
+        <section><h3>恢复目标</h3><div class="path-box">/Users/luyao/.agents/skills/finding-unknowns</div><h3 style="margin-top:16px">技术记录</h3><div class="path-box">64b7e8a1 · habitat-tree-v1<br>2026-08-12 10:42</div></section>
+        <section><div class="trust-note"><span>✓</span><span>恢复会重新开启用户级可见性，但不会修改 Agent 设置。</span></div></section>
+        <div class="inspector-footer"><button class="primary-button">检查并恢复原入口</button></div>
+      </aside>
+    </div>
+  </div>
+
+  <div class="view" id="timeline">
+    <div class="windowbar"><span class="traffic red"></span><span class="traffic yellow"></span><span class="traffic green"></span></div>
+    <div class="shell">
+      <aside class="sidebar">
+        <div class="brand"><span class="brand-mark"></span><span><strong>Habitat</strong><small>本地优先 · Skill 管理器</small></span></div>
+        <div class="side-label">项目</div>
+        <button class="nav-item"><span class="nav-icon">▱</span><span class="nav-copy"><strong>Habitat</strong><small>/Users/luyao/Project/Habitat</small></span></button>
+        <button class="nav-item add-project"><span class="nav-icon">＋</span><span class="nav-copy"><strong>添加项目</strong></span></button>
+        <div class="store-block"><div class="store-row"><span class="nav-icon">◉</span><span class="nav-copy"><strong>Skill Store</strong><small>43 个 Skills</small></span></div><button class="store-action selected"><span class="nav-icon">↶</span>恢复</button><button class="store-action"><span class="nav-icon">⚙</span>设置</button></div>
+      </aside>
+      <main class="main">
+        <header class="page-head"><div><span class="eyebrow">SKILL STORE</span><h1>恢复记录</h1><p>按事务查看迁移结果、恢复状态与技术报告。</p></div><button class="secondary-button">↻ 重新检查</button></header>
+        <div class="timeline-body">
+          <nav class="transaction-list">
+            <p class="transaction-label">迁移事务</p>
+            <button class="transaction selected"><strong>首次迁移</strong><small>今天 10:42<br>2 条恢复记录 · 1 项需处理</small></button>
+            <button class="transaction"><strong>首次迁移（已撤销）</strong><small>昨天 23:18<br>2 条入口已恢复</small></button>
+            <button class="transaction"><strong>导入尝试（未完成）</strong><small>昨天 18:07<br>没有移动用户入口</small></button>
+          </nav>
+          <section class="report">
+            <div class="report-head"><div><span class="eyebrow">2026年8月12日 10:42</span><h2>首次迁移</h2><p>事务 64b7e8a1 · completed</p></div><button class="quiet-button">查看技术报告　›</button></div>
+            <div class="report-summary"><div class="metric"><b>43</b><span>Store 内容</span></div><div class="metric"><b>2</b><span>原入口记录</span></div><div class="metric"><b style="color:var(--success)">1</b><span>可以恢复</span></div><div class="metric"><b style="color:var(--danger)">1</b><span>需要处理</span></div></div>
+            <div class="inline-alert"><span>!</span><span><strong>恢复原入口不会撤销整笔迁移。</strong><br>Store canonical 内容与现有项目链接保持不变；恢复后对应 Skill 会再次成为用户级入口。</span></div>
+            <div class="report-table-head"><span>原入口</span><span>适用于</span><span>当前状态</span><span></span></div>
+            <div class="timeline-entry"><div class="entry-name"><span class="skill-icon">◇</span><span><strong>finding-unknowns</strong><small>~/.agents/skills/finding-unknowns</small></span></div><div class="agents"><span class="agent">Cx</span><span class="agent">Pi</span><span class="agent">Cu</span></div><span class="status safe">可以恢复</span><button class="row-action">恢复原入口</button></div>
+            <div class="timeline-entry"><div class="entry-name"><span class="skill-icon">□</span><span><strong>project-harness</strong><small>~/.claude/skills/project-harness</small></span></div><div class="agents"><span class="agent">Cl</span></div><span class="status blocked">路径被占用</span><button class="row-action" disabled>恢复</button></div>
+            <div class="inline-alert" style="border-color:var(--border);background:var(--primary);color:var(--secondary)"><span>i</span><span>如果需要撤销整个首次迁移，请先解除依赖 Store 内容的项目链接，再从技术报告执行整笔回滚。</span></div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <div class="view" id="guided">
+    <div class="windowbar"><span class="traffic red"></span><span class="traffic yellow"></span><span class="traffic green"></span></div>
+    <div class="shell" style="position:relative">
+      <aside class="sidebar">
+        <div class="brand"><span class="brand-mark"></span><span><strong>Habitat</strong><small>本地优先 · Skill 管理器</small></span></div>
+        <div class="side-label">项目</div>
+        <button class="nav-item"><span class="nav-icon">▱</span><span class="nav-copy"><strong>Habitat</strong><small>/Users/luyao/Project/Habitat</small></span></button>
+        <button class="nav-item add-project"><span class="nav-icon">＋</span><span class="nav-copy"><strong>添加项目</strong></span></button>
+        <div class="store-block"><div class="store-row"><span class="nav-icon">◉</span><span class="nav-copy"><strong>Skill Store</strong><small>43 个 Skills</small></span></div><button class="store-action selected"><span class="nav-icon">↶</span>恢复</button><button class="store-action"><span class="nav-icon">⚙</span>设置</button></div>
+      </aside>
+      <main class="guided-main">
+        <header class="page-head"><div><span class="eyebrow">SKILL STORE</span><h1>恢复原入口</h1><p>逐步检查一次恢复，不覆盖任何已变化的路径。</p></div><button class="quiet-button">退出恢复</button></header>
+        <div class="stepbar"><div class="step"><b>1</b>选择条目</div><div class="step-line"></div><div class="step active"><b>2</b>检查影响</div><div class="step-line"></div><div class="step"><b>3</b>确认恢复</div></div>
+        <div class="guided-content">
+          <span class="eyebrow">正在检查 1 个入口</span><h2>确认恢复后的可见性</h2><p>Habitat 已重新检查恢复记录、目标路径与 Store source。继续前请确认这正是你想要的结果。</p>
+          <div class="focus-entry">
+            <div class="focus-main">
+              <div class="focus-title"><span class="skill-icon">◇</span><div><h3>finding-unknowns</h3><small>通用用户入口 · Codex / Pi / Cursor</small></div></div>
+              <div class="impact-map"><div class="impact-node"><strong>当前：仅保存在恢复区</strong><code>…/.habitat/recovery/64b7e8a1/route-01</code></div><div class="arrow">→</div><div class="impact-node"><strong>恢复后：重新成为用户入口</strong><code>~/.agents/skills/finding-unknowns</code></div></div>
+              <div class="trust-note" style="margin-top:18px"><span>✓</span><span>Skill Store 中的 canonical 内容继续保留；Habitat 项目的相对链接不会改变。</span></div>
+            </div>
+            <aside class="focus-side"><h4>预检通过</h4><div class="check"><i>✓</i><span>恢复指纹一致</span></div><div class="check"><i>✓</i><span>原路径未被占用</span></div><div class="check"><i>✓</i><span>Store source 可用</span></div><button class="quiet-button" style="padding:0;margin-top:8px">查看技术详情　›</button></aside>
+          </div>
+          <div class="blocked-card"><strong>另有 1 个入口暂时无法恢复</strong><p>project-harness 的原路径已被重新创建。Habitat 不会覆盖它；完成当前恢复后仍可返回处理。</p></div>
+        </div>
+        <footer class="guided-footer"><div><strong>恢复后会重新开启用户级可见性</strong><small>不会删除 Store 内容，不会修改 Agent 设置。</small></div><div><button class="secondary-button">返回选择</button> <button class="primary-button">继续确认恢复</button></div></footer>
+      </main>
+    </div>
+  </div>
+  <script>
+    const view = new URLSearchParams(location.search).get("view");
+    document.body.dataset.view = ["ledger", "timeline", "guided"].includes(view) ? view : "ledger";
+  </script>
+</body>
+</html>

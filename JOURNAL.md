@@ -3,6 +3,26 @@
 最新记录在最上方；每个 session 一条。超过约 150 行时，将最新五条之前的内容压缩到
 Digest。
 
+## 2026-08-12 — M9: 侧栏 Recovery 功能进入原型确认
+
+- Root cause: 项目页 `StoreNav` 中的“恢复”只有静态按钮，没有事件、页面状态或 API 调用；
+  已有 `rollback_first_run_migration_command` 又只接受当前进程内的整笔首次迁移记录，不能
+  直接承担重启后、项目已连接状态下的常驻 Recovery 入口。
+- Product boundary: 侧栏 Recovery 默认采用逐项 `恢复原入口`：重新执行 lstat/identity、
+  link text、fingerprint 和原目标缺失预检后，只把对应用户级目录或 symlink 从 recovery 移回
+  原位置；Store canonical 内容、现有项目相对链接和 Agent 设置保持不变。整笔首次迁移回滚
+  是独立高级操作，不能成为侧栏按钮的隐式行为。
+- Prototypes: 新增同一 43 Skills / 2 recovery entries fixture 的三份 1440×1024 静态方向：
+  `recovery-ledger-v1.png`（三栏恢复账本，推荐）、`recovery-timeline-v1.png`（事务时间线）和
+  `recovery-guided-v1.png`（三步引导恢复）；共同覆盖可恢复、原路径占用阻断和已恢复状态。
+- Review: 三稿均保持 Quiet Native、单一珊瑚红主动作、真实状态文字与 Store 级导航；原图
+  检查无裁切，尺寸均为 1440×1024。方向、共享行为合同和风险记录在
+  `docs/prototypes/mvp/recovery-directions.md`。
+- Safety: 本轮只修改原型与 harness 文档，未修改 `src/`、`src-tauri/`，未读取或变更真实
+  Skill Store、项目链接或 Agent 配置；现有未跟踪 `.agents/` 继续不触碰。
+- State: 等待产品负责人明确选择 A/B/C 并确认逐项恢复合同；确认前不得进入生产 UI 或命令
+  实现。M9 保持 `doing`。
+
 ## 2026-08-12 — M9: 开始实现项目 Skills 状态分组
 
 - Approval: 产品负责人从三份原型中选择可折叠分组方案，并进一步确认删除筛选下方的

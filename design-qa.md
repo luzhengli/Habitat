@@ -1,5 +1,20 @@
 # Habitat Design QA
 
+## Project header path removal
+
+- Product-owner correction: do not render the absolute project path beside the project name in the
+  main page header. The sidebar remains the project-identification surface and continues to show the
+  path with its existing truncation and tooltip behavior.
+- Implementation follows `DESIGN.md` 7.4 exactly: the header contains only the project name, the
+  explanatory line, and the secondary recheck action. No new component, token, or layout direction
+  was introduced.
+- Browser fixture `?qa=project-grouped` at 1440×1024: `.project-header` contains zero `code`
+  elements; its text is limited to `media`, the explanatory line, and `重新检查`; header width and
+  scroll width are both 796px, so the deletion leaves no horizontal overflow.
+- Browser console: 0 warnings, 0 errors.
+
+final result: passed
+
 ## Button responsiveness and transaction locking
 
 - Full audit and current-run evidence: `docs/qa/button-state-audit.md` and

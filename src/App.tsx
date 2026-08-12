@@ -455,7 +455,7 @@ export default function App({ onOpenRecovery, recoveryLinks = [], onReturnRecove
       <main className="project-main">
         {onReturnRecovery && <div className="project-recovery-context"><span><strong>正在处理 Recovery 阻断</strong><small>{recoveryLinks.length} 个链接仍依赖首次迁移 Store 内容</small></span><button className="project-secondary" onClick={onReturnRecovery} disabled={busy !== null}>返回恢复检查</button></div>}
         <header className="project-header">
-          <div><h1>{projectName}</h1><code>{projectRoot}</code><p>管理此项目中的 Skills 与 Agent 入口</p></div>
+          <div><h1>{projectName}</h1><p>管理此项目中的 Skills 与 Agent 入口</p></div>
           <button className="project-secondary" onClick={() => refresh()} disabled={busy !== null}><RefreshCw className={busy === "load" ? "spin" : ""} />重新检查</button>
         </header>
         <div className="project-toolbar">

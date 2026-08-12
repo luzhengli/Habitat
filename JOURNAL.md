@@ -3,6 +3,19 @@
 最新记录在最上方；每个 session 一条。超过约 150 行时，将最新五条之前的内容压缩到
 Digest。
 
+## 2026-08-12 — M9: 删除项目页标题区的绝对路径
+
+- Trigger: 产品负责人指出项目页标题旁红框中的绝对项目路径不应添加。
+- Scope: 这是对已批准项目 Skills 工作台的局部文案删减；不改变侧栏项目识别信息、右侧相对
+  入口、项目选择、adapter 草稿或文件安全语义，也不引入新的视觉方向。
+- Implementation: 删除标题区的 `projectRoot` code 元素及其专用网格和胶囊样式；标题区现在严格
+  符合 `DESIGN.md` 7.4，只显示项目名、说明和“重新检查”。
+- QA: `?qa=project-grouped` 在 1440×1024 下确认标题区 `code` 数量为 0、宽度与 scroll width
+  均为 796px，浏览器 console 0 warnings / 0 errors；`npm run check` 通过（Rust 45 tests、
+  Vite 1597 modules、debug `Habitat.app`）。未读取或修改真实 Store、真实项目或 Agent 配置；
+  未跟踪 `.agents/` 保持不触碰。
+- State: 该文案修正完成；M9 保持 `doing`，下一步仍是确认发布目标、签名/分发方式和发布范围。
+
 ## 2026-08-12 — M9: 审计并修复按钮卡住状态
 
 - Trigger: 产品负责人观察到多个按钮点击后会进入“卡住”状态，要求先识别全应用触发面，再判断

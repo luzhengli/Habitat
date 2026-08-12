@@ -26,6 +26,8 @@ Digest。
 - Gate: `npm run check` → exit 0；Rust 44 tests passed、Vite 1597 modules transformed，debug
   `Habitat.app` 已打包。所有可变测试仅使用临时 fixture，未读取或修改真实 Store、项目链接或
   Agent 配置；未跟踪 `.agents/` 继续不触碰。
+- Checkpoint: `d6155b7` (`feat: implement global recovery workflow`)；本条记录由后续 docs
+  commit 写入。
 - State: Recovery 完整实现与 QA 已完成；M9 保持 `doing`，下一步仍是确认发布目标、签名/
   分发方式和发布范围。
 

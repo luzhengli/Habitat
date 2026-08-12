@@ -32,6 +32,7 @@ Digest。
   fixture 证明 plan/apply 互锁、完成后恢复和 success notice，0 warnings / 0 errors。
   `npm run check` → exit 0；Rust 45 tests passed、Vite 1597 modules transformed，debug
   `Habitat.app` 已打包。未读取或修改真实 Store、真实项目、Agent 配置或未跟踪 `.agents/`。
+- Checkpoint: `4766fde` (`fix: keep button actions responsive`)；本条由后续 docs commit 写入。
 - State: 按钮卡住根因和已识别局部交互缺口已完成修复；M9 保持 `doing`，下一步仍是发布范围。
 
 ## 2026-08-12 — M9: 开始实现全局 Recovery 完整动线

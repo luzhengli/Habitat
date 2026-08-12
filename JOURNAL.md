@@ -3,6 +3,38 @@
 最新记录在最上方；每个 session 一条。超过约 150 行时，将最新五条之前的内容压缩到
 Digest。
 
+## 2026-08-12 — M9: 选择全局影响概览并深化完整 Recovery 动线
+
+- Approval: 产品负责人选择新方案 A“全局影响概览”继续完善，并要求覆盖所有必须的用户
+  动线；这表示全屏、无项目侧栏、项目表格加整笔恢复摘要的视觉方向已选，但完整状态尚待
+  再次确认，暂不修改生产 UI。
+- Active work: 正在补齐自动检查、无可恢复事务、项目链接阻断、不可访问项目、系统安全阻断、
+  跳转项目手动解除链接并返回、全量复检、ready、最终危险确认、不可取消执行、成功返回首次
+  设置、执行前漂移、部分执行失败与重启续接。
+- Authoritative audit set: 建议后端取 durable managed-project registry 与所有有效
+  `*.project.json` 中、source 路径与首次迁移待回滚 imports 相交的 project roots 之并集，再按
+  canonical path 去重并检查真实文件系统。历史项目即使已不在普通 UI 中仍是依赖；不可访问、
+  identity drift 或不可读均为 unknown 并整笔阻断，不能用“忘记项目”绕过。
+- Navigation: Recovery 保持无项目侧栏；具体链接详情只提供“前往项目处理”。进入现有项目
+  工作台后显示 Recovery context bar，只筛出相关 Skills，用户仍需形成移除草稿、单独预检并
+  应用正常项目事务；返回 Recovery 后必须重建全量集合和重新检查。
+- Execution: 最终危险确认后再以 transaction id + audit revision 进行一次后端全量复验；执行
+  逐项持久化，不能取消。执行前漂移零写入返回审计；执行中部分失败必须报告已完成/剩余，重启
+  后只续接仍为 quarantined/imported 的操作，不能误报“未修改文件”。
+- Post-success: 显示可观察成功页后回到首次设置；建议保留 Store 路径、项目注册与事务历史为
+  dormant 元数据，清除 setup-complete 状态，不自动修改 Agent 设置或任何项目链接。
+- Artifacts: `recovery-global-overview-flow.md` 记录 13 个状态、blocker taxonomy、数据合同、
+  accessibility 和 9 类 fixture 验收；`recovery-global-overview-flow.html` 渲染 11 张关键
+  1440×1024 PNG，包括 checking、blocked、link details、project handoff、ready、confirm、
+  running、success、partial、empty 与 fatal。
+- Visual QA: 11 张原图已逐张检查，均无裁切；Recovery 状态无项目侧栏，只有进入独立项目
+  处理工作台后恢复项目导航并显示明确返回入口。危险实心色只用于最终确认，普通检查/处理动作
+  保持次按钮或单一珊瑚红主动作。
+- Safety: 本轮只修改原型和 harness 文档，未实现 registry schema、生产 React/Rust，也未读取
+  或修改真实 Store、项目链接、Agent 配置；现有未跟踪 `.agents/` 继续不触碰。
+- State: 等待产品负责人确认完整动线及上述高成本安全决策；确认前不进入生产实现。M9 保持
+  `doing`。
+
 ## 2026-08-12 — M9: Recovery 改为无项目侧栏的全局审计
 
 - Approval: 产品负责人拒绝此前三份整笔恢复视觉稿，纠正其信息架构：Recovery 可能影响

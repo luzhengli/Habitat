@@ -1,6 +1,6 @@
 # Recovery directions
 
-Status: awaiting product-owner selection of the global, no-project-sidebar set
+Status: direction A selected; complete flow under review
 
 Viewport: 1440x1024 macOS desktop
 
@@ -62,6 +62,10 @@ result without turning projects into navigation.
 Primary risk: the recovery summary becomes narrow at smaller desktop widths and needs to stack below
 the project table.
 
+Selected by the product owner on 2026-08-12 for complete-flow refinement. The authoritative project
+set, navigation contract, blocker taxonomy, execution/resume behavior, and required states are in
+`recovery-global-overview-flow.md`; production implementation still waits for that flow review.
+
 ## Direction B - Project impact matrix (recommended)
 
 Artifact: `recovery-global-matrix-v1.png`.
@@ -86,6 +90,7 @@ comparison than the matrix.
 
 ## Selection gate
 
-Do not modify production React UI or add the durable project-registry schema until the product owner
-explicitly selects A, B, or C. Existing backend manifest discovery and bounded link scanning remain
-safe foundations, but caller-supplied project lists are not accepted as proof of global completeness.
+Direction A is selected. Do not modify production React UI or add the durable project-registry schema
+until the product owner confirms the complete-flow contract and key states. Existing backend manifest
+discovery and bounded link scanning remain safe foundations, but caller-supplied project lists are not
+accepted as proof of global completeness.

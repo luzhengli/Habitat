@@ -1,5 +1,67 @@
 # Habitat Design QA
 
+## Global Recovery implementation and evidence
+
+**Approved source and contract**
+
+- Direction A “全局影响概览” and the 14-state contract in
+  `docs/prototypes/mvp/recovery-global-overview-flow.md`.
+- Recovery is a Store-level, one-shot rollback. It has no project sidebar, no current-project
+  semantics, no Skill selection, and no automatic project-link deletion.
+
+**Rendered implementation**
+
+- `docs/qa/recovery-global-blocked.jpg`: 1440×1024 blocked overview with 4 required projects,
+  3 inspected, 3 related links, one historical offline project, and a disabled rollback action.
+- `docs/qa/recovery-global-confirm.jpg`: 1440×1024 all-passed state with the final destructive
+  confirmation, exact restore/remove counts, and explicit non-actions.
+- `docs/qa/recovery-global-blocked-1024.jpg`: 1024×768 compact window; the project audit remains
+  readable without horizontal overflow and the transaction summary continues below the table.
+
+### Findings
+
+No actionable P0/P1/P2 findings remain for the approved global Recovery surface and its required
+handoff states.
+
+- [P3] At 1024×768 the right transaction summary moves below the four project rows, so it requires
+  vertical scrolling.
+  - Impact: the full audit remains readable and no project row or status column is truncated.
+  - Disposition: accepted responsive behavior from the approved contract; horizontal compression
+    would make paths and blocker states less trustworthy.
+
+### Required fidelity surfaces
+
+- Visual system: warm white/stone surfaces, 1px dividers, 8px radii, charcoal text, semantic
+  green/amber/red, and coral-red only for the confirmed destructive action. No gradients, glass,
+  decorative shadows, or card wall.
+- Information hierarchy: global coverage metrics precede the authoritative project audit; the
+  transaction summary states 2 original entries, 43 Store imports, 0 project-link mutations, and
+  0 Agent-setting mutations in the deterministic fixture.
+- Safety copy: unknown project state is not treated as safe; historical-only provenance is visible;
+  blocked and ready states use text and icons in addition to color.
+- Responsiveness: 1440×1024 uses table + transaction summary; 1024×768 stacks the summary below a
+  bounded, vertically scrollable table with `scrollWidth === 1024`.
+- Accessibility: detail and confirmation surfaces are modal dialogs with labelled headings; status
+  changes use live/alert regions; every icon-only close action has an accessible name; disabled and
+  enabled rollback states were checked semantically.
+
+### Interaction and runtime checks
+
+- Blocked fixture: “恢复到迁移前” is disabled; “处理链接” exposes the exact project-link path.
+- Project handoff: “前往项目处理” opens the existing project workbench with a Recovery context bar,
+  filters `finding-unknowns`, and prepares exactly 1 Skill / 0 additions / 1 removal; “返回恢复检查”
+  restores the global surface and forces a fresh inspection in production.
+- Ready fixture: the rollback action is enabled and opens a final confirmation; the QA execution
+  reaches the observable success page.
+- Partial, empty, and fatal fixtures show respectively “继续剩余恢复”, “没有需要恢复的首次迁移”,
+  and an error-code-bearing manual-inspection state.
+- Browser console across blocked, ready, handoff, success, partial, empty, and fatal routes:
+  0 warnings, 0 errors.
+- Rust safety fixtures use only temporary directories; 44 tests pass, including history-only project
+  discovery, offline-project blocking, audit-revision drift, and exact rollback after link removal.
+
+final result: passed
+
 ## Project Skills 状态分组 target and evidence
 
 **Source visual truth**

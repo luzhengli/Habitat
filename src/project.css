@@ -63,6 +63,10 @@
 .store-nav button:last-child { border-radius: 0 0 var(--radius-control) var(--radius-control); }
 
 .project-main { display: flex; min-width: 0; min-height: 0; flex-direction: column; overflow: hidden; }
+.project-recovery-context { display: flex; min-height: 58px; align-items: center; justify-content: space-between; gap: 18px; padding: 8px 24px; border-bottom: 1px solid #f1c6c1; background: var(--accent-subtle); }
+.project-recovery-context span { display: flex; min-width: 0; flex-direction: column; }
+.project-recovery-context strong { font-size: 12px; }
+.project-recovery-context small { margin-top: 4px; color: var(--text-secondary); font-size: 11px; }
 .project-header { display: flex; min-height: 100px; align-items: center; justify-content: space-between; gap: 20px; padding: 20px 24px 12px; }
 .project-header > div { display: grid; grid-template-columns: max-content minmax(0, max-content); align-items: center; gap: 4px 10px; min-width: 0; }
 .project-header h1 { margin: 0; font-size: 24px; font-weight: 650; }

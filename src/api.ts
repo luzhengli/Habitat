@@ -3,6 +3,7 @@ import type {
   CommandResult,
   InventorySnapshot,
   MigrationPlan,
+  ManagedProjectRecord,
   Preflight,
   ProjectDraftSelection,
   ProjectExposurePlan,
@@ -11,6 +12,7 @@ import type {
   ProjectWorkspaceInspection,
   RecoveryPlan,
   StoreScan,
+  TargetGroupId,
   TransactionManifest,
 } from "./types";
 
@@ -25,10 +27,14 @@ export const api = {
     invoke<TransactionManifest>("execute_first_run_migration_command", { transactionId }),
   rollbackFirstRunMigration: (transactionId: string) =>
     invoke<TransactionManifest>("rollback_first_run_migration_command", { transactionId }),
-  inspectRecovery: (storePath: string, managedProjects: string[]) =>
-    invoke<RecoveryPlan | null>("inspect_recovery_command", { storePath, managedProjects }),
-  executeRecovery: (transactionId: string) =>
-    invoke<TransactionManifest>("execute_recovery_command", { transactionId }),
+  inspectRecovery: (storePath: string) =>
+    invoke<RecoveryPlan | null>("inspect_recovery_command", { storePath }),
+  executeRecovery: (transactionId: string, auditRevision: string) =>
+    invoke<TransactionManifest>("execute_recovery_command", { transactionId, auditRevision }),
+  listManagedProjects: (storePath: string) =>
+    invoke<ManagedProjectRecord[]>("list_managed_projects_command", { storePath }),
+  registerManagedProject: (storePath: string, projectPath: string, targetGroups: TargetGroupId[]) =>
+    invoke<ManagedProjectRecord>("register_managed_project_command", { storePath, projectPath, targetGroups }),
   inspectProjectWorkspace: (storePath: string, projectPath: string) =>
     invoke<ProjectWorkspaceInspection>("inspect_project_workspace_command", { storePath, projectPath }),
   planProjectSettings: (storePath: string, projectPath: string, selections: ProjectDraftSelection[]) =>

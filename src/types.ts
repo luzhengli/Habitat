@@ -161,6 +161,7 @@ export type RecoveryBlocker = {
 
 export type RecoveryPlan = {
   transactionId: string;
+  auditRevision: string;
   storeRoot: string;
   state: TransactionManifest["state"];
   createdAt: number;
@@ -168,8 +169,33 @@ export type RecoveryPlan = {
   importCount: number;
   recoveryCount: number;
   projectLinks: string[];
+  projects: RecoveryProjectAudit[];
+  coverage: {
+    expected: number;
+    inspected: number;
+    passed: number;
+    blocked: number;
+    unknown: number;
+  };
   blockers: RecoveryBlocker[];
   ready: boolean;
+};
+
+export type RecoveryProjectAudit = {
+  projectId: string | null;
+  projectRoot: string;
+  provenance: Array<"registry" | "project_transaction">;
+  state: "passed" | "blocked" | "unknown" | "replaced";
+  relatedLinks: string[];
+  blocker: RecoveryBlocker | null;
+};
+
+export type ManagedProjectRecord = {
+  projectId: string;
+  projectRoot: string;
+  targetGroups: TargetGroupId[];
+  createdAt: number;
+  updatedAt: number;
 };
 
 export type TargetGroupId = "agents_shared" | "claude" | "trae";

@@ -3,6 +3,32 @@
 最新记录在最上方；每个 session 一条。超过约 150 行时，将最新五条之前的内容压缩到
 Digest。
 
+## 2026-08-12 — M9: 开始实现全局 Recovery 完整动线
+
+- Approval: 产品负责人以 `ok` 确认方案 A 的完整合同，包括权威全项目集合、不可绕过离线或
+  历史项目、正常项目事务交接、最终复验、部分失败续接和成功后 dormant 项目元数据。
+- Scope: 现在允许新增后端持久化项目注册表与历史项目事务并集审计、audit revision、Recovery
+  全屏生产 UI、项目处理返回上下文、fixture 测试和视觉 QA；仍不得修改真实 Store、真实项目
+  链接或 Agent 配置。
+- Backend: 新增 Store-owned `.habitat/projects.json` v1，记录 canonical project root、文件身份、
+  target groups 与时间；全量集合取该注册表和 source 与首次迁移 imports 相交的历史
+  `*.project.json` roots 并集。不可访问、identity drift、schema/path 越界或相关链接均阻断。
+  prepare 返回结构化项目覆盖与 SHA-256 audit revision；execute 以 transaction id + revision
+  重建全量计划，任何漂移都在写入前停止。
+- Frontend: 侧栏“恢复”已接入无项目侧栏的全屏 Recovery 状态机，覆盖 checking、blocked、
+  link details、项目工作台交接与返回、ready、最终危险确认、running、success、partial、empty、
+  fatal 和 execution error。添加/已有项目会持久登记到后端；项目交接只形成正常移除草稿，不
+  自动删除链接或选择 Skills。
+- QA: 1440×1024 阻断页与最终确认、1024×768 紧凑布局均已原图检查；阻断按钮 disabled，
+  ready 按钮 enabled，最终确认与成功页可达。交接 fixture 精确形成 1 Skill / 0 添加 / 1 移除并
+  可返回全量检查；partial/empty/fatal 均有独立出口；浏览器 console 0 warnings / 0 errors。
+  `design-qa.md` 和 `DESIGN.md` 已同步。
+- Gate: `npm run check` → exit 0；Rust 44 tests passed、Vite 1597 modules transformed，debug
+  `Habitat.app` 已打包。所有可变测试仅使用临时 fixture，未读取或修改真实 Store、项目链接或
+  Agent 配置；未跟踪 `.agents/` 继续不触碰。
+- State: Recovery 完整实现与 QA 已完成；M9 保持 `doing`，下一步仍是确认发布目标、签名/
+  分发方式和发布范围。
+
 ## 2026-08-12 — M9: 选择全局影响概览并深化完整 Recovery 动线
 
 - Approval: 产品负责人选择新方案 A“全局影响概览”继续完善，并要求覆盖所有必须的用户

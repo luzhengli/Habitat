@@ -151,12 +151,20 @@ function AgentGroupButton({
   );
 }
 
-export default function App() {
-  const [store, setStore] = useState<StoreScan | null>(qaMode?.startsWith("project-") ? projectQaStore : null);
-  const [workspace, setWorkspace] = useState<ProjectExposureInspection[]>(qaMode?.startsWith("project-") ? projectQaWorkspace.skills : []);
-  const [projectRoot, setProjectRoot] = useState(qaMode?.startsWith("project-") ? projectQaWorkspace.projectRoot : "");
+export default function App({ onOpenRecovery, recoveryLinks = [], onReturnRecovery }: {
+  onOpenRecovery: () => void;
+  recoveryLinks?: string[];
+  onReturnRecovery?: () => void;
+}) {
+  const projectQaActive = Boolean(qaMode?.startsWith("project-") || (qaMode?.startsWith("recovery-") && recoveryLinks.length));
+  const qaProjectRoot = recoveryLinks.length
+    ? window.localStorage.getItem("habitat.projectRoot") ?? projectQaWorkspace.projectRoot
+    : projectQaWorkspace.projectRoot;
+  const [store, setStore] = useState<StoreScan | null>(projectQaActive ? projectQaStore : null);
+  const [workspace, setWorkspace] = useState<ProjectExposureInspection[]>(projectQaActive ? projectQaWorkspace.skills : []);
+  const [projectRoot, setProjectRoot] = useState(projectQaActive ? qaProjectRoot : "");
   const [projects, setProjects] = useState<ManagedProject[]>(() => {
-    if (qaMode?.startsWith("project-")) return [{ root: projectQaWorkspace.projectRoot, groups: ["agents_shared", "claude", "trae"] }];
+    if (projectQaActive) return [{ root: qaProjectRoot, groups: ["agents_shared", "claude", "trae"] }];
     try {
       const saved = JSON.parse(window.localStorage.getItem("habitat.projects") ?? "[]") as ManagedProject[];
       if (Array.isArray(saved)) return saved;
@@ -167,16 +175,16 @@ export default function App() {
   const [activeGroups, setActiveGroups] = useState<TargetGroupId[]>(["agents_shared", "claude", "trae"]);
   const [projectCandidate, setProjectCandidate] = useState<string | null>(qaMode === "project-add" ? "/private/tmp/habitat-project-v2/blog" : null);
   const [candidateGroups, setCandidateGroups] = useState<TargetGroupId[]>(["agents_shared", "claude", "trae"]);
-  const [base, setBase] = useState<DraftMap>(() => deriveBase(qaMode?.startsWith("project-") ? projectQaWorkspace.skills : []));
+  const [base, setBase] = useState<DraftMap>(() => deriveBase(projectQaActive ? projectQaWorkspace.skills : []));
   const [draft, setDraft] = useState<DraftMap>(() => {
-    const initial = deriveBase(qaMode?.startsWith("project-") ? projectQaWorkspace.skills : []);
+    const initial = deriveBase(projectQaActive ? projectQaWorkspace.skills : []);
     if (qaMode?.startsWith("project-") && qaMode !== "project-grouped" && initial["project-harness"]) {
       initial["project-harness"] = { ...initial["project-harness"], agents_shared: true, claude: true };
       initial["media-kit"] = { ...initial["media-kit"], trae: false };
     }
     return initial;
   });
-  const [selectedName, setSelectedName] = useState(qaMode === "project-grouped" ? "explain-and-quiz" : qaMode?.startsWith("project-") ? "project-harness" : "");
+  const [selectedName, setSelectedName] = useState(qaMode === "project-grouped" ? "explain-and-quiz" : projectQaActive ? "project-harness" : "");
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<Filter>("all");
   const [collapsedSections, setCollapsedSections] = useState<Record<SkillSectionId, boolean>>({ linked: false, available: false });
@@ -204,7 +212,7 @@ export default function App() {
     setBusy("load");
     setNotice(null);
     try {
-      const [freshStore, inspection] = qaMode?.startsWith("project-")
+      const [freshStore, inspection] = projectQaActive
         ? [projectQaStore, projectQaWorkspace]
         : await Promise.all([api.scanStore(nextStore.root), api.inspectProjectWorkspace(nextStore.root, nextProject)]);
       const nextBase = deriveBase(inspection.skills);
@@ -224,7 +232,7 @@ export default function App() {
   }, [store, projectRoot]);
 
   useEffect(() => {
-    if (qaMode?.startsWith("project-") || store) return;
+    if (projectQaActive || store) return;
     const storeRoot = window.localStorage.getItem("habitat.storeRoot");
     if (!storeRoot) return;
     setBusy("load");
@@ -244,6 +252,34 @@ export default function App() {
       .finally(() => setBusy(null));
   }, [store, refresh, projects]);
 
+  useEffect(() => {
+    if (!store || projectQaActive || projects.length === 0) return;
+    void Promise.allSettled(projects.map((project) => api.registerManagedProject(store.root, project.root, project.groups)));
+  }, [store, projects]);
+
+  useEffect(() => {
+    if (!recoveryLinks.length || workspace.length === 0) return;
+    const affected = new Map<string, Set<TargetGroupId>>();
+    for (const link of recoveryLinks) {
+      const name = link.split("/").filter(Boolean).at(-1);
+      if (!name) continue;
+      const group: TargetGroupId = link.includes("/.claude/skills/") ? "claude" : link.includes("/.trae/skills/") ? "trae" : "agents_shared";
+      const groups = affected.get(name) ?? new Set<TargetGroupId>();
+      groups.add(group);
+      affected.set(name, groups);
+    }
+    setDraft((current) => {
+      const next = structuredClone(current);
+      for (const [name, groups] of affected) {
+        if (!next[name]) continue;
+        for (const group of groups) next[name][group] = false;
+      }
+      return next;
+    });
+    setFilter("pending");
+    setSelectedName(affected.keys().next().value ?? "");
+  }, [recoveryLinks, workspace]);
+
   const chooseProject = async () => {
     const path = await open({ directory: true, multiple: false, title: "选择要管理的项目" });
     if (typeof path !== "string" || !store) return;
@@ -253,6 +289,15 @@ export default function App() {
 
   const confirmProject = async () => {
     if (!projectCandidate || candidateGroups.length === 0 || !store) return;
+    if (!projectQaActive) {
+      try {
+        await api.registerManagedProject(store.root, projectCandidate, candidateGroups);
+      } catch (error) {
+        const detail = toError(error);
+        setNotice({ tone: "error", title: detail.message ?? "无法登记项目", detail: detail.recovery ?? "检查项目路径后重试。" });
+        return;
+      }
+    }
     const nextProjects = [...projects.filter((item) => item.root !== projectCandidate), { root: projectCandidate, groups: candidateGroups }];
     setProjects(nextProjects);
     setActiveGroups(candidateGroups);
@@ -319,7 +364,7 @@ export default function App() {
     setBusy("plan");
     setNotice(null);
     try {
-      const plan = qaMode?.startsWith("project-")
+      const plan = projectQaActive
         ? {
             transactionId: "qa-project-plan",
             registryVersion: "1",
@@ -351,9 +396,9 @@ export default function App() {
     if (!reviewPlan) return;
     setBusy("apply");
     try {
-      if (!qaMode?.startsWith("project-")) await api.applyProjectSettings(reviewPlan.transactionId);
+      if (!projectQaActive) await api.applyProjectSettings(reviewPlan.transactionId);
       setReviewPlan(null);
-      if (qaMode?.startsWith("project-")) {
+      if (projectQaActive) {
         setBase(structuredClone(draft));
       } else {
         await refresh();
@@ -370,7 +415,7 @@ export default function App() {
   if (!projectRoot) {
     return (
       <div className="project-empty-shell">
-        <aside><Brand /><StoreNav store={store} /></aside>
+        <aside><Brand /><StoreNav store={store} onOpenRecovery={onOpenRecovery} /></aside>
         <main>
           <FolderOpen aria-hidden="true" />
           <h1>添加第一个项目</h1>
@@ -392,10 +437,11 @@ export default function App() {
           <Folder /><span><strong>{item.root.split("/").filter(Boolean).at(-1) ?? "未命名"}</strong><small>{item.root}</small></span>
         </button>)}
         <button className="sidebar-action" onClick={chooseProject}><Plus />添加项目</button>
-        <StoreNav store={store} />
+        <StoreNav store={store} onOpenRecovery={onOpenRecovery} />
       </aside>
 
       <main className="project-main">
+        {onReturnRecovery && <div className="project-recovery-context"><span><strong>正在处理 Recovery 阻断</strong><small>{recoveryLinks.length} 个链接仍依赖首次迁移 Store 内容</small></span><button className="project-secondary" onClick={onReturnRecovery}>返回恢复检查</button></div>}
         <header className="project-header">
           <div><h1>{projectName}</h1><code>{projectRoot}</code><p>管理此项目中的 Skills 与 Agent 入口</p></div>
           <button className="project-secondary" onClick={() => refresh()} disabled={busy !== null}><RefreshCw className={busy === "load" ? "spin" : ""} />重新检查</button>
@@ -483,8 +529,8 @@ function Brand() {
   return <div className="project-brand"><Box /><span><strong>Habitat</strong><small>本地优先 · Skill 管理器</small></span></div>;
 }
 
-function StoreNav({ store }: { store: StoreScan | null }) {
-  return <div className="store-nav"><div><Database /><span><strong>Skill Store</strong><small>{store ? `${store.skills.length} 个 Skills` : "尚未就绪"}</small></span><i /></div><button><RotateCcw />恢复</button><button><Settings />设置</button></div>;
+function StoreNav({ store, onOpenRecovery }: { store: StoreScan | null; onOpenRecovery: () => void }) {
+  return <div className="store-nav"><div><Database /><span><strong>Skill Store</strong><small>{store ? `${store.skills.length} 个 Skills` : "尚未就绪"}</small></span><i /></div><button onClick={onOpenRecovery} disabled={!store}><RotateCcw />恢复</button><button><Settings />设置</button></div>;
 }
 
 function AgentIcons({ group }: { group: TargetGroupId }) {

@@ -1,17 +1,23 @@
 # Recovery directions
 
-Status: awaiting product-owner selection
+Status: awaiting product-owner selection of the global, no-project-sidebar set
 
 Viewport: 1440x1024 macOS desktop
 
-Visual source: `DESIGN.md` and the approved project Skills V2 shell.
+Visual source: `DESIGN.md`. Recovery deliberately exits the project Skills V2 shell because it is
+a Store-wide operation rather than a current-project task.
 
 ## Shared behavior contract
 
 All three directions use the same fixture and operation boundary:
 
-- the sidebar `恢复` action opens a Store-level Recovery surface and does not mutate files;
+- the sidebar `恢复` action exits project navigation and opens a full-window Store-level Recovery
+  surface; the Recovery surface itself has no project sidebar or current-project selection;
 - Recovery is one transaction-wide rollback with no Skill picker or per-entry action;
+- "all projects" means every project in Habitat's durable managed-project registry, not an
+  unbounded whole-disk scan and not only the project that was selected before entering Recovery;
+- each registered project must receive an explicit readable/no-related-link result; an unavailable,
+  unreadable, missing, or otherwise unverified project blocks the whole operation;
 - after one fresh all-target preflight, Habitat restores every quarantined original user entry,
   removes every unchanged Store import created by that migration, and returns to first setup;
 - any Store, recovery, original-destination, manifest-boundary, or identity drift blocks the whole
@@ -22,54 +28,64 @@ All three directions use the same fixture and operation boundary:
   the existing exact rollback;
 - Agent settings are never changed and permanent recovery deletion remains outside MVP.
 
-The product owner confirmed this whole-transaction contract on 2026-08-12. The earlier
-entry-scoped artifacts (`recovery-ledger-v1.png`, `recovery-timeline-v1.png`, and
-`recovery-guided-v1.png`) remain rejected decision history.
+The product owner confirmed this whole-transaction contract on 2026-08-12, then rejected the first
+two visual sets because both retained project navigation and implied a current-project scope. Those
+six artifacts remain decision history. The three directions below are the replacement reaction set.
+
+The current implementation only persists projects in WebView local storage and passes a caller-
+supplied project list to Rust. That list is useful for scanning but cannot prove it is complete.
+Production execution therefore remains blocked until Habitat owns a durable authoritative registry
+that the Recovery backend reads directly; the selected prototype will define how registry problems
+are surfaced.
 
 ## Shared fixture
 
 - Store: 43 Skills.
 - Transaction: first migration, 2026-08-12 10:42, id prefix `64b7e8a1`.
 - 43 Store imports and 2 original user entries are individually fingerprint-safe.
-- Habitat still has one managed `.agents/skills/finding-unknowns` link resolving into the Store;
-  this single link blocks the entire rollback.
-- An older transaction is already rolled back and remains visible as audit history.
+- Four projects are registered with Habitat: Habitat, media, blog, and archive-lab.
+- Habitat has one and media has two adapter links resolving into transaction Store imports; blog has
+  none.
+- archive-lab is registered under a currently unavailable volume, so its result is unknown and it
+  independently blocks recovery.
+- Three of four projects were checked, three relevant links were found, and two blocker categories
+  remain. All directions show the same state and final disabled action.
 
-## Direction A - Transaction summary with inspector (recommended)
+## Direction A - Global impact overview
 
-Artifact: `recovery-transaction-summary-v1.png`.
+Artifact: `recovery-global-overview-v1.png`.
 
-Reuses the approved three-column Habitat workbench. The center shows the two fixed rollback phases
-and blockers rather than Skills; the inspector explains the whole-transaction result and owns the
-single final action. It is the clearest continuation of the current app and keeps the scope visible
-without looking like a picker.
+Uses a full-window Store-level page with aggregate coverage metrics, one row for every managed
+project, and a fixed recovery summary. It balances the global audit surface and the transaction
+result without turning projects into navigation.
 
-Primary risk: the right inspector must remain readable at narrower desktop widths and become the
-same established drawer below 1120px.
+Primary risk: the recovery summary becomes narrow at smaller desktop widths and needs to stack below
+the project table.
 
-## Direction B - Transaction report
+## Direction B - Project impact matrix (recommended)
 
-Artifact: `recovery-transaction-report-v1.png`.
+Artifact: `recovery-global-matrix-v1.png`.
 
-Makes durable manifests and audit history the primary information architecture. A compact
-transaction rail selects the authoritative first-run record; the report shows the two fixed
-rollback phases, aggregate counts, and the single project-link blocker. It exposes no per-Skill
-actions.
+Makes completeness easiest to audit: every registered project is a row and every Habitat-managed
+adapter container is a column. Related link counts, inaccessible routes, and the final whole-
+transaction blocker are visible in one scan. This best matches the corrected global mental model.
 
-Primary risk: transaction terminology is more prominent than the user's immediate task, and the
-second navigation rail consumes useful width.
+Primary risk: adapter columns expose more implementation detail than most users need; responsive
+layouts should collapse them into a per-project detail disclosure.
 
-## Direction C - Guided transaction rollback
+## Direction C - Guided global audit
 
-Artifact: `recovery-transaction-guided-v1.png`.
+Artifact: `recovery-global-guided-v1.png`.
 
-Turns the one rollback into three steps: inspect the fixed scope, resolve all blockers, and confirm
-once. The focused blocker map makes the cross-transaction project-link boundary hardest to miss.
+Turns the rollback into three global stages and groups blockers by action: remove relevant links,
+then repair or explicitly remove an unavailable project registration. A compact checklist still
+proves that all registered projects are included.
 
-Primary risk: the stepper makes a single rollback feel heavier than the rest of Habitat.
+Primary risk: the stepper makes a rare one-time rollback feel heavier and shows less cross-project
+comparison than the matrix.
 
 ## Selection gate
 
-Do not modify production React UI until the product owner explicitly selects A, B, or C. The
-transaction-wide behavior contract is already confirmed, so backend manifest discovery, preflight,
-and blocker tests may proceed independently of the visual selection.
+Do not modify production React UI or add the durable project-registry schema until the product owner
+explicitly selects A, B, or C. Existing backend manifest discovery and bounded link scanning remain
+safe foundations, but caller-supplied project lists are not accepted as proof of global completeness.

@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Habitat global recovery directions</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --canvas: #fbfbf8;
+      --primary: #fff;
+      --subtle: #f4f3ef;
+      --border: #dfded9;
+      --border-strong: #cbc9c2;
+      --text: #282827;
+      --secondary: #70747a;
+      --muted: #9a9da0;
+      --accent: #ff5a49;
+      --accent-soft: #fff0ed;
+      --success: #3f9658;
+      --success-soft: #edf7ef;
+      --warning: #a96c16;
+      --warning-soft: #fff6e5;
+      --danger: #c64239;
+      --danger-soft: #fcecea;
+    }
+    * { box-sizing: border-box; }
+    html, body { width: 1440px; height: 1024px; margin: 0; overflow: hidden; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", sans-serif; color: var(--text); background: #dad8d2; }
+    button { font: inherit; }
+    .view { display: none; width: 1440px; height: 1024px; background: var(--canvas); }
+    body[data-view="overview"] #overview,
+    body[data-view="matrix"] #matrix,
+    body[data-view="guided"] #guided { display: block; }
+    .windowbar { height: 42px; display: flex; align-items: center; gap: 11px; padding: 0 18px; border-bottom: 1px solid var(--border); background: #f8f8f5; }
+    .traffic { width: 13px; height: 13px; border: 1px solid rgba(0,0,0,.12); border-radius: 50%; }
+    .red { background: #ff5f57; } .yellow { background: #febc2e; } .green { background: #28c840; }
+    .appbar { height: 78px; display: flex; align-items: center; justify-content: space-between; padding: 0 36px; border-bottom: 1px solid var(--border); background: rgba(255,255,255,.82); }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-mark { width: 34px; height: 34px; display: grid; place-items: center; border: 2px solid var(--text); border-radius: 8px; transform: rotate(30deg); }
+    .brand-mark::after { content: ""; width: 13px; height: 13px; border: 2px solid var(--text); border-radius: 3px; }
+    .brand strong { display: block; font-size: 20px; line-height: 1.1; }
+    .brand small { display: block; margin-top: 4px; color: var(--secondary); font-size: 11px; }
+    .back { height: 38px; padding: 0 14px; border: 1px solid var(--border-strong); border-radius: 8px; background: var(--primary); color: var(--secondary); font-weight: 600; }
+    .page { height: 904px; }
+    .hero { display: flex; align-items: flex-end; justify-content: space-between; min-height: 150px; padding: 30px 42px 26px; border-bottom: 1px solid var(--border); }
+    .eyebrow { display: block; margin-bottom: 8px; color: var(--secondary); font-size: 11px; font-weight: 700; letter-spacing: .08em; }
+    h1 { margin: 0; font-size: 29px; line-height: 1.2; letter-spacing: -.02em; }
+    .hero p { margin: 9px 0 0; color: var(--secondary); font-size: 13px; }
+    .recheck { height: 40px; padding: 0 15px; border: 1px solid var(--border-strong); border-radius: 8px; background: var(--primary); font-weight: 600; }
+    .scope-note { display: inline-flex; align-items: center; gap: 7px; margin-top: 12px; color: #397147; font-size: 12px; font-weight: 600; }
+    .scope-note::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--success); }
+    .metrics { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--border); border-radius: 11px; overflow: hidden; background: var(--primary); }
+    .metric { padding: 17px 19px; border-right: 1px solid var(--border); }
+    .metric:last-child { border-right: 0; }
+    .metric b { display: block; font-size: 23px; }
+    .metric span { display: block; margin-top: 4px; color: var(--secondary); font-size: 11px; }
+    .danger-text { color: var(--danger); }
+    .success-text { color: var(--success); }
+    .card { border: 1px solid var(--border); border-radius: 11px; background: var(--primary); overflow: hidden; }
+    .card-head { min-height: 66px; display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; border-bottom: 1px solid var(--border); }
+    .card-head h2, .card-head h3 { margin: 0; font-size: 15px; }
+    .card-head p { margin: 5px 0 0; color: var(--secondary); font-size: 11px; }
+    .count { min-width: 26px; height: 22px; display: inline-grid; place-items: center; padding: 0 7px; border-radius: 11px; background: var(--subtle); color: var(--secondary); font-size: 11px; }
+    .status { display: inline-flex; align-items: center; gap: 7px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+    .status::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+    .status.ok { color: var(--success); } .status.bad { color: var(--danger); } .status.warn { color: var(--warning); }
+    .project-name strong { display: block; font-size: 13px; }
+    .project-name code { display: block; max-width: 450px; margin-top: 5px; overflow: hidden; color: var(--secondary); font: 10px ui-monospace, SFMono-Regular, Menlo, monospace; text-overflow: ellipsis; white-space: nowrap; }
+    .chip { display: inline-flex; align-items: center; height: 24px; padding: 0 8px; border-radius: 12px; background: var(--subtle); color: var(--secondary); font-size: 10px; font-weight: 650; }
+    .chip.bad { background: var(--danger-soft); color: var(--danger); }
+    .chip.ok { background: var(--success-soft); color: var(--success); }
+    .row-button { height: 32px; padding: 0 11px; border: 1px solid var(--border-strong); border-radius: 7px; background: var(--primary); font-size: 11px; font-weight: 650; }
+    .disabled-action { height: 44px; padding: 0 18px; border: 1px solid var(--border); border-radius: 8px; background: #f2f1ed; color: var(--muted); font-weight: 650; }
+    .blocker { padding: 13px 14px; border: 1px solid #eab7b2; border-radius: 8px; background: var(--danger-soft); }
+    .blocker strong { display: block; color: var(--danger); font-size: 12px; }
+    .blocker p { margin: 6px 0 0; color: #81544f; font-size: 11px; line-height: 1.45; }
+    .mono { color: var(--secondary); font: 10px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace; }
+
+    /* A: overview */
+    .overview-body { padding: 22px 42px; }
+    .overview-grid { display: grid; grid-template-columns: minmax(0, 1fr) 350px; gap: 18px; margin-top: 18px; }
+    .project-head, .project-row { display: grid; grid-template-columns: minmax(260px, 1.3fr) 130px 112px 104px 108px; gap: 12px; align-items: center; padding: 0 18px; }
+    .project-head { height: 38px; border-bottom: 1px solid var(--border); color: var(--secondary); font-size: 10px; font-weight: 700; }
+    .project-row { min-height: 72px; border-bottom: 1px solid var(--border); }
+    .project-row:last-child { border-bottom: 0; }
+    .project-row.unreadable { background: #fffaf1; }
+    .summary-panel { display: flex; flex-direction: column; min-height: 476px; }
+    .summary-section { padding: 17px 19px; border-bottom: 1px solid var(--border); }
+    .summary-section h3 { margin: 0 0 11px; font-size: 12px; }
+    .summary-line { display: flex; justify-content: space-between; margin-top: 9px; color: var(--secondary); font-size: 11px; }
+    .summary-line b { color: var(--text); }
+    .summary-footer { margin-top: auto; padding: 17px 19px; }
+    .summary-footer button { width: 100%; }
+    .summary-footer small { display: block; margin-top: 9px; color: var(--secondary); font-size: 10px; line-height: 1.45; text-align: center; }
+
+    /* B: matrix */
+    .matrix-body { padding: 22px 42px 90px; }
+    .matrix-body .metrics { margin-bottom: 18px; }
+    .matrix-head, .matrix-row { display: grid; grid-template-columns: minmax(250px, 1.2fr) 118px 118px 118px 150px 110px; align-items: center; gap: 10px; padding: 0 20px; }
+    .matrix-head { height: 43px; border-bottom: 1px solid var(--border); background: var(--subtle); color: var(--secondary); font-size: 10px; font-weight: 700; }
+    .matrix-row { min-height: 77px; border-bottom: 1px solid var(--border); }
+    .matrix-row:last-child { border-bottom: 0; }
+    .route-cell { display: flex; align-items: center; gap: 7px; color: var(--secondary); font-size: 11px; }
+    .route-cell b { min-width: 24px; height: 24px; display: grid; place-items: center; border: 1px solid var(--border); border-radius: 6px; background: var(--subtle); color: var(--text); font-size: 10px; }
+    .route-cell.hit { color: var(--danger); font-weight: 700; }
+    .route-cell.hit b { border-color: #e5aaa5; background: var(--danger-soft); color: var(--danger); }
+    .route-cell.unknown { color: var(--warning); }
+    .route-cell.unknown b { border-color: #edd19c; background: var(--warning-soft); color: var(--warning); }
+    .legend { display: flex; gap: 18px; padding: 13px 20px; border-top: 1px solid var(--border); color: var(--secondary); font-size: 10px; }
+    .fixedbar { position: absolute; left: 0; right: 0; bottom: 0; height: 78px; display: flex; align-items: center; justify-content: space-between; padding: 0 42px; border-top: 1px solid var(--border); background: rgba(255,255,255,.97); }
+    .fixedbar strong { display: block; font-size: 13px; }
+    .fixedbar small { display: block; margin-top: 5px; color: var(--secondary); font-size: 11px; }
+
+    /* C: guided */
+    .stepbar { height: 68px; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid var(--border); background: var(--primary); }
+    .step { display: flex; align-items: center; gap: 8px; color: var(--secondary); font-size: 11px; font-weight: 650; }
+    .step b { width: 25px; height: 25px; display: grid; place-items: center; border: 1px solid var(--border-strong); border-radius: 50%; background: var(--primary); }
+    .step.active { color: var(--text); }
+    .step.active b { border-color: var(--accent); background: var(--accent); color: #fff; }
+    .step.done b { border-color: var(--success); background: var(--success-soft); color: var(--success); }
+    .step-line { width: 120px; height: 1px; margin: 0 14px; background: var(--border); }
+    .guided-body { width: 1060px; margin: 0 auto; padding: 25px 0 96px; }
+    .guided-title { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 18px; }
+    .guided-title h2 { margin: 0; font-size: 21px; }
+    .guided-title p { margin: 7px 0 0; color: var(--secondary); font-size: 12px; }
+    .progress { width: 230px; }
+    .progress-label { display: flex; justify-content: space-between; margin-bottom: 7px; color: var(--secondary); font-size: 10px; }
+    .track { height: 6px; overflow: hidden; border-radius: 3px; background: #e7e5df; }
+    .track i { display: block; width: 75%; height: 100%; background: var(--accent); }
+    .guided-grid { display: grid; grid-template-columns: 1fr 318px; gap: 18px; }
+    .issue { display: grid; grid-template-columns: 40px minmax(0, 1fr) 122px; gap: 13px; align-items: start; padding: 17px 18px; border-bottom: 1px solid var(--border); }
+    .issue:last-child { border-bottom: 0; }
+    .issue-icon { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 8px; background: var(--danger-soft); color: var(--danger); font-weight: 800; }
+    .issue h3 { margin: 0; font-size: 13px; }
+    .issue p { margin: 6px 0 0; color: var(--secondary); font-size: 11px; line-height: 1.5; }
+    .issue-side { text-align: right; }
+    .audit-list { padding: 8px 18px; }
+    .audit-item { display: flex; align-items: center; justify-content: space-between; min-height: 46px; border-bottom: 1px solid var(--border); font-size: 11px; }
+    .audit-item:last-child { border-bottom: 0; }
+  </style>
+</head>
+<body data-view="overview">
+  <section class="view" id="overview">
+    <div class="windowbar"><i class="traffic red"></i><i class="traffic yellow"></i><i class="traffic green"></i></div>
+    <div class="appbar"><div class="brand"><span class="brand-mark"></span><span><strong>Habitat</strong><small>本地优先 · Skill 管理器</small></span></div><button class="back">← 返回项目管理</button></div>
+    <main class="page">
+      <header class="hero"><div><span class="eyebrow">GLOBAL RECOVERY</span><h1>恢复到首次迁移前</h1><p>这是全局操作。Habitat 会先检查所有已纳管项目，再决定整笔恢复能否执行。</p><span class="scope-note">审计范围来自 Habitat 项目注册表，不扫描磁盘上的其他文件夹</span></div><button class="recheck">↻ 重新检查全部项目</button></header>
+      <div class="overview-body">
+        <div class="metrics"><div class="metric"><b>4</b><span>已纳管项目</span></div><div class="metric"><b>3 / 4</b><span>已完成检查</span></div><div class="metric"><b class="danger-text">3</b><span>仍依赖 Store 的链接</span></div><div class="metric"><b class="danger-text">2</b><span>阻断原因</span></div></div>
+        <div class="overview-grid">
+          <section class="card"><div class="card-head"><div><h2>所有已纳管项目</h2><p>每个项目都必须得到明确结果，缺失结果不会被视为安全。</p></div><span class="count">4</span></div>
+            <div class="project-head"><span>项目</span><span>可访问性</span><span>相关链接</span><span>结果</span><span>处理</span></div>
+            <div class="project-row"><div class="project-name"><strong>Habitat</strong><code>/Users/luyao/Project/Habitat</code></div><span class="chip ok">可访问</span><b class="danger-text">1 个</b><span class="status bad">阻断</span><button class="row-button">打开项目</button></div>
+            <div class="project-row"><div class="project-name"><strong>media</strong><code>/Users/luyao/Project/media</code></div><span class="chip ok">可访问</span><b class="danger-text">2 个</b><span class="status bad">阻断</span><button class="row-button">打开项目</button></div>
+            <div class="project-row"><div class="project-name"><strong>blog</strong><code>/Users/luyao/Project/blog</code></div><span class="chip ok">可访问</span><b>0 个</b><span class="status ok">通过</span><button class="row-button">查看</button></div>
+            <div class="project-row unreadable"><div class="project-name"><strong>archive-lab</strong><code>/Volumes/Archive/archive-lab</code></div><span class="chip bad">路径不可用</span><b>未知</b><span class="status warn">未完成</span><button class="row-button">修复路径</button></div>
+          </section>
+          <aside class="card summary-panel"><div class="card-head"><div><h3>整笔恢复</h3><p>首次迁移 · 64b7e8a1</p></div><span class="status bad">已阻断</span></div><div class="summary-section"><h3>恢复结果</h3><div class="summary-line"><span>恢复原用户入口</span><b>2</b></div><div class="summary-line"><span>移除本事务 Store 导入</span><b>43</b></div><div class="summary-line"><span>修改 Agent 设置</span><b>0</b></div></div><div class="summary-section"><div class="blocker"><strong>还不能恢复</strong><p>先移除 3 个相关项目链接，并让 archive-lab 完成检查；Habitat 不会自动删除项目链接。</p></div></div><div class="summary-footer"><button class="disabled-action" disabled>恢复整笔首次迁移</button><small>全部 4 个项目检查通过后，按钮才会启用。</small></div></aside>
+        </div>
+      </div>
+    </main>
+  </section>
+
+  <section class="view" id="matrix">
+    <div class="windowbar"><i class="traffic red"></i><i class="traffic yellow"></i><i class="traffic green"></i></div>
+    <div class="appbar"><div class="brand"><span class="brand-mark"></span><span><strong>Habitat</strong><small>本地优先 · Skill 管理器</small></span></div><button class="back">← 返回项目管理</button></div>
+    <main class="page" style="position:relative"><header class="hero"><div><span class="eyebrow">ALL PROJECTS AUDIT</span><h1>项目影响矩阵</h1><p>横向核对所有 Habitat adapter 入口；没有当前项目，也不允许跳过任何已纳管项目。</p><span class="scope-note">4 个项目必须全部完成可访问性与链接检查</span></div><button class="recheck">↻ 全量复检</button></header>
+      <div class="matrix-body"><div class="metrics"><div class="metric"><b>4</b><span>注册项目总数</span></div><div class="metric"><b class="success-text">1</b><span>完整通过</span></div><div class="metric"><b class="danger-text">2</b><span>存在相关链接</span></div><div class="metric"><b class="danger-text">1</b><span>无法确认</span></div></div>
+        <section class="card"><div class="card-head"><div><h2>全局 adapter 检查</h2><p>数字表示指向本次待移除 Store imports 的链接数量。</p></div><span class="status bad">恢复已阻断</span></div>
+          <div class="matrix-head"><span>项目</span><span>.agents</span><span>.claude</span><span>.trae</span><span>影响</span><span>检查结果</span></div>
+          <div class="matrix-row"><div class="project-name"><strong>Habitat</strong><code>/Users/luyao/Project/Habitat</code></div><div class="route-cell hit"><b>A</b>1</div><div class="route-cell"><b>C</b>0</div><div class="route-cell"><b>T</b>0</div><span>1 个相关链接</span><span class="status bad">阻断</span></div>
+          <div class="matrix-row"><div class="project-name"><strong>media</strong><code>/Users/luyao/Project/media</code></div><div class="route-cell hit"><b>A</b>1</div><div class="route-cell hit"><b>C</b>1</div><div class="route-cell"><b>T</b>0</div><span>2 个相关链接</span><span class="status bad">阻断</span></div>
+          <div class="matrix-row"><div class="project-name"><strong>blog</strong><code>/Users/luyao/Project/blog</code></div><div class="route-cell"><b>A</b>0</div><div class="route-cell"><b>C</b>0</div><div class="route-cell"><b>T</b>0</div><span>无影响</span><span class="status ok">通过</span></div>
+          <div class="matrix-row" style="background:#fffaf1"><div class="project-name"><strong>archive-lab</strong><code>/Volumes/Archive/archive-lab</code></div><div class="route-cell unknown"><b>A</b>?</div><div class="route-cell unknown"><b>C</b>?</div><div class="route-cell unknown"><b>T</b>?</div><span>路径不可用</span><span class="status warn">未确认</span></div>
+          <div class="legend"><span>● 红色：发现相关链接</span><span>● 黄色：无法完成检查</span><span>● 绿色：检查完成且无影响</span></div>
+        </section>
+      </div>
+      <div class="fixedbar"><div><strong>尚有 3 个相关链接，1 个项目未完成检查</strong><small>Habitat 不会自动清理链接；任何未知状态都阻断整笔恢复。</small></div><button class="disabled-action" disabled>恢复整笔首次迁移</button></div>
+    </main>
+  </section>
+
+  <section class="view" id="guided">
+    <div class="windowbar"><i class="traffic red"></i><i class="traffic yellow"></i><i class="traffic green"></i></div>
+    <div class="appbar"><div class="brand"><span class="brand-mark"></span><span><strong>Habitat</strong><small>本地优先 · Skill 管理器</small></span></div><button class="back">退出恢复</button></div>
+    <main class="page" style="position:relative"><div class="stepbar"><div class="step done"><b>✓</b>确认迁移事务</div><i class="step-line"></i><div class="step active"><b>2</b>检查所有项目</div><i class="step-line"></i><div class="step"><b>3</b>确认整笔恢复</div></div>
+      <div class="guided-body"><div class="guided-title"><div><span class="eyebrow">STEP 2 OF 3</span><h2>先解决全局阻断</h2><p>所有已纳管项目都通过后，Habitat 才会进入最后确认。</p></div><div class="progress"><div class="progress-label"><span>项目检查进度</span><b>3 / 4</b></div><div class="track"><i></i></div></div></div>
+        <div class="guided-grid"><section class="card"><div class="card-head"><div><h2>需要处理</h2><p>2 类阻断共同阻止整笔恢复。</p></div><span class="count">2</span></div>
+          <div class="issue"><div class="issue-icon">↗</div><div><h3>2 个项目仍有 3 个相关链接</h3><p>Habitat 和 media 的 adapter 链接仍指向本次待移除的 Store 内容。请在对应项目中移除这些链接，再回到这里复检。</p><p class="mono">Habitat · .agents/skills/finding-unknowns<br>media · .agents/skills/browser · .claude/skills/browser</p></div><div class="issue-side"><button class="row-button">查看全部链接</button></div></div>
+          <div class="issue"><div class="issue-icon">!</div><div><h3>archive-lab 尚未完成检查</h3><p>注册路径当前不可访问。重新连接磁盘并复检，或明确从 Habitat 移除这个失效项目记录；在此之前不能证明恢复安全。</p><p class="mono">/Volumes/Archive/archive-lab</p></div><div class="issue-side"><button class="row-button">修复项目路径</button></div></div>
+        </section>
+        <aside class="card"><div class="card-head"><div><h3>全量检查清单</h3><p>项目注册表 · 4 项</p></div><span class="status warn">未完成</span></div><div class="audit-list"><div class="audit-item"><span>Habitat</span><span class="status bad">1 个链接</span></div><div class="audit-item"><span>media</span><span class="status bad">2 个链接</span></div><div class="audit-item"><span>blog</span><span class="status ok">通过</span></div><div class="audit-item"><span>archive-lab</span><span class="status warn">不可访问</span></div></div><div class="summary-section"><h3>通过后将一次完成</h3><div class="summary-line"><span>恢复原入口</span><b>2</b></div><div class="summary-line"><span>移除 Store imports</span><b>43</b></div><div class="summary-line"><span>自动删除项目链接</span><b>0</b></div></div></aside></div>
+      </div>
+      <div class="fixedbar"><div><strong>第 2 步尚未完成</strong><small>解决 2 类阻断并重新检查所有项目后继续。</small></div><button class="disabled-action" disabled>继续确认恢复</button></div>
+    </main>
+  </section>
+  <script>
+    const view = new URLSearchParams(location.search).get('view');
+    if (['overview', 'matrix', 'guided'].includes(view)) document.body.dataset.view = view;
+  </script>
+</body>
+</html>

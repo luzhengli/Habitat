@@ -3,6 +3,30 @@
 最新记录在最上方；每个 session 一条。超过约 150 行时，将最新五条之前的内容压缩到
 Digest。
 
+## 2026-08-12 — M9: Recovery 改为无项目侧栏的全局审计
+
+- Approval: 产品负责人拒绝此前三份整笔恢复视觉稿，纠正其信息架构：Recovery 可能影响
+  所有项目，必须检查所有项目的链接情况；项目只是审计对象，Recovery 页面不展示项目侧栏，
+  也不存在“当前项目”。
+- Scope interpretation: “所有项目”暂定义为 Habitat 持久化注册表中的全部已纳管项目，不做
+  无边界全盘扫描；每个注册项目必须得到明确的可访问性和相关链接检查结果。路径缺失、权限
+  不足、不可读或其他未知状态与相关 Store 链接一样，都会阻断整笔恢复。
+- Architecture gap: 当前项目清单只在 WebView local storage 持久化，再由前端作为
+  `managedProjects` 传给 Rust。现有 `find_managed_links_to_sources` 可以安全扫描给定集合，
+  但后端无法证明调用方没有漏传项目；生产执行前需要后端直接读取的 durable authoritative
+  managed-project registry，不能把 caller-supplied list 当作全量证据。
+- Reaction prototypes: 新增无项目侧栏、相同 4 项目 / 3 相关链接 / 1 不可访问项目 fixture 的
+  三份 1440×1024 原型：`recovery-global-overview-v1.png`（A，全局影响概览）、
+  `recovery-global-matrix-v1.png`（B，项目影响矩阵，推荐）和
+  `recovery-global-guided-v1.png`（C，引导式全局审计）。三稿均显示全量覆盖状态、未知即阻断、
+  不自动删除项目链接和唯一禁用恢复动作，无 Skill 选择或逐项恢复。
+- Visual QA: 三张 PNG 已按原始 1440×1024 尺寸检查，内容无裁切；Quiet Native token、单一
+  珊瑚红语义和 macOS 全局工具页结构保持一致。
+- Safety: 本轮只修改原型与 harness 文档，未修改生产 React/Rust、真实 Skill Store、项目
+  链接或 Agent 配置；现有未跟踪 `.agents/` 继续不触碰。
+- State: 等待产品负责人从新的全局 A/B/C 中选择；选择前不得新增注册表 schema 或实现生产
+  Recovery UI。M9 保持 `doing`。
+
 ## 2026-08-12 — M9: 确认整笔 Recovery 合同并完成安全后端
 
 - Approval: 产品负责人纠正并确认侧栏 Recovery 是一次性撤销整笔首次迁移，不需要用户

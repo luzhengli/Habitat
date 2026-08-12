@@ -23,7 +23,7 @@ Digest。
   后只续接仍为 quarantined/imported 的操作，不能误报“未修改文件”。
 - Post-success: 显示可观察成功页后回到首次设置；建议保留 Store 路径、项目注册与事务历史为
   dormant 元数据，清除 setup-complete 状态，不自动修改 Agent 设置或任何项目链接。
-- Artifacts: `recovery-global-overview-flow.md` 记录 13 个状态、blocker taxonomy、数据合同、
+- Artifacts: `recovery-global-overview-flow.md` 记录 14 个状态、blocker taxonomy、数据合同、
   accessibility 和 9 类 fixture 验收；`recovery-global-overview-flow.html` 渲染 11 张关键
   1440×1024 PNG，包括 checking、blocked、link details、project handoff、ready、confirm、
   running、success、partial、empty 与 fatal。

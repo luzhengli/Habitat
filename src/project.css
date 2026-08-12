@@ -97,6 +97,29 @@
 .skill-columns span:nth-child(2) { display: flex; align-items: center; gap: 5px; }
 .skill-columns svg { width: 13px; height: 13px; }
 .skill-list { min-height: 0; flex: 1; overflow-y: auto; }
+.skill-section { border: 0; }
+.skill-section-toggle {
+  display: flex;
+  width: 100%;
+  min-height: 48px;
+  align-items: center;
+  gap: 10px;
+  padding: 0 24px;
+  border: 0;
+  border-bottom: 1px solid var(--border-default);
+  background: var(--surface-primary);
+  color: var(--text-primary);
+  text-align: left;
+  cursor: pointer;
+}
+.skill-section-toggle:hover { background: var(--surface-subtle); }
+.skill-section-toggle:focus-visible { position: relative; z-index: 2; outline: 2px solid var(--accent); outline-offset: -2px; }
+.skill-section-toggle svg { width: 16px; height: 16px; flex: 0 0 auto; transition: transform var(--motion-fast) var(--easing); }
+.skill-section-toggle svg.collapsed { transform: rotate(-90deg); }
+.skill-section-toggle strong { font-size: 14px; font-weight: 600; }
+.skill-section-toggle > span { color: var(--text-secondary); font-size: 13px; }
+.skill-section-toggle small { color: var(--text-secondary); font-size: 12px; }
+.skill-list-empty { display: grid; min-height: 160px; place-items: center; padding: 24px; color: var(--text-secondary); font-size: 13px; text-align: center; }
 .skill-row { position: relative; min-height: 98px; padding: 0 24px; border-bottom: 1px solid var(--border-default); cursor: pointer; }
 .skill-row:hover { background: var(--surface-subtle); }
 .skill-row.selected { background: var(--accent-subtle); box-shadow: inset 2px 0 0 var(--accent); }
@@ -240,11 +263,15 @@
 @media (max-width: 1024px) {
   body { min-width: 900px; }
   .project-shell { grid-template-columns: 190px minmax(0, 1fr); }
-  .project-header, .project-toolbar, .skill-columns, .skill-row, .pending-bar { padding-right: 18px; padding-left: 18px; }
+  .project-header, .project-toolbar, .skill-columns, .skill-section-toggle, .skill-row, .pending-bar { padding-right: 18px; padding-left: 18px; }
   .skill-columns, .skill-row { grid-template-columns: minmax(210px, 1fr) 254px 102px 36px; }
   .skill-row { min-height: 92px; }
   .agent-toggle.shared { min-width: 96px; }
   .agent-toggle { gap: 6px; padding: 0 7px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skill-section-toggle svg { transition: none; }
 }
 
 @keyframes spin { to { transform: rotate(360deg); } }

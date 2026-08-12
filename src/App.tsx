@@ -43,6 +43,7 @@ import "./project.css";
 type GroupState = Record<TargetGroupId, boolean>;
 type DraftMap = Record<string, GroupState>;
 type Filter = "all" | "linked" | "available" | "pending" | "attention";
+type SkillSectionId = "linked" | "available";
 type Notice = { tone: "error" | "success"; title: string; detail: string };
 type ManagedProject = { root: string; groups: TargetGroupId[] };
 
@@ -169,15 +170,16 @@ export default function App() {
   const [base, setBase] = useState<DraftMap>(() => deriveBase(qaMode?.startsWith("project-") ? projectQaWorkspace.skills : []));
   const [draft, setDraft] = useState<DraftMap>(() => {
     const initial = deriveBase(qaMode?.startsWith("project-") ? projectQaWorkspace.skills : []);
-    if (qaMode?.startsWith("project-") && initial["project-harness"]) {
+    if (qaMode?.startsWith("project-") && qaMode !== "project-grouped" && initial["project-harness"]) {
       initial["project-harness"] = { ...initial["project-harness"], agents_shared: true, claude: true };
       initial["media-kit"] = { ...initial["media-kit"], trae: false };
     }
     return initial;
   });
-  const [selectedName, setSelectedName] = useState(qaMode?.startsWith("project-") ? "project-harness" : "");
+  const [selectedName, setSelectedName] = useState(qaMode === "project-grouped" ? "explain-and-quiz" : qaMode?.startsWith("project-") ? "project-harness" : "");
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<Filter>("all");
+  const [collapsedSections, setCollapsedSections] = useState<Record<SkillSectionId, boolean>>({ linked: false, available: false });
   const [busy, setBusy] = useState<"load" | "plan" | "apply" | null>(null);
   const [reviewPlan, setReviewPlan] = useState<ProjectExposurePlan | null>(null);
   const [notice, setNotice] = useState<Notice | null>(null);
@@ -211,6 +213,7 @@ export default function App() {
       setProjectRoot(inspection.projectRoot);
       setBase(nextBase);
       setDraft(nextBase);
+      setCollapsedSections({ linked: false, available: false });
       setSelectedName((current) => freshStore.skills.some((skill) => skill.name === current) ? current : freshStore.skills[0]?.name ?? "");
     } catch (error) {
       const detail = toError(error);
@@ -285,7 +288,7 @@ export default function App() {
     const query = search.trim().toLocaleLowerCase();
     const dirtyNames = new Set(dirty.map((item) => item.name));
     return (store?.skills ?? []).filter((skill) => {
-      const groups = draft[skill.name];
+      const groups = base[skill.name];
       const inspection = inspectionByName.get(skill.name);
       const isLinked = groups && Object.values(groups).some(Boolean);
       const attention = inspection && (Object.keys(groups ?? {}) as TargetGroupId[]).some((group) => groupHasProblem(inspection, group));
@@ -296,7 +299,20 @@ export default function App() {
         || (filter === "attention" && attention);
       return matchesFilter && (!query || `${skill.name} ${skill.description}`.toLocaleLowerCase().includes(query));
     });
-  }, [store, draft, dirty, filter, search, inspectionByName]);
+  }, [store, base, dirty, filter, search, inspectionByName]);
+
+  const skillSections = useMemo(() => {
+    const linked = visibleSkills.filter((skill) => Object.values(base[skill.name] ?? {}).some(Boolean));
+    const available = visibleSkills.filter((skill) => !Object.values(base[skill.name] ?? {}).some(Boolean));
+    return [
+      { id: "linked" as const, title: "当前可用", description: null, skills: linked },
+      { id: "available" as const, title: "尚未添加", description: "从 Skill Store 选择并添加", skills: available },
+    ].filter((section) => section.skills.length > 0);
+  }, [visibleSkills, base]);
+
+  const toggleSection = (section: SkillSectionId) => {
+    setCollapsedSections((current) => ({ ...current, [section]: !current[section] }));
+  };
 
   const review = async () => {
     if (!store || !projectRoot || dirty.length === 0 || blockingCount > 0) return;
@@ -393,25 +409,40 @@ export default function App() {
         {notice && <NoticeBanner notice={notice} onClose={() => setNotice(null)} />}
         <div className="skill-columns"><span>Skill</span><span>适用于 <Info /></span><span>来源与版本</span><span>状态</span></div>
         <div className="skill-list">
-          {visibleSkills.map((skill) => {
-            const groups = draft[skill.name];
-            const verified = base[skill.name];
-            const inspection = inspectionByName.get(skill.name)!;
-            const skillDirty = dirty.filter((item) => item.name === skill.name);
-            const hasProblem = (Object.keys(groups) as TargetGroupId[]).some((group) => groupHasProblem(inspection, group));
-            return (
-              <div key={skill.name} className={`skill-row ${selectedName === skill.name ? "selected" : ""}`} onClick={() => { setSelectedName(skill.name); setInspectorOpen(true); }}>
-                <div className="skill-name"><SkillGlyph name={skill.name} /><span><strong>{skill.name}</strong><small>{skill.description}</small></span></div>
-                <div className="skill-agents" onClick={(event) => event.stopPropagation()}>
-                  {(["agents_shared", "claude", "trae"] as TargetGroupId[]).map((group) => <AgentGroupButton key={group} group={group} current={groups[group]} verified={verified[group]} blocked={groupHasProblem(inspection, group)} disabled={!activeGroups.includes(group)} forceHelp={Boolean(qaMode?.startsWith("project-") && selectedName === skill.name && group === "agents_shared")} onToggle={() => toggle(skill.name, group)} />)}
-                </div>
-                <div className="skill-source"><span>Skill Store</span><small>v{skill.version}</small></div>
-                <div className={`skill-status ${skillDirty.length ? "pending" : hasProblem ? "warning" : Object.values(groups).some(Boolean) ? "ok" : "off"}`} title={skillDirty.length ? "有待应用更改" : hasProblem ? "需要处理" : Object.values(groups).some(Boolean) ? "已验证" : "未添加"}>
-                  {skillDirty.length ? <CircleDot /> : hasProblem ? <AlertCircle /> : Object.values(groups).some(Boolean) ? <CheckCircle2 /> : <span>—</span>}
-                </div>
+          {skillSections.map((section) => {
+            const collapsed = collapsedSections[section.id];
+            const contentId = `skill-section-${section.id}`;
+            return <section className="skill-section" key={section.id}>
+              <button className="skill-section-toggle" type="button" onClick={() => toggleSection(section.id)} aria-expanded={!collapsed} aria-controls={contentId}>
+                <ChevronDown className={collapsed ? "collapsed" : ""} aria-hidden="true" />
+                <strong>{section.title}</strong>
+                <span>{section.skills.length}</span>
+                {section.description && <small>{section.description}</small>}
+              </button>
+              <div id={contentId} hidden={collapsed}>
+                {section.skills.map((skill) => {
+                  const groups = draft[skill.name];
+                  const verified = base[skill.name];
+                  const inspection = inspectionByName.get(skill.name)!;
+                  const skillDirty = dirty.filter((item) => item.name === skill.name);
+                  const hasProblem = (Object.keys(groups) as TargetGroupId[]).some((group) => groupHasProblem(inspection, group));
+                  return (
+                    <div key={skill.name} className={`skill-row ${selectedName === skill.name ? "selected" : ""}`} onClick={() => { setSelectedName(skill.name); setInspectorOpen(true); }}>
+                      <div className="skill-name"><SkillGlyph name={skill.name} /><span><strong>{skill.name}</strong><small>{skill.description}</small></span></div>
+                      <div className="skill-agents" onClick={(event) => event.stopPropagation()}>
+                        {(["agents_shared", "claude", "trae"] as TargetGroupId[]).map((group) => <AgentGroupButton key={group} group={group} current={groups[group]} verified={verified[group]} blocked={groupHasProblem(inspection, group)} disabled={!activeGroups.includes(group)} forceHelp={Boolean(qaMode?.startsWith("project-") && qaMode !== "project-grouped" && selectedName === skill.name && group === "agents_shared")} onToggle={() => toggle(skill.name, group)} />)}
+                      </div>
+                      <div className="skill-source"><span>Skill Store</span><small>v{skill.version}</small></div>
+                      <div className={`skill-status ${skillDirty.length ? "pending" : hasProblem ? "warning" : Object.values(groups).some(Boolean) ? "ok" : "off"}`} title={skillDirty.length ? "有待应用更改" : hasProblem ? "需要处理" : Object.values(groups).some(Boolean) ? "已验证" : "未添加"}>
+                        {skillDirty.length ? <CircleDot /> : hasProblem ? <AlertCircle /> : Object.values(groups).some(Boolean) ? <CheckCircle2 /> : <span>—</span>}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-            );
+            </section>;
           })}
+          {skillSections.length === 0 && <div className="skill-list-empty">没有符合当前搜索和筛选条件的 Skill。</div>}
         </div>
         {dirty.length > 0 && <div className="pending-bar">
           <div><strong>待应用更改</strong><span>涉及 {new Set(dirty.map((item) => item.name)).size} 个 Skill · 添加 {dirty.filter((item) => item.action === "create").length} · 移除 {dirty.filter((item) => item.action === "remove").length}</span>{blockingCount > 0 && <small>{blockingCount} 项需要先处理</small>}</div>

@@ -3,6 +3,32 @@
 最新记录在最上方；每个 session 一条。超过约 150 行时，将最新五条之前的内容压缩到
 Digest。
 
+## 2026-08-12 — M9: 开始实现项目 Skills 状态分组
+
+- Approval: 产品负责人从三份原型中选择可折叠分组方案，并进一步确认删除筛选下方的
+  “记住折叠状态”整行及两个分组右侧的“收起”文字；最终视觉目标为
+  `docs/prototypes/mvp/project-skills-grouped-selected-v1.png`。
+- Scope: 项目 Skills 中栏按最近一次验证状态分为“当前可用 / 尚未添加”，前者垂直置顶；
+  两组默认展开，左侧 disclosure 箭头独立控制整组 Skills 的隐藏与恢复。搜索和状态筛选
+  继续先过滤结果，Agent 点击仍只形成草稿，不改变 adapter、命令或路径安全语义。
+- Implementation: `App.tsx` 先按搜索/筛选得到结果，再以最近验证的 `base` 状态归组；空组
+  不渲染，分组标题显示结果数量。每组整行按钮提供 `aria-expanded`、`aria-controls` 和独立
+  React 状态；`project-grouped` fixture 保持无草稿的 4 / 2 基线。`project.css` 增加 48px
+  disclosure 标题、focus ring、箭头旋转和 reduced-motion 覆盖；`DESIGN.md` 已记录稳定规则。
+- Browser evidence: 1440×1024 默认态为
+  `docs/qa/project-skills-grouped-default.png`，当前可用折叠态为
+  `docs/qa/project-skills-grouped-current-collapsed.png`，同图对比为
+  `docs/qa/project-skills-grouped-comparison.png`。两组初始均 `aria-expanded=true`；各自折叠
+  只隐藏本组并保留另一组，第二次点击恢复。筛选只留下匹配分组；`project-harness` 草稿仍
+  留在尚未添加组且出现待应用栏。console 为 0 warnings / 0 errors。
+- Visual QA: `design-qa.md` 新增本切片证据与五项 fidelity surface，`final result: passed`；
+  没有 P0/P1/P2，保留真实图标/既有行状态语义作为已接受的 P3 实现差异。
+- Gate: `npm run check` → exit 0；Rust 36 passed、Vite 1595 modules transformed，并生成
+  debug `Habitat.app`。
+- Safety: 本轮不发布、不修改真实项目或 Skill Store；开发态视觉和交互只使用现有
+  `project-*` fixture。工作树已有未跟踪 `.agents/`，属于用户内容，本轮不触碰。
+- State: 状态分组切片完成；M9 继续 `doing`，仍等待发布目标、签名/分发方式和发布范围确认。
+
 ## 2026-08-11 — M9: 修复重复 Recovery 并精确回滚真实事务
 
 - Root cause: Codex/Pi/Cursor 等 adapter 会把共享 discovery root 分别记为 Agent route；

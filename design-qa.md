@@ -1,5 +1,74 @@
 # Habitat Design QA
 
+## Project Skills 状态分组 target and evidence
+
+**Source visual truth**
+
+- `docs/prototypes/mvp/project-skills-grouped-selected-v1.png`.
+- Source pixels: 1487×1058；对比时仅做等比例语义画布归一到 1440×1024，不做密度转换。
+- State: `media` 项目、`explain-and-quiz` 选中；“当前可用 4”在前、“尚未添加 2”在后，
+  两组均展开；没有“记住折叠状态”或“收起”文字。
+
+**Rendered implementation**
+
+- `docs/qa/project-skills-grouped-default.png`.
+- CSS viewport and capture: 1440×1024 at device scale factor 1；文档与 body 均无横纵溢出。
+- Full-view normalized comparison: `docs/qa/project-skills-grouped-comparison.png`，确认稿在左，
+  实现在右。
+- Folded interaction evidence: `docs/qa/project-skills-grouped-current-collapsed.png`.
+- State: `?qa=project-grouped` 开发 fixture，使用同一 6 Skill / 4 当前可用 / 2 尚未添加数据。
+
+### Findings
+
+No actionable P0/P1/P2 findings remain for the approved grouping surface or its expand/collapse
+behavior.
+
+- [P3] 生成确认稿使用约 98px 高行，当前实现沿用既有生产 V2 的同一 98px token，但浏览器
+  字体栅格化与图像生成结果存在轻微字重、图标轮廓差异。
+  - Impact: 不改变层级、扫描密度或交互；生产实现继续使用真实 Lucide/Lobe SVG 资产。
+  - Disposition: accepted implementation-truth difference.
+- [P3] 确认稿将未添加行状态画成加号，生产合同仍使用现有低对比 Agent 控件与“—”状态。
+  - Impact: 不影响通过 Agent 控件形成草稿；避免把非独立行级操作画成可点击加号。
+  - Disposition: accepted product-contract preservation.
+
+### Required fidelity surfaces
+
+- Fonts and typography: macOS system UI 字体、12–24px 层级、14px 分组标题、13px 计数/说明
+  保持现有 Habitat token；中英文没有额外字距，行名与描述按现有规则截断。
+- Spacing and layout rhythm: 264px / flexible / 380px 三栏、46px 列头、48px 分组标题与 98px
+  Skill 行保持确认稿的信息顺序和密度；分组依赖留白与 1px 分隔线，没有卡片或阴影。
+- Colors and visual tokens: 暖白 canvas、石灰侧栏、炭黑文字、珊瑚红只用于选中项，绿色只用于
+  已验证状态；未新增 token、渐变、玻璃或装饰色。
+- Image quality and asset fidelity: Agent 使用既有 Lobe 静态 SVG，功能图标使用 Lucide；没有
+  raster 占位、CSS art、手绘 SVG 或 emoji。
+- Copy and content: 分组仅使用“当前可用 / 尚未添加 / 从 Skill Store 选择并添加”和结果数量；
+  已按批注删除“记住折叠状态”整行与所有“收起”文字。
+- Icons and behavior: 每组仅左侧 ChevronDown 作为 disclosure 标志；折叠态旋转为向右，整行
+  32px 以上可点击并有 `aria-expanded`、`aria-controls`、focus ring 和 reduced-motion 覆盖。
+- Responsiveness: 沿用 1180px 检查器抽屉与 1024px 紧凑栏宽；分组标题复用中栏左右 padding，
+  不引入横向滚动。
+
+### Interaction and runtime checks
+
+- 初始 DOM：`当前可用 4` 与 `尚未添加 2 从 Skill Store 选择并添加` 均为
+  `aria-expanded=true`，六个 Skill 行均可见。
+- 点击“当前可用”：该组变为 `aria-expanded=false`、其 4 行隐藏；“尚未添加”仍展开且 2 行
+  可见。再次点击恢复。
+- 点击“尚未添加”：该组变为 `aria-expanded=false`、其 2 行隐藏；“当前可用”仍展开且 4 行
+  可见。再次点击恢复。
+- “当前可用”筛选只渲染对应分组和 4 行；未添加分组不渲染。
+- 对 `project-harness` 建立 Agent 草稿后出现待应用栏，但其仍留在“尚未添加”，两个分组数量
+  保持 4 / 2，证明归组依据最近验证状态而非未提交草稿。
+- 浏览器 console：0 warnings、0 errors。
+
+### Comparison history
+
+- Pass 1 — passed: 首次浏览器实现已满足确认稿的结构、密度和文案删减要求；全视图对比未发现
+  P0/P1/P2，因此没有为视觉 QA 进行代码修复。折叠态另行捕获以证明交互，不以静态截图代替
+  行为验证。
+
+final result: passed
+
 ## Project Skills V2 target and evidence
 
 **Source visual truth**

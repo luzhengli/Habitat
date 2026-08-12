@@ -133,4 +133,8 @@ Done when: 发布目标、签名/分发方式、数据升级与回滚路径、�
 当前状态：内部 symlink 权限误报与共享 discovery root 重复 Recovery 均已修复；重叠 Agent
 routes 仍保留在 inventory，但迁移计划只生成一次物理移动，不一致重复记录会阻断。真实失败
 事务已精确 rollback：43 个 Store 导入移除、2 个原 symlink 恢复，Store 顶层回到空状态；
-`npm run check` 通过。M9 继续等待发布目标、签名/分发方式和发布范围确认。
+`npm run check` 通过。产品负责人选择的项目 Skills 状态分组切片已完成：“当前可用 / 尚未
+添加”按最近验证状态归组、默认全部展开，并可通过左侧箭头独立折叠与恢复；已删除“记住
+折叠状态”与“收起”文字。1440×1024 同视口视觉复验、实际折叠/筛选/草稿稳定性浏览器证据、
+`design-qa.md` 和 `DESIGN.md` 均已同步，`npm run check` 通过；Agent 草稿、adapter 与文件
+安全语义未改变。M9 仍继续等待发布目标、签名/分发方式和发布范围确认。

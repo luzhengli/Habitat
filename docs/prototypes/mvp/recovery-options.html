@@ -190,30 +190,30 @@
         </div>
       </aside>
       <main class="main">
-        <header class="page-head"><div><span class="eyebrow">SKILL STORE</span><h1>恢复</h1><p>恢复迁移前的用户级入口；Store 内容和项目链接保持不变。</p></div><button class="secondary-button">↻ 重新检查</button></header>
-        <div class="toolbar"><div class="search">⌕　搜索 Skill 或原路径…</div><div class="filter">全部状态　⌄</div></div>
-        <div class="summary-line"><div><strong>首次迁移 · 2026年8月12日 10:42</strong><small>事务 64b7e8a1 · 指纹记录完整</small></div><div class="metric"><b>2</b><span>恢复记录</span></div><div class="metric"><b>1</b><span>可以恢复</span></div><div class="metric"><b>1</b><span>需要处理</span></div></div>
-        <div class="group-title"><span>⌄</span><strong>可以恢复</strong><span class="count">1</span></div>
+        <header class="page-head"><div><span class="eyebrow">SKILL STORE</span><h1>恢复到迁移前</h1><p>一次性撤销首次迁移；不会让你逐个选择 Skills。</p></div><button class="secondary-button">↻ 重新检查</button></header>
+        <div class="toolbar"><div><strong style="font-size:13px">整笔恢复</strong><small style="display:block;margin-top:4px;color:var(--secondary);font-size:12px">全部预检通过后，恢复所有原入口并移除本事务导入的 Store 内容。</small></div></div>
+        <div class="summary-line"><div><strong>首次迁移 · 2026年8月12日 10:42</strong><small>事务 64b7e8a1 · completed</small></div><div class="metric"><b>43</b><span>Store 内容</span></div><div class="metric"><b>2</b><span>原用户入口</span></div><div class="metric"><b style="color:var(--danger)">1</b><span>阻断项</span></div></div>
+        <div class="group-title"><span>⌄</span><strong>恢复范围</strong><span class="count">2 步</span></div>
         <div class="entry-row selected">
-          <div class="entry-name"><span class="skill-icon">◇</span><span><strong>finding-unknowns</strong><small>~/.agents/skills/finding-unknowns</small></span></div>
-          <div class="source"><div class="agents"><span class="agent">Cx</span><span class="agent">Pi</span><span class="agent">Cu</span></div><small>通用用户入口</small></div>
-          <span class="status safe">可以恢复</span><button class="row-action">查看</button>
+          <div class="entry-name"><span class="skill-icon">↶</span><span><strong>恢复全部原用户入口</strong><small>2 个目录或符号链接</small></span></div>
+          <div class="source"><strong>恢复到迁移前路径</strong><small>identity / link text / fingerprint</small></div>
+          <span class="status safe">预检通过</span><button class="row-action">查看范围</button>
         </div>
-        <div class="group-title"><span>⌄</span><strong>需要处理</strong><span class="count">1</span></div>
         <div class="entry-row">
-          <div class="entry-name"><span class="skill-icon">□</span><span><strong>project-harness</strong><small>~/.claude/skills/project-harness</small></span></div>
-          <div class="source"><div class="agents"><span class="agent">Cl</span></div><small>Claude Code 用户入口</small></div>
-          <span class="status blocked">原路径被占用</span><button class="row-action" disabled>恢复</button>
+          <div class="entry-name"><span class="skill-icon">−</span><span><strong>移除本事务导入的 Store 内容</strong><small>43 个 canonical Skills</small></span></div>
+          <div class="source"><strong>不删除其他 Store 内容</strong><small>逐项复验事务指纹</small></div>
+          <span class="status safe">预检通过</span><button class="row-action">查看范围</button>
         </div>
-        <div class="group-title"><span>›</span><strong>已恢复</strong><span class="count">1</span></div>
+        <div class="group-title"><span>⌄</span><strong>需要先处理</strong><span class="count">1</span></div>
+        <div class="entry-row"><div class="entry-name"><span class="skill-icon">!</span><span><strong>Habitat 仍有项目链接</strong><small>.agents/skills/finding-unknowns</small></span></div><div class="source"><strong>Habitat 项目</strong><small>/Users/luyao/Project/Habitat</small></div><span class="status blocked">整笔阻断</span><button class="row-action">前往项目</button></div>
       </main>
       <aside class="inspector">
-        <div class="inspector-head"><span class="skill-icon">◇</span><div><span class="eyebrow">恢复详情</span><h2>finding-unknowns</h2></div></div>
-        <section><h3>本次恢复会发生什么</h3><p>把迁移时保存的原入口移回原位置。该 Skill 在 Store 中的 canonical 内容不会删除，Habitat 项目中的相对链接也不会改变。</p></section>
-        <section><h3>当前检查</h3><div class="check"><i>✓</i><span>恢复记录与迁移指纹一致</span></div><div class="check"><i>✓</i><span>原路径当前不存在，可以安全写入</span></div><div class="check"><i>✓</i><span>Store canonical 内容仍可用</span></div></section>
-        <section><h3>恢复目标</h3><div class="path-box">/Users/luyao/.agents/skills/finding-unknowns</div><h3 style="margin-top:16px">技术记录</h3><div class="path-box">64b7e8a1 · habitat-tree-v1<br>2026-08-12 10:42</div></section>
-        <section><div class="trust-note"><span>✓</span><span>恢复会重新开启用户级可见性，但不会修改 Agent 设置。</span></div></section>
-        <div class="inspector-footer"><button class="primary-button">检查并恢复原入口</button></div>
+        <div class="inspector-head"><span class="skill-icon">↶</span><div><span class="eyebrow">整笔恢复</span><h2>首次迁移</h2></div></div>
+        <section><h3>恢复后的状态</h3><p>2 个原用户入口回到迁移前位置，43 个由本事务导入的 Store Skills 被移除，Habitat 返回首次设置。</p></section>
+        <section><h3>全量预检</h3><div class="check"><i>✓</i><span>Store 与 recovery 指纹一致</span></div><div class="check"><i>✓</i><span>全部原路径当前不存在</span></div><div class="check"><i>✓</i><span>只包含一笔有效迁移事务</span></div><div class="check"><i style="background:var(--danger-soft);color:var(--danger)">!</i><span>1 个受管项目链接仍在使用 Store</span></div></section>
+        <section><h3>阻断位置</h3><div class="path-box">/Users/luyao/Project/Habitat/.agents/skills/finding-unknowns</div><p style="margin-top:10px">先在项目页解除该链接，然后重新检查。Habitat 不会自动跨事务删除项目配置。</p></section>
+        <section><div class="trust-note" style="background:var(--danger-soft);color:var(--danger)"><span>!</span><span>当前不会修改任何文件。</span></div></section>
+        <div class="inspector-footer"><button class="primary-button" style="background:#d7d5cf;border-color:#d7d5cf" disabled>恢复到迁移前</button></div>
       </aside>
     </div>
   </div>
@@ -229,22 +229,22 @@
         <div class="store-block"><div class="store-row"><span class="nav-icon">◉</span><span class="nav-copy"><strong>Skill Store</strong><small>43 个 Skills</small></span></div><button class="store-action selected"><span class="nav-icon">↶</span>恢复</button><button class="store-action"><span class="nav-icon">⚙</span>设置</button></div>
       </aside>
       <main class="main">
-        <header class="page-head"><div><span class="eyebrow">SKILL STORE</span><h1>恢复记录</h1><p>按事务查看迁移结果、恢复状态与技术报告。</p></div><button class="secondary-button">↻ 重新检查</button></header>
+        <header class="page-head"><div><span class="eyebrow">SKILL STORE</span><h1>恢复首次迁移</h1><p>按事务核对整笔恢复范围；不选择单个 Skill。</p></div><button class="secondary-button">↻ 重新检查</button></header>
         <div class="timeline-body">
           <nav class="transaction-list">
             <p class="transaction-label">迁移事务</p>
-            <button class="transaction selected"><strong>首次迁移</strong><small>今天 10:42<br>2 条恢复记录 · 1 项需处理</small></button>
+            <button class="transaction selected"><strong>首次迁移</strong><small>今天 10:42<br>43 个导入 · 2 个原入口</small></button>
             <button class="transaction"><strong>首次迁移（已撤销）</strong><small>昨天 23:18<br>2 条入口已恢复</small></button>
             <button class="transaction"><strong>导入尝试（未完成）</strong><small>昨天 18:07<br>没有移动用户入口</small></button>
           </nav>
           <section class="report">
             <div class="report-head"><div><span class="eyebrow">2026年8月12日 10:42</span><h2>首次迁移</h2><p>事务 64b7e8a1 · completed</p></div><button class="quiet-button">查看技术报告　›</button></div>
-            <div class="report-summary"><div class="metric"><b>43</b><span>Store 内容</span></div><div class="metric"><b>2</b><span>原入口记录</span></div><div class="metric"><b style="color:var(--success)">1</b><span>可以恢复</span></div><div class="metric"><b style="color:var(--danger)">1</b><span>需要处理</span></div></div>
-            <div class="inline-alert"><span>!</span><span><strong>恢复原入口不会撤销整笔迁移。</strong><br>Store canonical 内容与现有项目链接保持不变；恢复后对应 Skill 会再次成为用户级入口。</span></div>
-            <div class="report-table-head"><span>原入口</span><span>适用于</span><span>当前状态</span><span></span></div>
-            <div class="timeline-entry"><div class="entry-name"><span class="skill-icon">◇</span><span><strong>finding-unknowns</strong><small>~/.agents/skills/finding-unknowns</small></span></div><div class="agents"><span class="agent">Cx</span><span class="agent">Pi</span><span class="agent">Cu</span></div><span class="status safe">可以恢复</span><button class="row-action">恢复原入口</button></div>
-            <div class="timeline-entry"><div class="entry-name"><span class="skill-icon">□</span><span><strong>project-harness</strong><small>~/.claude/skills/project-harness</small></span></div><div class="agents"><span class="agent">Cl</span></div><span class="status blocked">路径被占用</span><button class="row-action" disabled>恢复</button></div>
-            <div class="inline-alert" style="border-color:var(--border);background:var(--primary);color:var(--secondary)"><span>i</span><span>如果需要撤销整个首次迁移，请先解除依赖 Store 内容的项目链接，再从技术报告执行整笔回滚。</span></div>
+            <div class="report-summary"><div class="metric"><b>43</b><span>将从 Store 移除</span></div><div class="metric"><b>2</b><span>将恢复原入口</span></div><div class="metric"><b style="color:var(--success)">3</b><span>安全检查通过</span></div><div class="metric"><b style="color:var(--danger)">1</b><span>项目链接阻断</span></div></div>
+            <div class="inline-alert"><span>!</span><span><strong>当前不能恢复。</strong><br>Habitat 项目仍有 1 个相对链接指向本事务导入的 Store 内容；整笔恢复不会自动删除另一个事务创建的项目链接。</span></div>
+            <div class="report-table-head"><span>整笔恢复步骤</span><span>范围</span><span>当前状态</span><span></span></div>
+            <div class="timeline-entry"><div class="entry-name"><span class="skill-icon">↶</span><span><strong>恢复全部原用户入口</strong><small>按迁移清单恢复目录与符号链接</small></span></div><div class="source"><strong>2 个入口</strong><small>.agents / .claude</small></div><span class="status safe">预检通过</span><button class="row-action">查看报告</button></div>
+            <div class="timeline-entry"><div class="entry-name"><span class="skill-icon">−</span><span><strong>移除全部事务导入</strong><small>仅限事务 64b7e8a1 创建的内容</small></span></div><div class="source"><strong>43 个 Skills</strong><small>指纹一致</small></div><span class="status blocked">链接仍在使用</span><button class="row-action">前往项目</button></div>
+            <div class="inline-alert" style="border-color:var(--border);background:var(--primary);color:var(--secondary)"><span>i</span><span>解除全部相关项目链接后，页面只提供一次“恢复到迁移前”确认，不会出现 Skill 选择。</span></div>
           </section>
         </div>
       </main>
@@ -262,21 +262,21 @@
         <div class="store-block"><div class="store-row"><span class="nav-icon">◉</span><span class="nav-copy"><strong>Skill Store</strong><small>43 个 Skills</small></span></div><button class="store-action selected"><span class="nav-icon">↶</span>恢复</button><button class="store-action"><span class="nav-icon">⚙</span>设置</button></div>
       </aside>
       <main class="guided-main">
-        <header class="page-head"><div><span class="eyebrow">SKILL STORE</span><h1>恢复原入口</h1><p>逐步检查一次恢复，不覆盖任何已变化的路径。</p></div><button class="quiet-button">退出恢复</button></header>
-        <div class="stepbar"><div class="step"><b>1</b>选择条目</div><div class="step-line"></div><div class="step active"><b>2</b>检查影响</div><div class="step-line"></div><div class="step"><b>3</b>确认恢复</div></div>
+        <header class="page-head"><div><span class="eyebrow">SKILL STORE</span><h1>恢复首次迁移</h1><p>逐步核对一次整笔恢复，不选择单个 Skill。</p></div><button class="quiet-button">退出恢复</button></header>
+        <div class="stepbar"><div class="step"><b>1</b>检查范围</div><div class="step-line"></div><div class="step active"><b>2</b>解除阻断</div><div class="step-line"></div><div class="step"><b>3</b>确认恢复</div></div>
         <div class="guided-content">
-          <span class="eyebrow">正在检查 1 个入口</span><h2>确认恢复后的可见性</h2><p>Habitat 已重新检查恢复记录、目标路径与 Store source。继续前请确认这正是你想要的结果。</p>
+          <span class="eyebrow">整笔恢复尚未就绪</span><h2>先解除仍在使用 Store 的项目链接</h2><p>Habitat 已完成迁移事务与文件指纹检查；处理以下唯一阻断项后，才能一次性恢复到迁移前。</p>
           <div class="focus-entry">
             <div class="focus-main">
-              <div class="focus-title"><span class="skill-icon">◇</span><div><h3>finding-unknowns</h3><small>通用用户入口 · Codex / Pi / Cursor</small></div></div>
-              <div class="impact-map"><div class="impact-node"><strong>当前：仅保存在恢复区</strong><code>…/.habitat/recovery/64b7e8a1/route-01</code></div><div class="arrow">→</div><div class="impact-node"><strong>恢复后：重新成为用户入口</strong><code>~/.agents/skills/finding-unknowns</code></div></div>
-              <div class="trust-note" style="margin-top:18px"><span>✓</span><span>Skill Store 中的 canonical 内容继续保留；Habitat 项目的相对链接不会改变。</span></div>
+              <div class="focus-title"><span class="skill-icon">!</span><div><h3>Habitat 项目仍有 1 个链接</h3><small>该入口依赖即将从 Store 移除的 finding-unknowns</small></div></div>
+              <div class="impact-map"><div class="impact-node"><strong>当前项目入口</strong><code>Habitat/.agents/skills/finding-unknowns</code></div><div class="arrow">→</div><div class="impact-node"><strong>指向 Store 内容</strong><code>Skill Store/finding-unknowns</code></div></div>
+              <div class="trust-note" style="margin-top:18px;background:var(--danger-soft);color:var(--danger)"><span>!</span><span>Habitat 不会在恢复首次迁移时自动删除另一个事务创建的项目链接。</span></div>
             </div>
-            <aside class="focus-side"><h4>预检通过</h4><div class="check"><i>✓</i><span>恢复指纹一致</span></div><div class="check"><i>✓</i><span>原路径未被占用</span></div><div class="check"><i>✓</i><span>Store source 可用</span></div><button class="quiet-button" style="padding:0;margin-top:8px">查看技术详情　›</button></aside>
+            <aside class="focus-side"><h4>全量检查</h4><div class="check"><i>✓</i><span>43 个 Store 指纹一致</span></div><div class="check"><i>✓</i><span>2 个原路径可恢复</span></div><div class="check"><i>✓</i><span>事务边界有效</span></div><div class="check"><i style="background:var(--danger-soft);color:var(--danger)">!</i><span>1 个项目链接仍在使用</span></div><button class="quiet-button" style="padding:0;margin-top:8px">查看技术详情　›</button></aside>
           </div>
-          <div class="blocked-card"><strong>另有 1 个入口暂时无法恢复</strong><p>project-harness 的原路径已被重新创建。Habitat 不会覆盖它；完成当前恢复后仍可返回处理。</p></div>
+          <div class="blocked-card"><strong>整笔恢复尚未修改任何文件</strong><p>前往 Habitat 项目解除 finding-unknowns 的项目链接，然后返回重新检查。其他 42 个 Skills 不需要逐项处理。</p></div>
         </div>
-        <footer class="guided-footer"><div><strong>恢复后会重新开启用户级可见性</strong><small>不会删除 Store 内容，不会修改 Agent 设置。</small></div><div><button class="secondary-button">返回选择</button> <button class="primary-button">继续确认恢复</button></div></footer>
+        <footer class="guided-footer"><div><strong>恢复将一次性回到首次迁移前</strong><small>恢复 2 个原入口，移除 43 个事务导入，随后返回首次设置。</small></div><div><button class="secondary-button">退出恢复</button> <button class="primary-button">前往 Habitat 解除链接</button></div></footer>
       </main>
     </div>
   </div>

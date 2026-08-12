@@ -2023,7 +2023,238 @@ fn remove_tree(path: &Path) -> Result<(), MigrationError> {
     })
 }
 
-pub fn rollback_transaction(manifest_path: &Path) -> Result<TransactionManifest, MigrationError> {
+pub fn discover_recovery_transaction(
+    store_path: &Path,
+) -> Result<Option<(PathBuf, TransactionManifest)>, MigrationError> {
+    let store = canonical_real_directory(store_path, "recovery", "Skill Store")?;
+    let transactions = store.join(INTERNAL_DIRECTORY).join("transactions");
+    let metadata = match fs::symlink_metadata(&transactions) {
+        Ok(metadata) => metadata,
+        Err(error) if error.kind() == io::ErrorKind::NotFound => return Ok(None),
+        Err(error) => {
+            return Err(MigrationError::io(
+                "transactions_unreadable",
+                "recovery",
+                "无法检查迁移事务目录。",
+                &transactions,
+                error,
+                "检查 Skill Store 权限后重试。",
+                true,
+            ))
+        }
+    };
+    if metadata.file_type().is_symlink() || !metadata.is_dir() {
+        return Err(MigrationError::new(
+            "unsafe_transactions_directory",
+            "recovery",
+            "迁移事务容器必须是真实目录。",
+            Some(transactions),
+            Some("real directory".into()),
+            Some(format!("mode {:o}", metadata.mode())),
+            "保留现场并人工检查 Skill Store。",
+            false,
+        ));
+    }
+
+    let mut candidates = Vec::new();
+    let entries = fs::read_dir(&transactions)
+        .map_err(|error| {
+            MigrationError::io(
+                "transactions_unreadable",
+                "recovery",
+                "无法枚举迁移事务。",
+                &transactions,
+                error,
+                "检查 Skill Store 权限后重试。",
+                true,
+            )
+        })?
+        .collect::<Result<Vec<_>, _>>()
+        .map_err(|error| {
+            MigrationError::io(
+                "transactions_unreadable",
+                "recovery",
+                "无法读取迁移事务目录项。",
+                &transactions,
+                error,
+                "检查 Skill Store 权限后重试。",
+                true,
+            )
+        })?;
+    for entry in entries {
+        let path = entry.path();
+        let Some(file_name) = path.file_name().and_then(OsStr::to_str) else {
+            continue;
+        };
+        if file_name.ends_with(".project.json") || !file_name.ends_with(".json") {
+            continue;
+        }
+        let transaction_id = file_name.trim_end_matches(".json").to_owned();
+        if Uuid::parse_str(&transaction_id).is_err() {
+            continue;
+        }
+        let metadata = fs::symlink_metadata(&path).map_err(|error| {
+            MigrationError::io(
+                "manifest_unreadable",
+                "recovery",
+                "无法检查迁移事务清单。",
+                &path,
+                error,
+                "保留现场并人工检查事务目录。",
+                false,
+            )
+        })?;
+        if metadata.file_type().is_symlink() || !metadata.is_file() {
+            return Err(MigrationError::new(
+                "unsafe_manifest_entry",
+                "recovery",
+                "迁移事务清单必须是真实文件。",
+                Some(path),
+                Some("regular file".into()),
+                Some(format!("mode {:o}", metadata.mode())),
+                "保留现场并人工检查事务目录。",
+                false,
+            ));
+        }
+        let contents = fs::read(&path).map_err(|error| {
+            MigrationError::io(
+                "manifest_unreadable",
+                "recovery",
+                "无法读取迁移事务清单。",
+                &path,
+                error,
+                "保留现场并人工检查事务目录。",
+                false,
+            )
+        })?;
+        let manifest: TransactionManifest = serde_json::from_slice(&contents).map_err(|error| {
+            MigrationError::new(
+                "manifest_invalid",
+                "recovery",
+                "迁移事务清单格式无效。",
+                Some(path.clone()),
+                Some("TransactionManifest v1".into()),
+                Some(error.to_string()),
+                "保留现场并人工检查事务目录。",
+                false,
+            )
+        })?;
+        if manifest.schema_version != 1
+            || manifest.transaction_id != transaction_id
+            || manifest.store_root != store
+        {
+            return Err(MigrationError::new(
+                "manifest_mismatch",
+                "recovery",
+                "迁移事务清单与当前位置不一致。",
+                Some(path),
+                Some(format!("transaction {transaction_id} in {}", store.display())),
+                Some(format!(
+                    "schema {} transaction {} store {}",
+                    manifest.schema_version,
+                    manifest.transaction_id,
+                    manifest.store_root.display()
+                )),
+                "保留现场并人工检查事务目录。",
+                false,
+            ));
+        }
+        let recovery_root = store
+            .join(INTERNAL_DIRECTORY)
+            .join("recovery")
+            .join(&manifest.transaction_id);
+        for import in &manifest.imports {
+            let safe_final_name = import
+                .final_path
+                .file_name()
+                .and_then(OsStr::to_str)
+                .is_some_and(|name| safe_segment(name) && name != INTERNAL_DIRECTORY);
+            if import.final_path.parent() != Some(store.as_path()) || !safe_final_name {
+                return Err(MigrationError::new(
+                    "manifest_boundary",
+                    "recovery",
+                    "迁移事务中的 Store 路径越过安全边界。",
+                    Some(import.final_path.clone()),
+                    Some("direct canonical Store child".into()),
+                    None,
+                    "保留现场并人工检查事务清单。",
+                    false,
+                ));
+            }
+        }
+        for recovery in &manifest.recoveries {
+            let safe_route = recovery
+                .recovery_path
+                .file_name()
+                .and_then(OsStr::to_str)
+                .is_some_and(|name| safe_segment(name) && name == recovery.route_id);
+            if recovery.recovery_path.parent() != Some(recovery_root.as_path())
+                || !safe_route
+                || recovery.original_path.parent() != Some(recovery.original_parent.as_path())
+            {
+                return Err(MigrationError::new(
+                    "manifest_boundary",
+                    "recovery",
+                    "迁移事务中的恢复路径越过安全边界。",
+                    Some(recovery.recovery_path.clone()),
+                    Some(format!(
+                        "{} and one child of {}",
+                        recovery_root.display(),
+                        recovery.original_parent.display()
+                    )),
+                    Some(recovery.original_path.display().to_string()),
+                    "保留现场并人工检查事务清单。",
+                    false,
+                ));
+            }
+            let original_parent = canonical_real_directory(
+                &recovery.original_parent,
+                "recovery",
+                "原用户入口父目录",
+            )?;
+            if original_parent != recovery.original_parent {
+                return Err(MigrationError::new(
+                    "manifest_boundary",
+                    "recovery",
+                    "原用户入口父目录已被改道。",
+                    Some(recovery.original_parent.clone()),
+                    Some(recovery.original_parent.display().to_string()),
+                    Some(original_parent.display().to_string()),
+                    "保留现场并人工检查事务清单。",
+                    false,
+                ));
+            }
+        }
+        let has_active_mutation = manifest
+            .imports
+            .iter()
+            .any(|operation| operation.result == OperationResult::Imported)
+            || manifest
+                .recoveries
+                .iter()
+                .any(|operation| operation.result == OperationResult::Quarantined);
+        if manifest.state != TransactionState::RolledBack && has_active_mutation {
+            candidates.push((path, manifest));
+        }
+    }
+    if candidates.len() > 1 {
+        return Err(MigrationError::new(
+            "multiple_recovery_transactions",
+            "recovery",
+            "发现多笔仍包含文件变更的迁移事务，无法自动选择恢复目标。",
+            Some(transactions),
+            Some("one active migration transaction".into()),
+            Some(candidates.len().to_string()),
+            "保留现场并人工检查事务报告。",
+            false,
+        ));
+    }
+    Ok(candidates.pop())
+}
+
+fn read_transaction_manifest(
+    manifest_path: &Path,
+) -> Result<TransactionManifest, MigrationError> {
     let contents = fs::read(manifest_path).map_err(|error| {
         MigrationError::io(
             "manifest_unreadable",
@@ -2035,7 +2266,7 @@ pub fn rollback_transaction(manifest_path: &Path) -> Result<TransactionManifest,
             false,
         )
     })?;
-    let mut manifest: TransactionManifest = serde_json::from_slice(&contents).map_err(|error| {
+    serde_json::from_slice(&contents).map_err(|error| {
         MigrationError::new(
             "manifest_invalid",
             "rollback",
@@ -2046,7 +2277,13 @@ pub fn rollback_transaction(manifest_path: &Path) -> Result<TransactionManifest,
             "保留现场并人工检查事务清单。",
             false,
         )
-    })?;
+    })
+}
+
+pub fn preflight_rollback_transaction(
+    manifest_path: &Path,
+) -> Result<TransactionManifest, MigrationError> {
+    let manifest = read_transaction_manifest(manifest_path)?;
     let transaction_id = manifest.transaction_id.clone();
     let store = canonical_real_directory(&manifest.store_root, "rollback", "Skill Store")?;
     let actual_store_identity = identity(&fs::symlink_metadata(&store).map_err(|error| {
@@ -2137,7 +2374,12 @@ pub fn rollback_transaction(manifest_path: &Path) -> Result<TransactionManifest,
             .for_transaction(&transaction_id));
         }
     }
+    Ok(manifest)
+}
 
+pub fn rollback_transaction(manifest_path: &Path) -> Result<TransactionManifest, MigrationError> {
+    let mut manifest = preflight_rollback_transaction(manifest_path)?;
+    let transaction_id = manifest.transaction_id.clone();
     persist_state(manifest_path, &mut manifest, TransactionState::RollingBack)?;
     for index in 0..manifest.recoveries.len() {
         if manifest.recoveries[index].result != OperationResult::Quarantined {
@@ -2575,5 +2817,104 @@ mod tests {
         assert!(store.join("alpha/SKILL.md").is_file());
         assert!(manifest.recoveries[0].recovery_path.is_dir());
         assert!(source.is_file());
+    }
+
+    #[test]
+    fn completed_transaction_is_discovered_from_store_after_session_state_is_lost() {
+        let fixture = TempDir::new().unwrap();
+        let root_path = fixture.path().join("skills");
+        let store = fixture.path().join("store");
+        let source = root_path.join("alpha");
+        fs::create_dir(&store).unwrap();
+        write_skill(&source, "alpha", "hello");
+        let roots = vec![root("codex", &root_path)];
+        let snapshot = scan_inventory(&roots).unwrap();
+        let plan = build_import_plan(
+            &snapshot,
+            &store,
+            &roots,
+            &[],
+            &[snapshot.artifacts[0].artifact_id.clone()],
+        )
+        .unwrap();
+        let expected = execute_import(&plan).unwrap();
+
+        let (manifest_path, discovered) = discover_recovery_transaction(&store).unwrap().unwrap();
+
+        assert_eq!(manifest_path, plan.manifest_path);
+        assert_eq!(discovered.transaction_id, expected.transaction_id);
+        assert_eq!(discovered.state, TransactionState::Completed);
+    }
+
+    #[test]
+    fn discovery_blocks_multiple_active_mutating_transactions() {
+        let fixture = TempDir::new().unwrap();
+        let root_path = fixture.path().join("skills");
+        let store = fixture.path().join("store");
+        let source = root_path.join("alpha");
+        fs::create_dir(&store).unwrap();
+        write_skill(&source, "alpha", "hello");
+        let roots = vec![root("codex", &root_path)];
+        let snapshot = scan_inventory(&roots).unwrap();
+        let plan = build_import_plan(
+            &snapshot,
+            &store,
+            &roots,
+            &[],
+            &[snapshot.artifacts[0].artifact_id.clone()],
+        )
+        .unwrap();
+        let mut duplicate = execute_import(&plan).unwrap();
+        duplicate.transaction_id = Uuid::new_v4().to_string();
+        duplicate.created_at += 1;
+        duplicate.updated_at += 1;
+        let duplicate_recovery_root = duplicate
+            .store_root
+            .join(INTERNAL_DIRECTORY)
+            .join("recovery")
+            .join(&duplicate.transaction_id);
+        for recovery in &mut duplicate.recoveries {
+            recovery.recovery_path = duplicate_recovery_root.join(&recovery.route_id);
+        }
+        let duplicate_path = store
+            .join(INTERNAL_DIRECTORY)
+            .join("transactions")
+            .join(format!("{}.json", duplicate.transaction_id));
+        write_manifest(&duplicate_path, &duplicate).unwrap();
+
+        let error = discover_recovery_transaction(&store).unwrap_err();
+
+        assert_eq!(error.code, "multiple_recovery_transactions");
+        assert!(store.join("alpha/SKILL.md").is_file());
+        assert!(fs::symlink_metadata(&source).is_err());
+    }
+
+    #[test]
+    fn discovery_rejects_manifest_paths_outside_the_transaction_boundaries() {
+        let fixture = TempDir::new().unwrap();
+        let root_path = fixture.path().join("skills");
+        let store = fixture.path().join("store");
+        let source = root_path.join("alpha");
+        fs::create_dir(&store).unwrap();
+        write_skill(&source, "alpha", "hello");
+        let roots = vec![root("codex", &root_path)];
+        let snapshot = scan_inventory(&roots).unwrap();
+        let plan = build_import_plan(
+            &snapshot,
+            &store,
+            &roots,
+            &[],
+            &[snapshot.artifacts[0].artifact_id.clone()],
+        )
+        .unwrap();
+        let mut manifest = execute_import(&plan).unwrap();
+        manifest.recoveries[0].recovery_path = fixture.path().join("outside/alpha");
+        write_manifest(&plan.manifest_path, &manifest).unwrap();
+
+        let error = discover_recovery_transaction(&store).unwrap_err();
+
+        assert_eq!(error.code, "manifest_boundary");
+        assert!(store.join("alpha/SKILL.md").is_file());
+        assert!(fs::symlink_metadata(&source).is_err());
     }
 }

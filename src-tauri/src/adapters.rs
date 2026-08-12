@@ -195,6 +195,113 @@ fn target_relative_path(group: TargetGroupId) -> &'static str {
     }
 }
 
+pub fn find_managed_links_to_sources(
+    store_path: &Path,
+    project_paths: &[PathBuf],
+    source_paths: &[PathBuf],
+) -> Result<Vec<PathBuf>, MigrationError> {
+    let (store_root, _) = canonical_real_directory(store_path, "Skill Store")?;
+    let mut sources = Vec::new();
+    for source_path in source_paths {
+        let (source, _) = canonical_real_directory(source_path, "Store Skill")?;
+        let name = source.file_name().and_then(OsStr::to_str).ok_or_else(|| {
+            MigrationError::new(
+                "invalid_skill_name",
+                "preflight",
+                "Store Skill 名称不是有效路径段。",
+                Some(source.clone()),
+                Some("safe UTF-8 path segment".into()),
+                None,
+                "保留现场并人工检查 Skill Store。",
+                false,
+            )
+        })?;
+        if source.parent() != Some(store_root.as_path()) || !safe_name(name) {
+            return Err(MigrationError::new(
+                "store_boundary",
+                "preflight",
+                "待恢复事务引用了 Skill Store 边界外的内容。",
+                Some(source),
+                Some("direct canonical Store child".into()),
+                Some(source_path.display().to_string()),
+                "保留现场并人工检查事务清单。",
+                false,
+            ));
+        }
+        sources.push((name.to_owned(), source));
+    }
+
+    let mut links = Vec::new();
+    for project_path in project_paths {
+        let (project, _) = canonical_real_directory(project_path, "受管项目")?;
+        if store_root == project
+            || store_root.starts_with(&project)
+            || project.starts_with(&store_root)
+        {
+            return Err(MigrationError::new(
+                "unsafe_store_relationship",
+                "preflight",
+                "Skill Store 与受管项目不能互为祖先或后代。",
+                Some(project),
+                Some("disjoint canonical paths".into()),
+                Some(store_root.display().to_string()),
+                "重新选择 Skill Store 或项目。",
+                false,
+            ));
+        }
+        for group in [
+            TargetGroupId::AgentsShared,
+            TargetGroupId::Claude,
+            TargetGroupId::Trae,
+        ] {
+            let container = project.join(target_relative_path(group));
+            inspect_container_chain(&project, &container)?;
+            for (name, source) in &sources {
+                let target = container.join(name);
+                let metadata = match fs::symlink_metadata(&target) {
+                    Ok(metadata) => metadata,
+                    Err(error) if error.kind() == io::ErrorKind::NotFound => continue,
+                    Err(error) => {
+                        return Err(MigrationError::io(
+                            "target_inspection_failed",
+                            "preflight",
+                            "无法检查受管项目 Skill 入口。",
+                            &target,
+                            error,
+                            "检查项目权限后重试。",
+                            true,
+                        ))
+                    }
+                };
+                if !metadata.file_type().is_symlink() {
+                    continue;
+                }
+                let raw = fs::read_link(&target).map_err(|error| {
+                    MigrationError::io(
+                        "target_inspection_failed",
+                        "preflight",
+                        "无法读取受管项目 Skill 链接。",
+                        &target,
+                        error,
+                        "检查项目权限后重试。",
+                        true,
+                    )
+                })?;
+                let resolved = match fs::canonicalize(target_absolute(&target, &raw)) {
+                    Ok(resolved) => resolved,
+                    Err(_) => continue,
+                };
+                if &resolved == source {
+                    links.push(target);
+                }
+            }
+        }
+    }
+    links.sort();
+    links.dedup();
+    Ok(links)
+}
+
 fn now_millis() -> u64 {
     SystemTime::now()
         .duration_since(UNIX_EPOCH)
@@ -1779,6 +1886,47 @@ mod tests {
         assert_eq!(manifest.state, ProjectTransactionState::RolledBack);
         assert!(fs::symlink_metadata(&existing).is_ok());
         assert!(fs::symlink_metadata(project.join(".claude/skills/alpha")).is_err());
+    }
+
+    #[test]
+    fn recovery_scan_finds_only_managed_links_to_transaction_store_sources() {
+        let fixture = TempDir::new().unwrap();
+        let store = fixture.path().join("store");
+        let project = fixture.path().join("project");
+        let source = store.join("alpha");
+        let other = store.join("other");
+        fs::create_dir(&store).unwrap();
+        fs::create_dir_all(project.join(".agents/skills")).unwrap();
+        fs::create_dir_all(project.join(".claude/skills")).unwrap();
+        write_skill(&source, "alpha");
+        write_skill(&other, "other");
+        let managed = project.join(".agents/skills/alpha");
+        let unrelated = project.join(".claude/skills/other");
+        symlink(
+            diff_paths(&source, managed.parent().unwrap()).unwrap(),
+            &managed,
+        )
+        .unwrap();
+        symlink(
+            diff_paths(&other, unrelated.parent().unwrap()).unwrap(),
+            &unrelated,
+        )
+        .unwrap();
+
+        let links = find_managed_links_to_sources(
+            &store,
+            std::slice::from_ref(&project),
+            std::slice::from_ref(&source),
+        )
+        .unwrap();
+
+        assert_eq!(
+            links,
+            vec![fs::canonicalize(&project)
+                .unwrap()
+                .join(".agents/skills/alpha")]
+        );
+        assert!(fs::symlink_metadata(unrelated).is_ok());
     }
 
     #[test]

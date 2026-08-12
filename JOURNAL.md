@@ -3,6 +3,36 @@
 最新记录在最上方；每个 session 一条。超过约 150 行时，将最新五条之前的内容压缩到
 Digest。
 
+## 2026-08-12 — M9: 确认整笔 Recovery 合同并完成安全后端
+
+- Approval: 产品负责人纠正并确认侧栏 Recovery 是一次性撤销整笔首次迁移，不需要用户
+  选择 Skills；若任何受管项目仍链接待移除的 Store 内容，则全量阻断且不自动删除项目链接。
+  上一条 Journal 的逐项恢复合同与三份 `recovery-*-v1.png` 原型已废弃，只保留为决策历史。
+- Recovery model: 一次确认恢复全部仍在 recovery 的原用户目录/symlink，移除全部仍为
+  `imported` 且指纹一致的本事务 Store 内容，并在成功后回到首次设置；任何文件、目标路径、
+  transaction 或项目链接阻断都会在写入前停止整笔操作。
+- Backend: `discover_recovery_transaction` 从 Store `.habitat/transactions` 发现唯一仍包含文件
+  变更的首次迁移 manifest，忽略 `.project.json` 与已 rolled-back/无变更记录；多个有效事务
+  拒绝自动选边。重启恢复会复验 manifest schema/id/store、真实事务文件、Store direct child、
+  recovery transaction root、真实 original parent 和当前 Agent registry roots。
+- Project boundary: `find_managed_links_to_sources` 只扫描 `.agents/.claude/.trae` 三个 Habitat
+  adapter 目标，按 canonical target 识别仍依赖本事务 Store import 的相对链接；无关链接与
+  普通文件不被当成依赖，也不会被修改。`inspect_recovery_command` 持有检查结果，
+  `execute_recovery_command` 在调用既有 exact rollback 前重新发现并预检同一事务。
+- Tests: 新增 6 个 fixture 覆盖重启后事务发现、多个有效事务、manifest 越界、仅识别相关
+  项目链接、链接存在时整笔阻断/解除后成功回滚，以及篡改后的未知用户 root 阻断。全部使用
+  `TempDir`，Rust 共 42 tests passed。
+- Prototypes: 新增同一整笔合同的 1440×1024 三稿：
+  `recovery-transaction-summary-v1.png`（事务摘要 + 检查器，推荐）、
+  `recovery-transaction-report-v1.png`（事务报告）和
+  `recovery-transaction-guided-v1.png`（三步引导）；三稿均无 Skill 选择或逐项恢复操作。
+- Gate: `npm run check` → exit 0；Rust 42 passed、Vite 1595 modules transformed，并生成 debug
+  `Habitat.app`。
+- Safety: 未读取或修改真实 Skill Store、项目链接或 Agent 配置；现有未跟踪 `.agents/`
+  继续不触碰。
+- State: 后端安全边界完成；等待产品负责人从 A/B/C 中选择整笔恢复视觉方向，确认前不得实现
+  生产 Recovery React UI。M9 保持 `doing`。
+
 ## 2026-08-12 — M9: 侧栏 Recovery 功能进入原型确认
 
 - Root cause: 项目页 `StoreNav` 中的“恢复”只有静态按钮，没有事件、页面状态或 API 调用；

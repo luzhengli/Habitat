@@ -4,11 +4,13 @@ pub mod skills;
 
 use adapters::{
     adapter_registry, apply_project_exposure_plan, build_project_exposure_plan,
-    inspect_project_exposures, rollback_project_transaction, AgentId, ProjectExposureInspection,
-    ProjectExposurePlan, ProjectSkillSelection, ProjectTransactionManifest,
+    find_managed_links_to_sources, inspect_project_exposures, rollback_project_transaction,
+    AgentId, ProjectExposureInspection, ProjectExposurePlan, ProjectSkillSelection,
+    ProjectTransactionManifest,
 };
 use migration::{
-    build_import_plan, execute_import, rollback_transaction, scan_inventory, validate_store,
+    build_import_plan, discover_recovery_transaction, execute_import,
+    preflight_rollback_transaction, rollback_transaction, scan_inventory, validate_store,
     InventoryRoot, InventorySnapshot, MigrationError, MigrationPlan, TransactionManifest,
 };
 use serde::{Deserialize, Serialize};
@@ -38,6 +40,53 @@ struct ProjectSession {
 
 #[derive(Default)]
 struct ProjectState(Mutex<ProjectSession>);
+
+#[derive(Debug, Clone)]
+struct RecoverySession {
+    transaction_id: String,
+    store_root: PathBuf,
+    managed_projects: Vec<PathBuf>,
+    known_user_roots: Vec<PathBuf>,
+    manifest_path: PathBuf,
+}
+
+#[derive(Default)]
+struct RecoveryState(Mutex<Option<RecoverySession>>);
+
+#[derive(Debug, Clone, Serialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+struct RecoveryBlocker {
+    code: String,
+    message: String,
+    path: Option<PathBuf>,
+    recovery: String,
+}
+
+impl From<MigrationError> for RecoveryBlocker {
+    fn from(error: MigrationError) -> Self {
+        Self {
+            code: error.code,
+            message: error.message,
+            path: error.path,
+            recovery: error.recovery,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+struct RecoveryPlan {
+    transaction_id: String,
+    store_root: PathBuf,
+    state: migration::TransactionState,
+    created_at: u64,
+    updated_at: u64,
+    import_count: usize,
+    recovery_count: usize,
+    project_links: Vec<PathBuf>,
+    blockers: Vec<RecoveryBlocker>,
+    ready: bool,
+}
 
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -93,6 +142,94 @@ fn lock_project(
             "重新打开 Habitat 后重新检查项目。",
         )
     })
+}
+
+fn lock_recovery(
+    state: &RecoveryState,
+) -> Result<std::sync::MutexGuard<'_, Option<RecoverySession>>, MigrationError> {
+    state.0.lock().map_err(|_| {
+        first_run_error(
+            "recovery_state_unavailable",
+            "恢复状态暂时不可用。",
+            "重新打开恢复页并重新检查。",
+        )
+    })
+}
+
+fn prepare_recovery_plan(
+    store_path: &std::path::Path,
+    managed_projects: &[PathBuf],
+    known_user_roots: &[PathBuf],
+) -> Result<Option<(PathBuf, RecoveryPlan)>, MigrationError> {
+    let Some((manifest_path, manifest)) = discover_recovery_transaction(store_path)? else {
+        return Ok(None);
+    };
+    let mut blockers = Vec::new();
+    if let Err(error) = preflight_rollback_transaction(&manifest_path) {
+        blockers.push(error.into());
+    }
+    let known_user_roots = known_user_roots
+        .iter()
+        .filter_map(|root| std::fs::canonicalize(root).ok())
+        .collect::<std::collections::BTreeSet<_>>();
+    for recovery in manifest
+        .recoveries
+        .iter()
+        .filter(|operation| operation.result == migration::OperationResult::Quarantined)
+    {
+        if !known_user_roots.contains(&recovery.original_parent) {
+            blockers.push(RecoveryBlocker {
+                code: "unknown_recovery_root".into(),
+                message: "迁移事务引用了当前 Agent registry 之外的用户入口。".into(),
+                path: Some(recovery.original_path.clone()),
+                recovery: "保留现场并人工检查事务清单；Habitat 不会恢复到未知目录。".into(),
+            });
+        }
+    }
+    let sources = manifest
+        .imports
+        .iter()
+        .filter(|operation| operation.result == migration::OperationResult::Imported)
+        .map(|operation| operation.final_path.clone())
+        .collect::<Vec<_>>();
+    let project_links = match find_managed_links_to_sources(
+        &manifest.store_root,
+        managed_projects,
+        &sources,
+    ) {
+        Ok(links) => links,
+        Err(error) => {
+            blockers.push(error.into());
+            Vec::new()
+        }
+    };
+    blockers.extend(project_links.iter().cloned().map(|path| RecoveryBlocker {
+        code: "managed_project_link_active".into(),
+        message: "受管项目仍有入口指向本次迁移的 Skill Store 内容。".into(),
+        path: Some(path),
+        recovery: "先在对应项目中解除这些 Skill 链接，再重新检查恢复。".into(),
+    }));
+    let plan = RecoveryPlan {
+        transaction_id: manifest.transaction_id,
+        store_root: manifest.store_root,
+        state: manifest.state,
+        created_at: manifest.created_at,
+        updated_at: manifest.updated_at,
+        import_count: manifest
+            .imports
+            .iter()
+            .filter(|operation| operation.result == migration::OperationResult::Imported)
+            .count(),
+        recovery_count: manifest
+            .recoveries
+            .iter()
+            .filter(|operation| operation.result == migration::OperationResult::Quarantined)
+            .count(),
+        project_links,
+        ready: blockers.is_empty(),
+        blockers,
+    };
+    Ok(Some((manifest_path, plan)))
 }
 
 fn migration_error_from_app(error: AppError) -> MigrationError {
@@ -331,6 +468,94 @@ fn rollback_first_run_migration_command(
 }
 
 #[tauri::command]
+fn inspect_recovery_command(
+    store_path: String,
+    managed_projects: Vec<String>,
+    state: State<'_, RecoveryState>,
+) -> Result<Option<RecoveryPlan>, MigrationError> {
+    let store_root = PathBuf::from(store_path);
+    let managed_projects = managed_projects
+        .into_iter()
+        .map(PathBuf::from)
+        .collect::<Vec<_>>();
+    let known_user_roots = known_inventory_roots()?
+        .into_iter()
+        .map(|root| root.path)
+        .collect::<Vec<_>>();
+    let prepared = prepare_recovery_plan(&store_root, &managed_projects, &known_user_roots)?;
+    let mut session = lock_recovery(&state)?;
+    let Some((manifest_path, plan)) = prepared else {
+        *session = None;
+        return Ok(None);
+    };
+    *session = Some(RecoverySession {
+        transaction_id: plan.transaction_id.clone(),
+        store_root: plan.store_root.clone(),
+        managed_projects,
+        known_user_roots,
+        manifest_path,
+    });
+    Ok(Some(plan))
+}
+
+#[tauri::command]
+fn execute_recovery_command(
+    transaction_id: String,
+    state: State<'_, RecoveryState>,
+) -> Result<TransactionManifest, MigrationError> {
+    let session = lock_recovery(&state)?.clone().ok_or_else(|| {
+        first_run_error(
+            "recovery_plan_required",
+            "当前没有已检查的恢复计划。",
+            "重新打开恢复页并重新检查。",
+        )
+    })?;
+    if session.transaction_id != transaction_id {
+        return Err(first_run_error(
+            "recovery_plan_mismatch",
+            "恢复计划已经变化。",
+            "重新打开恢复页并重新检查。",
+        ));
+    }
+    let (_, refreshed) = prepare_recovery_plan(
+        &session.store_root,
+        &session.managed_projects,
+        &session.known_user_roots,
+    )?
+    .ok_or_else(|| {
+            first_run_error(
+                "recovery_transaction_missing",
+                "迁移事务已不存在或已经恢复。",
+                "重新检查 Skill Store 当前状态。",
+            )
+        })?;
+    if refreshed.transaction_id != transaction_id {
+        return Err(first_run_error(
+            "recovery_plan_mismatch",
+            "当前可恢复事务已经变化。",
+            "重新打开恢复页并重新检查。",
+        ));
+    }
+    if !refreshed.ready {
+        let first = refreshed.blockers.first();
+        return Err(MigrationError::new(
+            "recovery_blocked",
+            "recovery",
+            "整笔恢复仍有阻断项，未修改任何文件。",
+            first.and_then(|blocker| blocker.path.clone()),
+            Some("zero recovery blockers".into()),
+            Some(refreshed.blockers.len().to_string()),
+            "处理全部阻断项后重新检查恢复。",
+            false,
+        )
+        .for_transaction(&transaction_id));
+    }
+    let result = rollback_transaction(&session.manifest_path)?;
+    *lock_recovery(&state)? = None;
+    Ok(result)
+}
+
+#[tauri::command]
 fn inspect_project_workspace_command(
     store_path: String,
     project_path: String,
@@ -538,6 +763,7 @@ pub fn run() {
     tauri::Builder::default()
         .manage(FirstRunState::default())
         .manage(ProjectState::default())
+        .manage(RecoveryState::default())
         .plugin(tauri_plugin_dialog::init())
         .invoke_handler(tauri::generate_handler![
             scan_known_inventory_command,
@@ -545,6 +771,8 @@ pub fn run() {
             plan_first_run_migration_command,
             execute_first_run_migration_command,
             rollback_first_run_migration_command,
+            inspect_recovery_command,
+            execute_recovery_command,
             inspect_project_workspace_command,
             plan_project_settings_command,
             apply_project_settings_command,
@@ -651,5 +879,122 @@ mod project_command_tests {
         )
         .unwrap_err();
         assert_eq!(error.code, "unknown_store_skill");
+    }
+
+    #[test]
+    fn transaction_wide_recovery_is_blocked_until_managed_project_links_are_removed() {
+        let fixture = TempDir::new().unwrap();
+        let discovery = fixture.path().join("user-skills");
+        let store = fixture.path().join("Skill Store");
+        let project = fixture.path().join("Habitat");
+        let original = discovery.join("alpha");
+        fs::create_dir(&store).unwrap();
+        fs::create_dir(&project).unwrap();
+        write_skill(&original, "alpha");
+        let roots = vec![InventoryRoot {
+            root_id: "codex".into(),
+            agent_id: "codex".into(),
+            edition: None,
+            path: discovery,
+        }];
+        let snapshot = scan_inventory(&roots).unwrap();
+        let migration_plan = build_import_plan(
+            &snapshot,
+            &store,
+            &roots,
+            &[],
+            &[snapshot.artifacts[0].artifact_id.clone()],
+        )
+        .unwrap();
+        execute_import(&migration_plan).unwrap();
+        let store_source = store.join("alpha");
+        let project_plan = build_project_exposure_plan(
+            &store,
+            &project,
+            &[ProjectSkillSelection {
+                name: "alpha".into(),
+                source_path: store_source.clone(),
+                selected_agents: vec![AgentId::Codex],
+            }],
+        )
+        .unwrap();
+        apply_project_exposure_plan(&project_plan).unwrap();
+
+        let known_roots = vec![roots[0].path.clone()];
+        let (_, blocked) = prepare_recovery_plan(
+            &store,
+            std::slice::from_ref(&project),
+            &known_roots,
+        )
+        .unwrap()
+        .unwrap();
+
+        assert!(!blocked.ready);
+        assert_eq!(blocked.project_links.len(), 1);
+        assert_eq!(blocked.blockers[0].code, "managed_project_link_active");
+        assert!(store_source.join("SKILL.md").is_file());
+        assert!(fs::symlink_metadata(&original).is_err());
+
+        fs::remove_file(&blocked.project_links[0]).unwrap();
+        let (manifest_path, ready) = prepare_recovery_plan(&store, &[project], &known_roots)
+            .unwrap()
+            .unwrap();
+        assert!(ready.ready);
+        assert!(ready.blockers.is_empty());
+
+        let restored = rollback_transaction(&manifest_path).unwrap();
+        assert_eq!(restored.state, migration::TransactionState::RolledBack);
+        assert!(original.join("SKILL.md").is_file());
+        assert!(fs::symlink_metadata(store_source).is_err());
+    }
+
+    #[test]
+    fn restart_recovery_rejects_manifest_original_paths_outside_known_agent_roots() {
+        let fixture = TempDir::new().unwrap();
+        let discovery = fixture.path().join("user-skills");
+        let store = fixture.path().join("Skill Store");
+        let outside = fixture.path().join("unrelated");
+        let original = discovery.join("alpha");
+        fs::create_dir(&store).unwrap();
+        fs::create_dir(&outside).unwrap();
+        write_skill(&original, "alpha");
+        let roots = vec![InventoryRoot {
+            root_id: "codex".into(),
+            agent_id: "codex".into(),
+            edition: None,
+            path: discovery,
+        }];
+        let snapshot = scan_inventory(&roots).unwrap();
+        let migration_plan = build_import_plan(
+            &snapshot,
+            &store,
+            &roots,
+            &[],
+            &[snapshot.artifacts[0].artifact_id.clone()],
+        )
+        .unwrap();
+        let mut manifest = execute_import(&migration_plan).unwrap();
+        let canonical_outside = fs::canonicalize(&outside).unwrap();
+        manifest.recoveries[0].original_parent = canonical_outside.clone();
+        manifest.recoveries[0].original_path = canonical_outside.join("alpha");
+        fs::write(
+            &migration_plan.manifest_path,
+            serde_json::to_vec_pretty(&manifest).unwrap(),
+        )
+        .unwrap();
+
+        let (_, plan) = prepare_recovery_plan(
+            &store,
+            &[],
+            std::slice::from_ref(&roots[0].path),
+        )
+        .unwrap()
+        .unwrap();
+
+        assert!(!plan.ready);
+        assert_eq!(plan.blockers.len(), 1);
+        assert_eq!(plan.blockers[0].code, "unknown_recovery_root");
+        assert!(store.join("alpha/SKILL.md").is_file());
+        assert!(fs::symlink_metadata(canonical_outside.join("alpha")).is_err());
     }
 }

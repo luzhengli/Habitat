@@ -152,6 +152,26 @@ export type TransactionManifest = MigrationPlan & {
   updatedAt: number;
 };
 
+export type RecoveryBlocker = {
+  code: string;
+  message: string;
+  path: string | null;
+  recovery: string;
+};
+
+export type RecoveryPlan = {
+  transactionId: string;
+  storeRoot: string;
+  state: TransactionManifest["state"];
+  createdAt: number;
+  updatedAt: number;
+  importCount: number;
+  recoveryCount: number;
+  projectLinks: string[];
+  blockers: RecoveryBlocker[];
+  ready: boolean;
+};
+
 export type TargetGroupId = "agents_shared" | "claude" | "trae";
 export type ProjectAction = "create" | "remove";
 export type ProjectOperationResult = "pending" | "created" | "removed" | "rolled_back" | "drifted";

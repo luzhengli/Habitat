@@ -34,6 +34,7 @@ export async function manifest(root) {
 export async function copySnapshot(source, target, expected) {
  const current=await manifest(source);requireValue(current.hash===expected.hash&&current.rootIdentity===expected.rootIdentity,'SOURCE_CHANGED','完整技能包在预览后改变',409);
  await fs.mkdir(target,{mode:0o700});
- for(const entry of expected.entries){const dest=path.join(target,entry.path);if(entry.type==='directory')await fs.mkdir(dest,{mode:entry.mode});else {await fs.copyFile(path.join(source,entry.path),dest,constants.COPYFILE_EXCL);await fs.chmod(dest,entry.mode);const h=await fs.open(dest,'r');await h.sync();await h.close();}}
+ for(const entry of expected.entries){const dest=path.join(target,entry.path);if(entry.type==='directory')await fs.mkdir(dest,{mode:0o700});else {await fs.copyFile(path.join(source,entry.path),dest,constants.COPYFILE_EXCL);await fs.chmod(dest,entry.mode);const h=await fs.open(dest,'r');await h.sync();await h.close();}}
+ for(const entry of [...expected.entries].reverse())if(entry.type==='directory')await fs.chmod(path.join(target,entry.path),entry.mode);
  const after=await manifest(target), original=await manifest(source);requireValue(after.hash===expected.hash&&original.hash===expected.hash,'COPY_MISMATCH','副本或来源指纹改变',409);return after;
 }

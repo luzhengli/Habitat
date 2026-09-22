@@ -1,4 +1,5 @@
 import fs from 'node:fs/promises';
+import {constants} from 'node:fs';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { authorizeRoots } from './inventory.mjs';
@@ -32,10 +33,12 @@ export class Operations {
  async preflight(plan) {
   const project=this.c.get('project',plan.projectId);requireValue(project&&project.revision===plan.revision,'REVISION_CHANGED','项目已变化，请重新预览',409);
   const parents=await this.parents(project);
+  try{await fs.access(project.path,constants.W_OK|constants.X_OK);for(const parent of parents)if(parent.identity)await fs.access(parent.path,constants.W_OK|constants.X_OK);await directory(this.c.directory);await fs.access(this.c.directory,constants.W_OK|constants.X_OK);const store=path.join(this.c.directory,'store');if(await exists(store)){await directory(store);await fs.access(store,constants.W_OK|constants.X_OK);}}catch{requireValue(false,'PREFLIGHT_PERMISSION','项目入口或 Store 无写权限/路径不安全，未施工',403);}
   for(const expected of plan.parents) {const current=parents.find(p=>p.path===expected.path);requireValue(expected.identity===current.identity,'PATH_CHANGED','项目父目录在预览后改变',409);}
   for(const step of plan.steps) {
    requireValue(JSON.stringify(await this.targetState(step.target))===JSON.stringify(step.before),'TARGET_CHANGED','目标已存在或身份改变，未施工',409);
    if(step.action==='add'||step.action==='replace') {
+    if(await exists(step.snapshot))requireValue((await manifest(step.snapshot)).hash===step.manifest.hash,'SNAPSHOT_CHANGED','已有快照变化，未施工',409);
     if(step.action==='replace') requireValue((await manifest(step.previous.snapshot)).hash===step.previous.manifest.hash,'PERSONAL_MODIFICATION','旧快照存在个人修改，拒绝更新',409);
     if(step.sourceId) {const source=this.c.grants().find(s=>s.id===step.sourceId);requireValue(source,'GRANT_REVOKED','来源授权已撤销',403);await directory(source.path,source.identity);const m=await manifest(step.source);requireValue(m.hash===step.manifest.hash&&m.rootIdentity===step.manifest.rootIdentity,'SOURCE_CHANGED','完整源包已变化',409);}
     else {requireValue((await manifest(step.snapshot)).hash===step.manifest.hash,'SNAPSHOT_CHANGED','受管快照改变',409);}

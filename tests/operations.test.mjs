@@ -65,3 +65,10 @@ test('whole-package symlink and oversize files are rejected without project writ
 test('cancellation at durable safe boundary writes no project entry',async t=>{
  const f=await setup(t),p=await f.plan();const result=await f.ops.execute({planId:p.id,hash:p.hash,confirm:true,idempotencyKey:'cancel-test-key'},op=>f.c.put('cancellation',{id:op.id}));assert.equal(result.status,'rolled-back');await assert.rejects(fs.lstat(p.steps[0].target),{code:'ENOENT'});
 });
+test('copy preserves nested directory modes after writing children',async t=>{
+ const f=await setup(t);await fs.chmod(path.join(f.skill.path,'scripts'),0o555);const p=await f.plan(),op=await f.apply(p);assert.equal(op.status,'succeeded');assert.equal((await fs.stat(path.join(op.steps[0].snapshot,'scripts'))).mode&0o777,0o555);
+ await fs.chmod(path.join(f.skill.path,'scripts'),0o755);await fs.chmod(path.join(op.steps[0].snapshot,'scripts'),0o755);
+});
+test('permission preflight failure creates no project container',async t=>{
+ const f=await setup(t);await fs.chmod(f.c.directory,0o500);try{await assert.rejects(f.plan(),/权限/);assert.deepEqual(await fs.readdir(f.project.path),[]);}finally{await fs.chmod(f.c.directory,0o700);}
+});

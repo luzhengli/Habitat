@@ -1,0 +1,103 @@
+
+> habitat-web@0.1.0 check
+> npm test && node scripts/check-source.mjs && npm --prefix apps/web run typecheck && npm run build
+
+
+> habitat-web@0.1.0 test
+> node --test tests/*.test.mjs reference/air/tests/model.test.mjs
+
+✔ 演示清单与计数一致 (1.043042ms)
+✔ 损坏/无权限存储安全回退 (0.292333ms)
+✔ 正确读取已保存状态 (0.823417ms)
+✔ 收录默认不改变任何项目 (4.717ms)
+✔ 同名与不安全路径标识被拒绝 (0.24925ms)
+✔ 项目配置只改变目标项目并保留源技能 (1.017208ms)
+✔ 不存在的项目与技能被拒绝 (0.31375ms)
+✔ 无变化操作幂等，不增加历史 (0.240542ms)
+✔ 移除只影响入口、不删除源内容 (0.588375ms)
+✔ 撤销恢复配置快照并保留记录 (0.687666ms)
+✔ 禁止越过后续操作撤销 (1.6825ms)
+✔ 撤销配置不会清除后来修改的收藏偏好 (0.5445ms)
+✔ 修复不能自动升级为真实发现 (0.661708ms)
+(node:41028) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ production API validates JSON, grants, size, session and complete real transaction (123.061916ms)
+(node:41029) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ explicit grant, durable identity and preferences survive restart; source unchanged (47.0845ms)
+✔ variants, missing fields, source drift and symlink gaps remain explicit (38.324833ms)
+✔ standard YAML parsing rejects invalid and binary data, preserves unknown fields (1.050459ms)
+✔ unsupported schema is rejected instead of silently rewritten (14.673875ms)
+✔ unreadable authorized source reports partial rather than empty success (9.760084ms)
+✔ database symlink is refused without modifying its target (5.709792ms)
+(node:41030) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ network input cannot select arbitrary host, private address, traversal or credential (1.197667ms)
+✔ isolated Git candidate verifies blobs, diffs and preserves prior imported source (56.367833ms)
+✔ Git symlinks, submodules and excessive tree are rejected before writes (10.088208ms)
+(node:41031) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ full copy fingerprint, explicit plan, readback, idempotency and undo preserve source (125.438584ms)
+✔ conflict, source drift, parent symlink and revoked grant block before construction (46.681708ms)
+✔ later revision, wrong hash and idempotency payload are rejected (93.812125ms)
+✔ failure compensation removes only proven created entry (31.257416ms)
+✔ foreign replacement remains intact and requires recovery (25.358209ms)
+✔ restarting a journaled interrupted operation compensates exact entry (28.283166ms)
+✔ existing foreign target and changed owned snapshot cannot be removed (26.208ms)
+✔ SIGKILL after filesystem apply recovers from durable journal without touching source (99.238041ms)
+✔ fixed version update and undo keep old snapshot; personal modifications block (62.638375ms)
+✔ concurrent requests cannot both execute a stale plan (28.437417ms)
+✔ whole-package symlink and oversize files are rejected without project writes (14.368375ms)
+✔ cancellation at durable safe boundary writes no project entry (16.7075ms)
+✔ copy preserves nested directory modes after writing children (29.159833ms)
+✔ permission preflight failure creates no project container (10.709208ms)
+(node:41032) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ no grants means no implicit home scan (3.2185ms)
+✔ authorized real scan and read preserve source bytes (14.025042ms)
+✔ source directory symlink grant is rejected (7.082417ms)
+✔ relative, root and malformed grants are rejected (0.19825ms)
+✔ candidate and SKILL symlinks are not followed (23.039416ms)
+✔ content drift invalidates ID-based read (9.42775ms)
+✔ root drift is partial, never empty success (13.640583ms)
+✔ oversized and invalid UTF-8 content is reported (14.567042ms)
+✔ API requires header, session and CSRF (28.018458ms)
+✔ foreign and null origins, fetch sites and Host are denied (18.70575ms)
+✔ dev exact origin enabled only in explicit dev mode (4.304042ms)
+✔ mutation API is closed with explicit 501 and no file writes (12.53125ms)
+✔ real inventory IDs only, no arbitrary file route (43.755292ms)
+✔ static exposure is allowlisted and demo has nonce CSP (35.721875ms)
+(node:41033) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ opaque file IDs read only bounded granted text and reject unknown/binary/revoked (65.489083ms)
+ℹ tests 52
+ℹ suites 0
+ℹ pass 52
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 809.663583
+Source boundary and 14 JavaScript syntax checks passed. This is NOT a Vite build, JSX typecheck, or a security certification.
+
+> habitat-web-ui@0.1.0 typecheck
+> tsc --noEmit
+
+
+> habitat-web@0.1.0 build
+> npm --prefix apps/web run build
+
+
+> habitat-web-ui@0.1.0 build
+> vite build
+
+vite v8.3.0 building client environment for production...
+transforming...
+✓ 25 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.41 kB │ gzip:  0.32 kB
+dist/assets/index-i90xEcLE.css   56.70 kB │ gzip: 11.73 kB
+dist/assets/index-3pARl83S.js   276.06 kB │ gzip: 88.24 kB
+
+✓ built in 118ms

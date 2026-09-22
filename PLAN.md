@@ -1,16 +1,18 @@
 # Habitat Web 进度
 
-当前状态：M0 工程基线已实现并验证；M1 真实只读切片已接通；M2 项目事务闭环已验收，M3 真实 Git 下载与维护已验收，正在完成 M4。
+当前状态：本轮 M0–M4 全部完成。真实本地 Web 项目已实现并通过对应验收。
 
-| 阶段 | 状态 | 退出条件 |
+| 阶段 | 状态 | 实际结果 |
 |---|---|---|
-| B0 交付基座 | done | 原型完整保留；零依赖本地服务/只读样例/请求边界；27 项当前测试 |
-| M0 正式 Web 工程基线 | done | 安装并锁定依赖；Vite build、类型检查和浏览器实测；缩小 JSX 未类型化范围 |
-| M1 真实只读技能库 | done | 授权/持久来源索引、标准解析、差异与覆盖、详情；源内容不变 |
-| M2 本地配置闭环 | done | 托管副本、项目登记、计划、预检、执行、回读、撤销、重启恢复 |
-| M3 诊断与能力扩展 | done | 有依据的 Agent 适配/冲突解释；Git 来源在安全门槛后接入 |
-| M4 Web 发布验收 | todo | Chromium/Safari 实测；权限与安全回归；安装/启动/停服说明；版本锁与干净克隆 |
+| B0 交付基座 | done | 原始 Air/design 27 项 SHA256 保留 |
+| M0 正式 Web 工程基线 | done | 实际 lockfile/ci；生产 TSX 严格检查；Vite build；URL/浏览器基线 |
+| M1 真实只读技能库 | done | 显式来源授权/撤销、SQLite v1、标准 YAML、UUID、搜索分页/收藏/详情/文件与缺口 |
+| M2 本地配置闭环 | done | 完整包快照、项目限定授权、持久草稿/计划/事务、预检/幂等/回读/撤销/SIGKILL 恢复 |
+| M3 诊断与能力扩展 | done | Claude Code 有据适配、只读诊断、真实 GitHub 下载/差异、固定版本更新/回退与个人修改保护 |
+| M4 Web 发布验收 | done | 52 tests + typecheck/build；Chromium/Safari；Node 24/25；干净本地 clone；启动/停服/备份文档 |
 
-next_action: M4：完成 Chromium/Safari 核心状态、断连/窄屏/安全回归、干净本地 clone 安装构建与交付记录。
+next_action: 本轮无待办。用户可打开 http://127.0.0.1:4173/library，明确授权自己的来源后开始使用；后续新范围另行规划。
 
-保留 Air 原型，不重选风格。不回到旧项目；不提前建设云账号、市场、团队分发或桌面打包。
+验收索引：verification/m0-acceptance.md 至 verification/m4-acceptance.md，截图与原始日志同目录。最终实现代码提交 23cccdd；后续仅验收记录提交。未 push、发布或部署。
+
+风险与边界：Agent 实测发现保持未知；Windows/Linux/Firefox 未验收；SQLite 内建模块仍标 experimental；未知漂移阻断而不强制覆盖；schema v2 未引入。详见 M4 记录与 README。

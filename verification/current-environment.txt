@@ -1,5 +1,7 @@
-
-NODE/SYSTEM
-v22.16.0
-10.9.2
-Linux x86_64
+2026-09-22 final implementation
+macOS arm64
+Node 25.6.1 and 24.14.0 tested
+npm 11.9.0
+React/ReactDOM 19.3.0; TypeScript 7.0.2; Vite 8.3.0
+52 tests; strict typecheck; Vite build; Chromium and native Safari; local clean clone verified
+See m4-acceptance.md for evidence and limitations.

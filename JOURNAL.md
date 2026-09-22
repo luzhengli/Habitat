@@ -29,3 +29,11 @@
 ## 2026-09-22 — M3 诊断与 Git 维护
 
 受限 GitHub API 下载/候选/差异/收录已实现，项目固定版本切换与撤销通过，个人修改保留。匿名 API 配额最初为 0，重置后实际下载 anthropics/skills 指定子目录成功：5 项、59784 字节、1 项技能。m3-live-git.json 留证。47 tests/typecheck/build 通过；继续 M4 浏览器、安全与干净 clone 验收。
+
+## 2026-09-22 — M4 完成与交付
+
+52 tests（39 项真实服务/领域 + 13 项原型）、严格 TSX/typecheck/build 通过；Node 25.6.1 与 24.14.0 验证；root/web audit 0 已知漏洞。Chromium 四尺寸、真实 Safari 列表/详情/刷新/Esc/项目/历史实测。真实 Git 浏览器下载/候选/收录通过；恶意文本不执行；停服明确离线，重启续接。独立本地 clone ci/build/test 通过且工作树干净，真实启动未授权空库。
+
+最后修复：目录复制后恢复 mode；Store/项目写权限在任何文件施工前预检；数据库文件拒绝外来 symlink。最终实现 23cccdd。冻结 Air/design 27 项原始校验和一致。详细证据 verification/m4-acceptance.md。临时验收服务已停止，默认正式服务 127.0.0.1:4173 运行、授权根为 0；测试材料独立保留。
+
+未支持范围已明确记录，未伪造 Agent 发现、跨平台验收或未来 schema 迁移。当前无不可绕过阻塞，M0–M4 全部完成；未推送或发布。next_action：本轮无待办，用户可显式授权真实来源开始使用。

@@ -1,3 +1,7 @@
+# 当前实现验收
+
+最终记录：[m4-acceptance.md](m4-acceptance.md)。M0–M3 分阶段记录和截图同目录；52 项最终测试日志为 m4-check.log/node24-check.log/clean-clone-check.log。以下原交付记录仅作历史。
+
 # 验证记录的层级
 
 current-* 是2026-09-22本次操作；historical-*是原Air包附带历史。两者不能相加后声称全是新Web测试。

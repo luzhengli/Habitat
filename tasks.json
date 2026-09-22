@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "current": "M4",
+  "current": "complete",
   "scope": "greenfield-local-first-web",
   "updatedAt": "2026-09-22",
-  "notes": "M3含后续扩展，M4可对M2 MVP先验收；发布前明确实际feature flags。",
+  "notes": "本轮 B0/M0–M4 均完成；未来可选能力未混入当前完成声明。详见 verification/m4-acceptance.md。",
   "tasks": [
     {
       "id": "B0",
@@ -97,7 +97,7 @@
     {
       "id": "M4",
       "title": "Web发布验收",
-      "status": "in_progress",
+      "status": "done",
       "dependsOn": [
         "M2"
       ],
@@ -106,7 +106,18 @@
         "WEB-14",
         "WEB-15",
         "WEB-16"
+      ],
+      "evidence": [
+        "verification/m4-acceptance.md",
+        "verification/m4-check.log",
+        "verification/node24-check.log",
+        "verification/clean-clone-check.log",
+        "verification/m4-safari-detail.png",
+        "verification/m4-clean-clone-empty.png"
       ]
     }
-  ]
+  ],
+  "lastCommand": "npm run check (clean clone at 23cccdd); Node 24.14.0 npm run check",
+  "next_action": "本轮完成；用户明确授权真实来源后使用。",
+  "blockers": []
 }

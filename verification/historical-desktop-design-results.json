@@ -1,0 +1,51 @@
+{
+  "passed": 11,
+  "results": [
+    {
+      "test": "侧栏可折叠、可恢复，默认保留文字入口",
+      "status": "passed"
+    },
+    {
+      "test": "Ctrl+1–4 导航、Ctrl+, 设置、? 帮助",
+      "status": "passed"
+    },
+    {
+      "test": "拖拽预留区不包含交互控件，无伪造原生窗口按钮",
+      "status": "passed"
+    },
+    {
+      "test": "输入中的问号不触发帮助快捷键",
+      "status": "passed"
+    },
+    {
+      "test": "同名来源比较、全局影响和失效路径采用结构化卡片",
+      "status": "passed"
+    },
+    {
+      "test": "新增技能来源和新增项目入口使用一致表单与选项样式",
+      "status": "passed"
+    },
+    {
+      "test": "960×640 桌面窗口、明确导航与表单底栏可见",
+      "status": "passed"
+    },
+    {
+      "test": "1280×800 桌面窗口、明确导航与表单底栏可见",
+      "status": "passed"
+    },
+    {
+      "test": "1920×1080 桌面窗口、明确导航与表单底栏可见",
+      "status": "passed"
+    },
+    {
+      "test": "prefers-reduced-motion 降低动效",
+      "status": "passed"
+    },
+    {
+      "test": "独立 WebView 静态资源与单文件原型同源输出",
+      "status": "passed"
+    }
+  ],
+  "errors": [],
+  "scope": "Linux Chromium rendering; no native macOS/Windows/WebKit verification."
+}

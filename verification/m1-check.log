@@ -1,0 +1,71 @@
+
+> habitat-web-kickstart@0.1.0 check
+> npm test && node scripts/check-source.mjs && npm --prefix apps/web run typecheck && npm run build
+
+
+> habitat-web-kickstart@0.1.0 test
+> node --test tests/*.test.mjs reference/air/tests/model.test.mjs
+
+✔ 演示清单与计数一致 (1.559666ms)
+✔ 损坏/无权限存储安全回退 (0.624917ms)
+✔ 正确读取已保存状态 (0.416125ms)
+✔ 收录默认不改变任何项目 (2.048708ms)
+✔ 同名与不安全路径标识被拒绝 (0.439625ms)
+✔ 项目配置只改变目标项目并保留源技能 (0.82925ms)
+✔ 不存在的项目与技能被拒绝 (0.100625ms)
+✔ 无变化操作幂等，不增加历史 (0.082458ms)
+✔ 移除只影响入口、不删除源内容 (0.220375ms)
+✔ 撤销恢复配置快照并保留记录 (0.383208ms)
+✔ 禁止越过后续操作撤销 (1.010333ms)
+✔ 撤销配置不会清除后来修改的收藏偏好 (0.160375ms)
+✔ 修复不能自动升级为真实发现 (0.121708ms)
+(node:3325) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ explicit grant, durable identity and preferences survive restart; source unchanged (23.690458ms)
+✔ variants, missing fields, source drift and symlink gaps remain explicit (18.754083ms)
+✔ standard YAML parsing rejects invalid and binary data, preserves unknown fields (1.744208ms)
+✔ no grants means no implicit home scan (1.480792ms)
+✔ authorized real scan and read preserve source bytes (12.508709ms)
+✔ source directory symlink grant is rejected (2.791791ms)
+✔ relative, root and malformed grants are rejected (0.162375ms)
+✔ candidate and SKILL symlinks are not followed (6.79475ms)
+✔ content drift invalidates ID-based read (4.805ms)
+✔ root drift is partial, never empty success (2.471125ms)
+✔ oversized and invalid UTF-8 content is reported (3.887916ms)
+✔ API requires header, session and CSRF (26.634625ms)
+✔ foreign and null origins, fetch sites and Host are denied (13.465125ms)
+✔ dev exact origin enabled only in explicit dev mode (2.82025ms)
+✔ mutation API is closed with explicit 501 and no file writes (8.983125ms)
+✔ real inventory IDs only, no arbitrary file route (8.88725ms)
+✔ static exposure is allowlisted and demo has nonce CSP (9.433083ms)
+ℹ tests 30
+ℹ suites 0
+ℹ pass 30
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 202.549209
+Source boundary and 9 JavaScript syntax checks passed. This is NOT a Vite build, JSX typecheck, or a security certification.
+
+> habitat-web-ui@0.1.0 typecheck
+> tsc --noEmit
+
+
+> habitat-web-kickstart@0.1.0 build
+> npm --prefix apps/web run build
+
+
+> habitat-web-ui@0.1.0 build
+> vite build
+
+vite v8.3.0 building client environment for production...
+transforming...
+✓ 20 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.41 kB │ gzip:  0.32 kB
+dist/assets/index-C_gZrCE6.css   55.50 kB │ gzip: 11.50 kB
+dist/assets/index-CLm4h8VZ.js   261.43 kB │ gzip: 83.79 kB
+
+✓ built in 101ms

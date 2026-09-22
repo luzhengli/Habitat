@@ -1,0 +1,7 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Habitat Web · 开工基座</title><link rel="stylesheet" href="/bootstrap.css"></head><body><main>
+<header><span class="eyebrow">HABITAT / WEB</span><a href="/demo">打开 Air 交互原型 ↗</a></header>
+<h1>从这里，开启新的 Habitat。</h1><p class="intro">全新 Web 项目 · 保留 Air 设计 · 不继承旧仓库</p>
+<section class="panel"><h2>这个启动页不是产品首页</h2><p>已提供可运行的本地服务和只读扫描起点。完整产品由 Codex 按交接材料实现；Air 原型中的配置、更新和撤销仍是演示。</p><div class="actions"><a class="primary" href="/demo">体验已确认原型</a><button id="refresh">检查本地服务</button></div></section>
+<section><div class="heading"><h2>本地只读目录</h2><span id="status" role="status">正在连接</span></div><p id="scope">扫描只读取启动时明确授权的目录，不自动遍历你的电脑。</p><div id="results"></div><pre id="content" hidden></pre></section>
+<section class="note"><h2>交给 Codex</h2><p>在此目录打开 Codex，复制 <code>CODEX-START.md</code> 的完整内容。它会先接入 React/Vite 工程，再逐段替换模拟能力。</p><p>无须安装前端依赖就能体验参考；开发前端运行 <code>npm run setup:web</code>，然后 <code>npm run dev</code>。</p></section>
+<footer>Local-first. No desktop shell. No automatic file changes.</footer></main><script type="module" src="/bootstrap.js"></script></body></html>

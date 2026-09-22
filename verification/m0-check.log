@@ -1,0 +1,66 @@
+
+> habitat-web-kickstart@0.1.0 check
+> npm test && node scripts/check-source.mjs && npm --prefix apps/web run typecheck && npm run build
+
+
+> habitat-web-kickstart@0.1.0 test
+> node --test tests/*.test.mjs reference/air/tests/model.test.mjs
+
+✔ 演示清单与计数一致 (3.417084ms)
+✔ 损坏/无权限存储安全回退 (0.442917ms)
+✔ 正确读取已保存状态 (0.272667ms)
+✔ 收录默认不改变任何项目 (1.797166ms)
+✔ 同名与不安全路径标识被拒绝 (0.521875ms)
+✔ 项目配置只改变目标项目并保留源技能 (1.79975ms)
+✔ 不存在的项目与技能被拒绝 (0.156042ms)
+✔ 无变化操作幂等，不增加历史 (0.16575ms)
+✔ 移除只影响入口、不删除源内容 (0.667417ms)
+✔ 撤销恢复配置快照并保留记录 (0.360792ms)
+✔ 禁止越过后续操作撤销 (0.532792ms)
+✔ 撤销配置不会清除后来修改的收藏偏好 (0.25575ms)
+✔ 修复不能自动升级为真实发现 (0.55125ms)
+✔ no grants means no implicit home scan (2.073625ms)
+✔ authorized real scan and read preserve source bytes (14.20325ms)
+✔ source directory symlink grant is rejected (2.251584ms)
+✔ relative, root and malformed grants are rejected (0.154791ms)
+✔ candidate and SKILL symlinks are not followed (4.5215ms)
+✔ content drift invalidates ID-based read (6.60775ms)
+✔ root drift is partial, never empty success (3.456667ms)
+✔ oversized and invalid UTF-8 content is reported (4.24825ms)
+✔ API requires header, session and CSRF (19.101667ms)
+✔ foreign and null origins, fetch sites and Host are denied (10.993208ms)
+✔ dev exact origin enabled only in explicit dev mode (3.153125ms)
+✔ mutation API is closed with explicit 501 and no file writes (8.0715ms)
+✔ real inventory IDs only, no arbitrary file route (8.181292ms)
+✔ static exposure is allowlisted and demo has nonce CSP (9.6405ms)
+ℹ tests 27
+ℹ suites 0
+ℹ pass 27
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 205.52125
+Source boundary and 8 JavaScript syntax checks passed. This is NOT a Vite build, JSX typecheck, or a security certification.
+
+> habitat-web-ui@0.1.0 typecheck
+> tsc --noEmit
+
+
+> habitat-web-kickstart@0.1.0 build
+> npm --prefix apps/web run build
+
+
+> habitat-web-ui@0.1.0 build
+> vite build
+
+vite v8.3.0 building client environment for production...
+transforming...
+✓ 20 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.41 kB │ gzip:  0.32 kB
+dist/assets/index-DOjH-I5q.css   55.10 kB │ gzip: 11.42 kB
+dist/assets/index-CjT8hiyL.js   258.58 kB │ gzip: 82.94 kB
+
+✓ built in 97ms

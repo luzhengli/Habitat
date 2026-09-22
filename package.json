@@ -1,0 +1,23 @@
+{
+  "name": "habitat-web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Local-first Skills workspace with bounded sources and recoverable project transactions",
+  "engines": {
+    "node": ">=24.14.0"
+  },
+  "scripts": {
+    "start": "node apps/server/index.mjs",
+    "start:fixture": "node apps/server/index.mjs --fixture",
+    "dev": "node scripts/dev.mjs",
+    "setup:web": "node scripts/setup-web.mjs",
+    "build": "npm --prefix apps/web run build",
+    "test": "node --test tests/*.test.mjs reference/air/tests/model.test.mjs",
+    "check": "npm test && node scripts/check-source.mjs && npm --prefix apps/web run typecheck && npm run build",
+    "verify:delivery": "node scripts/verify-delivery.mjs"
+  },
+  "dependencies": {
+    "yaml": "2.9.1"
+  }
+}

@@ -1,0 +1,181 @@
+
+> habitat-web-kickstart@0.1.0 check
+> npm test && node scripts/check-source.mjs
+
+
+> habitat-web-kickstart@0.1.0 test
+> node --test tests/*.test.mjs reference/air/tests/model.test.mjs
+
+TAP version 13
+# Subtest: 演示清单与计数一致
+ok 1 - 演示清单与计数一致
+  ---
+  duration_ms: 8.816331
+  type: 'test'
+  ...
+# Subtest: 损坏/无权限存储安全回退
+ok 2 - 损坏/无权限存储安全回退
+  ---
+  duration_ms: 1.279167
+  type: 'test'
+  ...
+# Subtest: 正确读取已保存状态
+ok 3 - 正确读取已保存状态
+  ---
+  duration_ms: 1.615792
+  type: 'test'
+  ...
+# Subtest: 收录默认不改变任何项目
+ok 4 - 收录默认不改变任何项目
+  ---
+  duration_ms: 4.650968
+  type: 'test'
+  ...
+# Subtest: 同名与不安全路径标识被拒绝
+ok 5 - 同名与不安全路径标识被拒绝
+  ---
+  duration_ms: 1.034875
+  type: 'test'
+  ...
+# Subtest: 项目配置只改变目标项目并保留源技能
+ok 6 - 项目配置只改变目标项目并保留源技能
+  ---
+  duration_ms: 3.473396
+  type: 'test'
+  ...
+# Subtest: 不存在的项目与技能被拒绝
+ok 7 - 不存在的项目与技能被拒绝
+  ---
+  duration_ms: 0.611909
+  type: 'test'
+  ...
+# Subtest: 无变化操作幂等，不增加历史
+ok 8 - 无变化操作幂等，不增加历史
+  ---
+  duration_ms: 0.690679
+  type: 'test'
+  ...
+# Subtest: 移除只影响入口、不删除源内容
+ok 9 - 移除只影响入口、不删除源内容
+  ---
+  duration_ms: 1.82033
+  type: 'test'
+  ...
+# Subtest: 撤销恢复配置快照并保留记录
+ok 10 - 撤销恢复配置快照并保留记录
+  ---
+  duration_ms: 5.251769
+  type: 'test'
+  ...
+# Subtest: 禁止越过后续操作撤销
+ok 11 - 禁止越过后续操作撤销
+  ---
+  duration_ms: 1.08823
+  type: 'test'
+  ...
+# Subtest: 撤销配置不会清除后来修改的收藏偏好
+ok 12 - 撤销配置不会清除后来修改的收藏偏好
+  ---
+  duration_ms: 0.563027
+  type: 'test'
+  ...
+# Subtest: 修复不能自动升级为真实发现
+ok 13 - 修复不能自动升级为真实发现
+  ---
+  duration_ms: 0.573741
+  type: 'test'
+  ...
+# Subtest: no grants means no implicit home scan
+ok 14 - no grants means no implicit home scan
+  ---
+  duration_ms: 8.822105
+  type: 'test'
+  ...
+# Subtest: authorized real scan and read preserve source bytes
+ok 15 - authorized real scan and read preserve source bytes
+  ---
+  duration_ms: 41.341306
+  type: 'test'
+  ...
+# Subtest: source directory symlink grant is rejected
+ok 16 - source directory symlink grant is rejected
+  ---
+  duration_ms: 13.382024
+  type: 'test'
+  ...
+# Subtest: relative, root and malformed grants are rejected
+ok 17 - relative, root and malformed grants are rejected
+  ---
+  duration_ms: 1.046343
+  type: 'test'
+  ...
+# Subtest: candidate and SKILL symlinks are not followed
+ok 18 - candidate and SKILL symlinks are not followed
+  ---
+  duration_ms: 18.826117
+  type: 'test'
+  ...
+# Subtest: content drift invalidates ID-based read
+ok 19 - content drift invalidates ID-based read
+  ---
+  duration_ms: 10.245242
+  type: 'test'
+  ...
+# Subtest: root drift is partial, never empty success
+ok 20 - root drift is partial, never empty success
+  ---
+  duration_ms: 5.810449
+  type: 'test'
+  ...
+# Subtest: oversized and invalid UTF-8 content is reported
+ok 21 - oversized and invalid UTF-8 content is reported
+  ---
+  duration_ms: 11.21057
+  type: 'test'
+  ...
+# Subtest: API requires header, session and CSRF
+ok 22 - API requires header, session and CSRF
+  ---
+  duration_ms: 64.177346
+  type: 'test'
+  ...
+# Subtest: foreign and null origins, fetch sites and Host are denied
+ok 23 - foreign and null origins, fetch sites and Host are denied
+  ---
+  duration_ms: 27.370939
+  type: 'test'
+  ...
+# Subtest: dev exact origin enabled only in explicit dev mode
+ok 24 - dev exact origin enabled only in explicit dev mode
+  ---
+  duration_ms: 10.545825
+  type: 'test'
+  ...
+# Subtest: mutation API is closed with explicit 501 and no file writes
+ok 25 - mutation API is closed with explicit 501 and no file writes
+  ---
+  duration_ms: 23.607
+  type: 'test'
+  ...
+# Subtest: real inventory IDs only, no arbitrary file route
+ok 26 - real inventory IDs only, no arbitrary file route
+  ---
+  duration_ms: 23.049222
+  type: 'test'
+  ...
+# Subtest: static exposure is allowlisted and demo has nonce CSP
+ok 27 - static exposure is allowlisted and demo has nonce CSP
+  ---
+  duration_ms: 46.325866
+  type: 'test'
+  ...
+1..27
+# tests 27
+# suites 0
+# pass 27
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 633.137053
+Source boundary and 8 JavaScript syntax checks passed. This is NOT a Vite build, JSX typecheck, or a security certification.

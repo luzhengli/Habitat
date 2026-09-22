@@ -1,0 +1,12 @@
+node_modules/
+**/node_modules/
+apps/web/dist/
+.env
+.env.*
+!.env.example
+.habitat/
+.DS_Store
+*.log
+verification/local-*
+
+!verification/*-check.log

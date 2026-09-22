@@ -1,0 +1,5 @@
+
+> habitat-air-prototype@0.2.0 build
+> node scripts/build.mjs
+
+Built React 19.1.1 prototype → dist/index.html (414 KB). No CDN, fonts, or runtime network requests.

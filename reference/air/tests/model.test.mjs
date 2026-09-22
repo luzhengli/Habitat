@@ -1,0 +1,15 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {initialState,loadState,applyProject,addSkill,transact,undo,canUndo,countUsage,validState} from '../src/model.js';
+test('演示清单与计数一致',()=>{const s=initialState();assert.equal(s.skills.length,9);assert.equal(s.projects.length,3);assert.equal(s.issues.length,2);assert.equal(s.bindings.length,8);assert.equal(countUsage(s,'frontend'),2);assert.ok(validState(s))});
+test('损坏/无权限存储安全回退',()=>{assert.equal(loadState({getItem:()=>'{broken'}).skills.length,9);assert.equal(loadState({getItem:()=>{throw Error('denied')}}).projects.length,3)});
+test('正确读取已保存状态',()=>{const s=initialState();s.skills[0].favorite=false;assert.equal(loadState({getItem:()=>JSON.stringify(s)}).skills[0].favorite,false)});
+test('收录默认不改变任何项目',()=>{const s=initialState();const n=addSkill(s,{name:'task-planner',title:'规划',source:'demo',managed:false});assert.equal(n.skills.length,10);assert.equal(n.bindings.length,s.bindings.length);assert.equal(n.skills[0].managed,false);assert.equal(s.skills.length,9)});
+test('同名与不安全路径标识被拒绝',()=>{const s=initialState();assert.throws(()=>addSkill(s,{name:'../foo'}));assert.throws(()=>addSkill(s,{name:'frontend-design'}));assert.throws(()=>addSkill(s,{name:'UPPERCASE'}))});
+test('项目配置只改变目标项目并保留源技能',()=>{const s=initialState();const n=applyProject(s,'habitat',['frontend','creator','writing']);assert.equal(n.skills.length,9);assert.deepEqual(n.bindings.filter(b=>b.projectId!=='habitat'),s.bindings.filter(b=>b.projectId!=='habitat'));assert.equal(n.bindings.find(b=>b.projectId==='habitat'&&b.skillId==='writing').checked,false);assert.equal(n.events.length,1)});
+test('不存在的项目与技能被拒绝',()=>{const s=initialState();assert.throws(()=>applyProject(s,'missing',['frontend']));assert.throws(()=>applyProject(s,'habitat',['missing']))});
+test('无变化操作幂等，不增加历史',()=>{const s=initialState();assert.equal(applyProject(s,'habitat',['frontend','review','creator']),s)});
+test('移除只影响入口、不删除源内容',()=>{const s=initialState();const n=applyProject(s,'habitat',[]);assert.equal(n.skills.length,9);assert.equal(n.bindings.filter(b=>b.projectId==='habitat').length,0)});
+test('撤销恢复配置快照并保留记录',()=>{const s=initialState();const n=applyProject(s,'habitat',[]);const r=undo(n,n.events[0].id);assert.deepEqual(r.bindings,s.bindings);assert.equal(r.events[0].undone,true)});
+test('禁止越过后续操作撤销',()=>{let s=initialState();s=applyProject(s,'habitat',[]);const earlier=s.events[0].id;s=applyProject(s,'personal-site',[]);assert.equal(canUndo(s,earlier),false);assert.throws(()=>undo(s,earlier));s=undo(s,s.events[0].id);assert.equal(canUndo(s,earlier),true)});
+test('撤销配置不会清除后来修改的收藏偏好',()=>{let s=applyProject(initialState(),'habitat',[]);s={...s,skills:s.skills.map(x=>x.id==='frontend'?{...x,favorite:false}:x)};assert.equal(undo(s,s.events[0].id).skills.find(x=>x.id==='frontend').favorite,false)});
+test('修复不能自动升级为真实发现',()=>{const s=initialState();const n=transact(s,{issues:[]},'演示修复','没有工具调用','repair');assert.ok(n.bindings.every(b=>!b.checked));assert.equal(n.events[0].kind,'repair')});

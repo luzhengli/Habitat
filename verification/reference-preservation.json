@@ -1,0 +1,84 @@
+{
+  "checkedAt": "2026-09-22",
+  "sourcePackage": "Habitat-Refactor-Handoff-20260910.zip",
+  "items": [
+    {
+      "file": "reference/air/Habitat-Air.html",
+      "sha256": "9359ed81cd4e4370972e77e23f28160a931b4babce94865a8739e345a1fc5814",
+      "originalSha256": "9359ed81cd4e4370972e77e23f28160a931b4babce94865a8739e345a1fc5814",
+      "identical": true
+    },
+    {
+      "file": "design/07-全局影响确认.png",
+      "sha256": "aad62c92662d41a55f6aa32adf5014ff5c4b26e1aeea1c29794adcd027b19ca4",
+      "originalSha256": "aad62c92662d41a55f6aa32adf5014ff5c4b26e1aeea1c29794adcd027b19ca4",
+      "identical": true
+    },
+    {
+      "file": "design/02-项目工作台.png",
+      "sha256": "d41aa97c5c64e3693dbe2fcf0ed40638ae2417240185efe0cd18cd36ad3cabad",
+      "originalSha256": "d41aa97c5c64e3693dbe2fcf0ed40638ae2417240185efe0cd18cd36ad3cabad",
+      "identical": true
+    },
+    {
+      "file": "design/11-最小桌面窗口.png",
+      "sha256": "71792fd1c84d136ac6ca6c3c09a5d6b0d741970d72229056641d1614606d14e3",
+      "originalSha256": "71792fd1c84d136ac6ca6c3c09a5d6b0d741970d72229056641d1614606d14e3",
+      "identical": true
+    },
+    {
+      "file": "design/09-操作记录.png",
+      "sha256": "42d15cd8e49edbb1b3bf96edd92775c80dfc00a95e8b1dd343ccfea08822ff1e",
+      "originalSha256": "42d15cd8e49edbb1b3bf96edd92775c80dfc00a95e8b1dd343ccfea08822ff1e",
+      "identical": true
+    },
+    {
+      "file": "design/12-最小窗口表单.png",
+      "sha256": "5bebd2789cb425e34d6293f5488f0c97270743d603aa6e4176839b3f5272ced3",
+      "originalSha256": "5bebd2789cb425e34d6293f5488f0c97270743d603aa6e4176839b3f5272ced3",
+      "identical": true
+    },
+    {
+      "file": "design/06-问题概览.png",
+      "sha256": "7334724002f67cdb02abbb0956bd779150142f7a1a84ad328dc74cdd00b6f2f0",
+      "originalSha256": "7334724002f67cdb02abbb0956bd779150142f7a1a84ad328dc74cdd00b6f2f0",
+      "identical": true
+    },
+    {
+      "file": "design/10-设置.png",
+      "sha256": "7de2621a94a419807a6add26efee39bc7948f78a0e7f83d24ba81183578f0601",
+      "originalSha256": "7de2621a94a419807a6add26efee39bc7948f78a0e7f83d24ba81183578f0601",
+      "identical": true
+    },
+    {
+      "file": "design/08-更新预览.png",
+      "sha256": "aaee93578a3965d6bcb84bdda26b4ed10b0c054fd55e28824019bbbcfeeb7ad6",
+      "originalSha256": "aaee93578a3965d6bcb84bdda26b4ed10b0c054fd55e28824019bbbcfeeb7ad6",
+      "identical": true
+    },
+    {
+      "file": "design/01-技能库.png",
+      "sha256": "5fffc42e3144469b1040eacf0c21913772463a2b5282d8c64fc362d54eb8aa5b",
+      "originalSha256": "5fffc42e3144469b1040eacf0c21913772463a2b5282d8c64fc362d54eb8aa5b",
+      "identical": true
+    },
+    {
+      "file": "design/05-添加技能.png",
+      "sha256": "38ebde7413527feba5a959f674a324c1b28ac72a082fe8bfe67ab171159e6867",
+      "originalSha256": "38ebde7413527feba5a959f674a324c1b28ac72a082fe8bfe67ab171159e6867",
+      "identical": true
+    },
+    {
+      "file": "design/03-技能详情.png",
+      "sha256": "1481b97ca8cdad6ebc8cbfd9bebe2b78ebfe7f0db6adc4dfdf47cf3af07767ba",
+      "originalSha256": "1481b97ca8cdad6ebc8cbfd9bebe2b78ebfe7f0db6adc4dfdf47cf3af07767ba",
+      "identical": true
+    },
+    {
+      "file": "design/04-变更预览.png",
+      "sha256": "81a7b6932be49380f599b1b35e78160e02190ff0a6867a826b2d7722e349bfae",
+      "originalSha256": "81a7b6932be49380f599b1b35e78160e02190ff0a6867a826b2d7722e349bfae",
+      "identical": true
+    }
+  ]
+}

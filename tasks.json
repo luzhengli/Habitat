@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "current": "M4",
+  "scope": "greenfield-local-first-web",
+  "updatedAt": "2026-09-22",
+  "notes": "M3含后续扩展，M4可对M2 MVP先验收；发布前明确实际feature flags。",
+  "tasks": [
+    {
+      "id": "B0",
+      "title": "交付基座",
+      "status": "done",
+      "dependsOn": [],
+      "acceptance": [
+        "当前27项测试",
+        "原型字节一致",
+        "无旧仓库/原生依赖"
+      ]
+    },
+    {
+      "id": "M0",
+      "title": "Web依赖与真实构建",
+      "status": "done",
+      "dependsOn": [
+        "B0"
+      ],
+      "acceptance": [
+        "锁定apps/web依赖",
+        "Vite build",
+        "TypeScript范围",
+        "浏览器截图",
+        "Web导航"
+      ],
+      "evidence": [
+        "verification/m0-acceptance.md",
+        "verification/m0-library-1440.png",
+        "verification/m0-library-960.png"
+      ]
+    },
+    {
+      "id": "M1",
+      "title": "真实只读技能库",
+      "status": "done",
+      "dependsOn": [
+        "M0"
+      ],
+      "acceptance": [
+        "WEB-01",
+        "WEB-02",
+        "WEB-03",
+        "WEB-04",
+        "WEB-06"
+      ],
+      "evidence": [
+        "verification/m1-acceptance.md",
+        "verification/m1-detail-960.png"
+      ]
+    },
+    {
+      "id": "M2",
+      "title": "托管与项目事务",
+      "status": "done",
+      "dependsOn": [
+        "M1"
+      ],
+      "acceptance": [
+        "WEB-05",
+        "WEB-07",
+        "WEB-08",
+        "WEB-09",
+        "WEB-10",
+        "WEB-11"
+      ],
+      "evidence": [
+        "verification/m2-acceptance.md",
+        "verification/m2-preview-1440.png",
+        "verification/m2-readback-1440.png",
+        "verification/m2-undo-1440.png"
+      ]
+    },
+    {
+      "id": "M3",
+      "title": "诊断与维护",
+      "status": "done",
+      "dependsOn": [
+        "M2"
+      ],
+      "acceptance": [
+        "WEB-11",
+        "WEB-12",
+        "WEB-14"
+      ],
+      "evidence": [
+        "verification/m3-acceptance.md",
+        "verification/m3-live-git.json"
+      ]
+    },
+    {
+      "id": "M4",
+      "title": "Web发布验收",
+      "status": "in_progress",
+      "dependsOn": [
+        "M2"
+      ],
+      "acceptance": [
+        "WEB-13",
+        "WEB-14",
+        "WEB-15",
+        "WEB-16"
+      ]
+    }
+  ]
+}

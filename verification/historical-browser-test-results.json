@@ -1,0 +1,87 @@
+{
+  "browser": "Chromium / Playwright",
+  "runtime": "React 19.1.1",
+  "mode": "set_content exact built HTML; URL navigation is restricted in this environment",
+  "passed": 19,
+  "errors": [],
+  "network_requests": [],
+  "results": [
+    {
+      "test": "React 19 正常渲染，初始 9 项技能",
+      "status": "passed"
+    },
+    {
+      "test": "搜索、分类、无结果与排序",
+      "status": "passed"
+    },
+    {
+      "test": "收藏与卡片/列表切换",
+      "status": "passed"
+    },
+    {
+      "test": "详情四个页签、焦点约束、Esc 关闭",
+      "status": "passed"
+    },
+    {
+      "test": "项目选择 → 草稿 → 离开保护 → 预览 → 应用",
+      "status": "passed"
+    },
+    {
+      "test": "发现检查保留冲突，不误报真实成功",
+      "status": "passed"
+    },
+    {
+      "test": "操作记录逆序撤销并恢复项目配置",
+      "status": "passed"
+    },
+    {
+      "test": "添加三步向导、校验、仅收录不启用",
+      "status": "passed"
+    },
+    {
+      "test": "从技能详情确认使用项目与目标入口",
+      "status": "passed"
+    },
+    {
+      "test": "同名冲突全局影响确认与失效入口重新定位",
+      "status": "passed"
+    },
+    {
+      "test": "版本 diff、影响项目、更新及回退",
+      "status": "passed"
+    },
+    {
+      "test": "只读扫描演示保留已有演示配置",
+      "status": "passed"
+    },
+    {
+      "test": "全局快捷键与搜索",
+      "status": "passed"
+    },
+    {
+      "test": "新建项目只登记、不自动启用技能",
+      "status": "passed"
+    },
+    {
+      "test": "设置偏好切换",
+      "status": "passed"
+    },
+    {
+      "test": "页面无脚本/控制台错误，无外部网络请求",
+      "status": "passed"
+    },
+    {
+      "test": "1024px 响应式、项目视图与详情无页面横向溢出",
+      "status": "passed"
+    },
+    {
+      "test": "390px 响应式、项目视图与详情无页面横向溢出",
+      "status": "passed"
+    },
+    {
+      "test": "存储适配器模拟：保存偏好，关闭记忆清理数据",
+      "status": "passed"
+    }
+  ],
+  "persistence_note": "Browser storage test uses explicit in-memory localStorage mock; real localStorage reload is not end-to-end verified here."
+}

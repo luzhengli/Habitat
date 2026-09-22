@@ -24,7 +24,7 @@ try {
   const server = createApp({ root, grants, catalog, operations, gitSources, dev: process.argv.includes('--dev') });
   server.on('error', error => { console.error(`Habitat failed to listen: ${error.code ?? error.message}. No fallback port or public host was chosen.`); process.exitCode = 1; });
   server.listen(port, '127.0.0.1', () => {
-    console.log(`Habitat Web: http://127.0.0.1:${port}/\nAir reference: http://127.0.0.1:${port}/demo\nAuthorized read-only roots: ${grants.length}. Project writes: explicit grant + confirmed plan only.`);
+    console.log(`Habitat Web: http://127.0.0.1:${port}/\nAir reference: http://127.0.0.1:${port}/demo\nAuthorized read-only roots: ${catalog.grants().length}. Project writes: explicit grant + confirmed plan only.`);
   });
   for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, () => { server.close(async () => { while(operations.lock || gitSources.busy) await new Promise(resolve=>setTimeout(resolve,50)); catalog.close(); release(); }); server.closeAllConnections(); });
 } catch (error) { console.error(error.message); process.exitCode = 1; }

@@ -18,9 +18,11 @@ export class Catalog {
     directory = directory ? fs.realpathSync(directory) : directory;
     requireValue(!directory || !/(?:^|[\\/])\.(?:claude|agents|codex)[\\/]skills(?:[\\/]|$)/.test(directory), 'UNSAFE_STORE', '应用数据不能放在 Agent 技能发现目录内');
     this.directory = directory;
+    if(directory)for(const name of ['catalog.sqlite','catalog.sqlite-wal','catalog.sqlite-shm']){try{const stat=fs.lstatSync(path.join(directory,name));requireValue(stat.isFile()&&!stat.isSymbolicLink(),'UNSAFE_DATABASE','数据库文件不能是链接或特殊文件');}catch(e){if(e.code!=='ENOENT')throw e;}}
     this.db = new DatabaseSync(directory ? path.join(directory, 'catalog.sqlite') : ':memory:');
     this.db.exec('PRAGMA journal_mode=WAL; PRAGMA synchronous=FULL;');
     const version = this.db.prepare('PRAGMA user_version').get().user_version;
+    if(version>1)this.db.close();
     requireValue(version <= 1, 'SCHEMA_UNSUPPORTED', '数据库版本高于服务支持版本；请使用原版本或备份恢复');
     this.db.exec('CREATE TABLE IF NOT EXISTS entities (kind TEXT NOT NULL, id TEXT NOT NULL, json TEXT NOT NULL, PRIMARY KEY(kind,id)); PRAGMA user_version=1;');
   }

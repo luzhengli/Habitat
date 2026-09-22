@@ -41,3 +41,6 @@ test('unreadable authorized source reports partial rather than empty success',as
  const f=await fixture(t);await f.grant();await fs.chmod(path.join(f.dir,'source'),0);t.after(()=>fs.chmod(path.join(f.dir,'source'),0o700).catch(()=>{}));
  try{await f.db.scan();assert.ok(f.db.inventory().diagnostics.some(d=>d.code==='ROOT_UNAVAILABLE_OR_CHANGED'));assert.equal(f.db.inventory().coverage.completeWithinBootstrapScope,false);}finally{await fs.chmod(path.join(f.dir,'source'),0o700);}
 });
+test('database symlink is refused without modifying its target',async t=>{
+ const dir=await fs.mkdtemp(path.join(os.tmpdir(),'habitat-db-link-'));t.after(()=>fs.rm(dir,{recursive:true,force:true}));await fs.mkdir(path.join(dir,'data'));await fs.writeFile(path.join(dir,'foreign'),'preserve');await fs.symlink(path.join(dir,'foreign'),path.join(dir,'data/catalog.sqlite'));assert.throws(()=>new Catalog(path.join(dir,'data')),/链接/);assert.equal(await fs.readFile(path.join(dir,'foreign'),'utf8'),'preserve');
+});

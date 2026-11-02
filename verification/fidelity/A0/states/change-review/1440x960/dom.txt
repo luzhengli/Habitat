@@ -1,0 +1,132 @@
+- complementary:
+  - generic: DESKTOP PREVIEW
+  - button "Habitat 首页":
+    - generic: Habitat
+  - generic: 个人技能工作台
+  - generic: 工作空间
+  - navigation "主导航":
+    - button "技能库":
+      - generic: 技能库
+    - button "项目":
+      - generic: 项目
+    - button "需要处理 2":
+      - generic: 需要处理
+      - generic: "2"
+    - button "操作记录":
+      - generic: 操作记录
+  - generic: 最近项目
+  - button "添加项目":
+  - navigation "项目导航":
+    - button "Habitat 3":
+      - generic: Habitat
+      - generic: "3"
+    - button "warehouse-core 3":
+      - generic: warehouse-core
+      - generic: "3"
+    - button "personal-site 2":
+      - generic: personal-site
+      - generic: "2"
+  - text: 本地空间
+  - generic: 无需登录 · 不上传内容
+  - button "设置":
+    - generic: 设置
+  - button "帮助与说明 ?":
+    - generic: 帮助与说明
+    - generic: "?"
+- banner:
+  - button "收起侧栏":
+  - generic: 本地空间
+  - strong: 项目
+  - generic: Habitat
+  - button "搜索 ⌘ K":
+    - generic: 搜索
+    - generic: ⌘ K
+  - generic: 演示原型
+- main:
+  - heading "项目" [level=1]
+  - paragraph: 为当前工作配上需要的技能，其他项目不受打扰。
+  - button "添加项目":
+    - generic: 添加项目
+  - button "Habitat 3 项技能 · 2 类入口":
+    - strong: Habitat
+    - generic: 3 项技能 · 2 类入口
+  - button "warehouse-core 3 项技能 · 2 类入口":
+    - strong: warehouse-core
+    - generic: 3 项技能 · 2 类入口
+  - button "personal-site 2 项技能 · 1 类入口":
+    - strong: personal-site
+    - generic: 2 项技能 · 1 类入口
+  - heading "Habitat" [level=2]
+  - paragraph:
+    - text: ~/Projects/Habitat
+  - button "模拟发现检查" [disabled]:
+    - generic: 模拟发现检查
+  - generic: 项目默认工具
+  - generic "共享入口：Codex、Pi、Cursor。不是三项独立权限。":
+    - text: Codex / Pi / Cursor
+  - text: Claude Code
+  - button "共享入口说明":
+    - text: 共享入口说明
+  - button "1 项配置需要检查，查看原因与建议操作。":
+    - generic: 1 项配置需要检查，查看原因与建议操作。
+  - button "本项目配置 3":
+    - text: 本项目配置
+    - generic: "3"
+  - button "其他范围可见 3":
+    - text: 其他范围可见
+    - generic: "3"
+  - button "添加技能":
+    - generic: 添加技能
+  - generic: 技能
+  - generic: 使用方式
+  - generic: 发现状态
+  - generic: 配置
+  - button "界面设计 frontend-design":
+    - strong: 界面设计
+    - generic: frontend-design
+  - text: 固定快照
+  - generic: 待移除
+  - switch "添加 frontend-design 的项目配置"
+  - button "代码审查 code-review":
+    - strong: 代码审查
+    - generic: code-review
+  - text: 固定快照
+  - button "同名冲突":
+    - generic: 同名冲突
+  - switch "移除 code-review 的项目配置" [checked]
+  - button "技能创作 skill-creator":
+    - strong: 技能创作
+    - generic: skill-creator
+  - text: 固定快照
+  - generic: 已配置 · 未检查
+  - switch "移除 skill-creator 的项目配置" [checked]
+  - text: 这里的状态来自演示数据。发现检查不会调用真实 Agent，也不评价 Skill 的执行效果。
+  - strong: 1 项待应用的更改
+  - generic: 仅是草稿，还没有改变项目配置。
+  - button "放弃更改":
+    - generic: 放弃更改
+  - button "检查并应用":
+    - generic: 检查并应用
+- dialog "应用到 Habitat":
+  - banner:
+    - generic: 变更预览
+    - heading "应用到 Habitat" [level=2]
+    - button "关闭对话框" [active]:
+  - paragraph: 这些更改只作用于当前项目的入口。技能源内容保留，其他项目的配置不变。
+  - strong: "0"
+  - text: 项添加
+  - strong: "1"
+  - text: 项移除
+  - strong: "0"
+  - text: 个源文件删除
+  - strong: frontend-design
+  - code: .agents/skills/frontend-design
+  - code: .claude/skills/frontend-design
+  - generic: 移除入口
+  - generic: 移除项目入口，不会关闭用户级来源或其他共享目录。应用成功只表示配置完成，不代表 Agent 已发现技能。
+  - contentinfo:
+    - text: 仅修改演示数据
+    - button "继续编辑":
+      - generic: 继续编辑
+    - button "确认应用":
+      - generic: 确认应用

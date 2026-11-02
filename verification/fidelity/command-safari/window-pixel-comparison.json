@@ -1,0 +1,28 @@
+{
+  "scope": "same Safari window screenshot pixels; CSS viewport/DPR not calibrated; not FID-04 acceptance",
+  "imageSize": [
+    1224,
+    768
+  ],
+  "boundsEqual": true,
+  "panelDifferentPixelCount": 99,
+  "panelDifferenceBoundsRelative": [
+    0,
+    14,
+    476,
+    46
+  ],
+  "method": "Largest connected bright component in central region; results area only, excludes full modal header/shadow",
+  "prototypeResultsWhiteRegionBounds": [
+    374,
+    402,
+    850,
+    497
+  ],
+  "productionResultsWhiteRegionBounds": [
+    374,
+    402,
+    850,
+    497
+  ]
+}

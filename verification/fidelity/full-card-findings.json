@@ -1,0 +1,258 @@
+{
+  "scope": "All nine cards at 1440x960, name sort, DPR1; not full fidelity acceptance",
+  "cardsCompared": 9,
+  "geometryDifferences": [
+    {
+      "scope": "page",
+      "selector": "brand",
+      "delta": {
+        "x": 0,
+        "y": -30,
+        "width": 0,
+        "height": 0.0
+      }
+    },
+    {
+      "scope": "card:1",
+      "selector": "ownership",
+      "delta": {
+        "x": -81.6640625,
+        "y": 0.0,
+        "width": 0,
+        "height": 0.0
+      }
+    },
+    {
+      "scope": "card:2",
+      "selector": "ownership",
+      "delta": {
+        "x": -106.3359375,
+        "y": 0.0,
+        "width": 0,
+        "height": 0.0
+      }
+    },
+    {
+      "scope": "card:3",
+      "selector": "ownership",
+      "delta": {
+        "x": -83.203125,
+        "y": 0.0,
+        "width": 0,
+        "height": 0.0
+      }
+    },
+    {
+      "scope": "card:4",
+      "selector": "ownership",
+      "delta": {
+        "x": -106.3359375,
+        "y": 0.0,
+        "width": 0,
+        "height": 0.0
+      }
+    },
+    {
+      "scope": "card:5",
+      "selector": "ownership",
+      "delta": {
+        "x": -81.6640625,
+        "y": 0.0,
+        "width": 0,
+        "height": 0.0
+      }
+    },
+    {
+      "scope": "card:6",
+      "selector": "ownership",
+      "delta": {
+        "x": -81.6640625,
+        "y": 0.0,
+        "width": 0,
+        "height": 0.0
+      }
+    },
+    {
+      "scope": "card:7",
+      "selector": "ownership",
+      "delta": {
+        "x": -81.6640625,
+        "y": 0.0,
+        "width": 0,
+        "height": 0.0
+      }
+    },
+    {
+      "scope": "card:8",
+      "selector": "ownership",
+      "delta": {
+        "x": -81.6640625,
+        "y": 0.0,
+        "width": 0,
+        "height": 0.0
+      }
+    }
+  ],
+  "styleDifferences": [
+    {
+      "scope": "page",
+      "selector": "sidebar ",
+      "differences": {
+        "padding": {
+          "prototype": "0px 16px 16px",
+          "production": "22px 16px 16px"
+        }
+      }
+    },
+    {
+      "scope": "page",
+      "selector": "brand",
+      "differences": {
+        "color": {
+          "prototype": "rgb(37, 40, 48)",
+          "production": "rgb(50, 104, 216)"
+        },
+        "border": {
+          "prototype": "0px none rgb(37, 40, 48)",
+          "production": "0px none rgb(50, 104, 216)"
+        }
+      }
+    }
+  ],
+  "contentDifferences": [
+    {
+      "scope": "card:0",
+      "selector": "origin",
+      "prototype": "engineering-kit",
+      "production": "source"
+    },
+    {
+      "scope": "card:1",
+      "selector": "origin",
+      "prototype": "发现于 Claude Code",
+      "production": "source"
+    },
+    {
+      "scope": "card:1",
+      "selector": "ownership",
+      "prototype": "仅收录",
+      "production": "已托管"
+    },
+    {
+      "scope": "card:2",
+      "selector": "origin",
+      "prototype": "发现于共享目录",
+      "production": "source"
+    },
+    {
+      "scope": "card:3",
+      "selector": "origin",
+      "prototype": "design-kit",
+      "production": "source"
+    },
+    {
+      "scope": "card:4",
+      "selector": "origin",
+      "prototype": "发现于 Codex",
+      "production": "source"
+    },
+    {
+      "scope": "card:5",
+      "selector": "origin",
+      "prototype": "我的技能仓库",
+      "production": "source"
+    },
+    {
+      "scope": "card:6",
+      "selector": "origin",
+      "prototype": "我的技能仓库",
+      "production": "source"
+    },
+    {
+      "scope": "card:7",
+      "selector": "origin",
+      "prototype": "engineering-kit",
+      "production": "source"
+    },
+    {
+      "scope": "card:8",
+      "selector": "origin",
+      "prototype": "research-kit",
+      "production": "source"
+    }
+  ],
+  "missingElements": [
+    {
+      "scope": "card:0",
+      "component": "usage-count"
+    },
+    {
+      "scope": "card:0",
+      "component": "metadata-dot"
+    },
+    {
+      "scope": "card:1",
+      "component": "usage-count"
+    },
+    {
+      "scope": "card:1",
+      "component": "metadata-dot"
+    },
+    {
+      "scope": "card:2",
+      "component": "usage-count"
+    },
+    {
+      "scope": "card:2",
+      "component": "metadata-dot"
+    },
+    {
+      "scope": "card:3",
+      "component": "usage-count"
+    },
+    {
+      "scope": "card:3",
+      "component": "metadata-dot"
+    },
+    {
+      "scope": "card:4",
+      "component": "usage-count"
+    },
+    {
+      "scope": "card:4",
+      "component": "metadata-dot"
+    },
+    {
+      "scope": "card:5",
+      "component": "usage-count"
+    },
+    {
+      "scope": "card:5",
+      "component": "metadata-dot"
+    },
+    {
+      "scope": "card:6",
+      "component": "usage-count"
+    },
+    {
+      "scope": "card:6",
+      "component": "metadata-dot"
+    },
+    {
+      "scope": "card:7",
+      "component": "usage-count"
+    },
+    {
+      "scope": "card:7",
+      "component": "metadata-dot"
+    },
+    {
+      "scope": "card:8",
+      "component": "usage-count"
+    },
+    {
+      "scope": "card:8",
+      "component": "metadata-dot"
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+The following is a diff from the previous accessibility tree for Window: "Habitat · 本地技能工作台" with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+Removed element IDs: 127-133, 135-139
+~					125 container
+~						126 link Habitat, Value: 127.0.0.1:4175/library
++						127 text 个人技能工作台 工作空间
++						128 container 主导航
++							129 link 技能库, Value: 127.0.0.1:4175/library
++							130 link 项目, Value: 127.0.0.1:4175/projects
++							131 link 需要处理, Value: 127.0.0.1:4175/issues
++							132 link 操作记录, Value: 127.0.0.1:4175/history
++						133 文本 最近项目
+~						134 按钮 添加项目
++						135 container 项目导航
++							136 按钮 habitat 0, Help: habitat
++							137 按钮 warehouse-core 0, Help: warehouse-core
++							138 按钮 personal-site 0, Help: personal-site
++						139 text 本地服务 仅授权目录 · 不上传
++						140 link 设置, Value: 127.0.0.1:4175/settings
++					141 container
++						142 按钮 收起侧栏
++						143 text 本地空间 项目
++						144 link 查看完整交互原型 ↗, Value: 127.0.0.1:4175/demo
++						145 文本 本地技能工作台
++					146 container
++						147 标题 项目, Value: 1
++							148 文本 项目
++						149 文本 按项目配置，变更先预览，结果可回读。
++						150 按钮 添加项目
++						151 按钮 habitat Claude Code · 项目入口
++						152 按钮 warehouse-core Claude Code · 项目入口
++						153 按钮 personal-site Claude Code · 项目入口
++						154 标题 habitat, Value: 2
++							155 文本 habitat
++						156 text /private/tmp/habitat-fidelity-7M783m/projects/habitat 默认工具：Claude Code 仅管理 .claude/skills 下的受管入口。个人、企业与父目录可见范围未知；项目移除不等于全局禁用。共享目录不是权限隔离。
++						157 标题 本项目配置, Value: 3
++							158 文本 本项目配置
++						159 文本 尚无受管配置
++						160 标题 添加技能, Value: 3
++							161 文本 添加技能
++						162 复选框 code-review · 696057b8, Value: 1
++						163 text code-review ·  696057b8
++						164 复选框 doc-writing · f6922c64, Value: 0
++						165 text doc-writing ·  f6922c64
++						166 复选框 find-skills · d72c2363, Value: 0
++						167 text find-skills ·  d72c2363
++						168 复选框 frontend-design · 94a779f3, Value: 0
++						169 text frontend-design ·  94a779f3
++						170 复选框 git-workflow · 4ae5a542, Value: 0
++						171 text git-workflow ·  4ae5a542
++						172 复选框 rd-change-solution · 6d98ec4b, Value: 0
++						173 text rd-change-solution ·  6d98ec4b
++						174 复选框 skill-creator · a03dcd45, Value: 0
++						175 text skill-creator ·  a03dcd45
++						176 复选框 systematic-debugging · 39929187, Value: 0
++						177 text systematic-debugging ·  39929187
++						178 复选框 web-research · 5d7983a0, Value: 0
++						179 text web-research ·  5d7983a0 1  项待变更 · 草稿保存在本机服务
++						180 按钮 清除草稿
++						181 按钮 预览变更
+The focused UI element is 4 HTML内容 Description: Habitat · 本地技能工作台, URL: 127.0.0.1:4175/projects

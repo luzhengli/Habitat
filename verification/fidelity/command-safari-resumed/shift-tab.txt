@@ -1,0 +1,2 @@
+There has been no change in the accessibility tree for Window: "Habitat · 本地技能工作台".
+The focused UI element is 156 按钮 personal-site

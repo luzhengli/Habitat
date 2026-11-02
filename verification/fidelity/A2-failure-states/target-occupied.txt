@@ -1,0 +1,266 @@
+- complementary:
+  - generic: LOCAL WORKSPACE
+  - button "Habitat 首页":
+    - generic: Habitat
+  - generic: 个人技能工作台
+  - generic: 工作空间
+  - navigation "主导航":
+    - button "技能库":
+      - generic: 技能库
+    - button "项目":
+      - generic: 项目
+    - button "需要处理 2":
+      - generic: 需要处理
+      - generic: "2"
+    - button "操作记录":
+      - generic: 操作记录
+  - generic: 最近项目
+  - button "添加项目":
+  - navigation "项目导航":
+    - button "Habitat 3":
+      - generic: Habitat
+      - generic: "3"
+    - button "warehouse-core 3":
+      - generic: warehouse-core
+      - generic: "3"
+    - button "personal-site 2":
+      - generic: personal-site
+      - generic: "2"
+  - text: 本地空间
+  - generic: 无需登录 · 不上传内容
+  - button "设置":
+    - generic: 设置
+  - button "帮助与说明 ?":
+    - generic: 帮助与说明
+    - generic: "?"
+- banner:
+  - button "收起侧栏":
+  - generic: 本地空间
+  - strong: 项目
+  - generic: Habitat
+  - button "搜索 ⌘/Ctrl K":
+    - generic: 搜索
+    - generic: ⌘/Ctrl K
+  - button "目标已被占用":
+    - generic: 目标已被占用
+  - generic: A2 失败状态候选
+- main:
+  - heading "项目" [level=1]
+  - paragraph: 为当前工作配上需要的技能，其他项目不受打扰。
+  - button "添加项目":
+    - generic: 添加项目
+  - button "Habitat 3 项技能 · 1 类可配置入口":
+    - strong: Habitat
+    - generic: 3 项技能 · 1 类可配置入口
+  - button "warehouse-core 3 项技能 · 1 类可配置入口":
+    - strong: warehouse-core
+    - generic: 3 项技能 · 1 类可配置入口
+  - button "personal-site 2 项技能 · 1 类可配置入口":
+    - strong: personal-site
+    - generic: 2 项技能 · 1 类可配置入口
+  - heading "Habitat" [level=2]
+  - paragraph:
+    - text: /Users/me/Projects/Habitat
+  - button "只读入口检查":
+    - generic: 只读入口检查
+  - generic: 项目默认工具
+  - generic "首发尚未实现这些项目适配":
+    - text: Codex / Pi / Cursor · 未支持
+  - text: Claude Code · 可配置
+  - button "能力与范围":
+    - text: 能力与范围
+  - button "1 项配置需要检查，查看原因与建议操作。":
+    - generic: 1 项配置需要检查，查看原因与建议操作。
+  - button "本项目配置 3":
+    - text: 本项目配置
+    - generic: "3"
+  - button "其他范围可见 未知":
+    - text: 其他范围可见
+    - generic "未授权，范围未知": 未知
+  - button "添加技能":
+    - generic: 添加技能
+  - generic: 技能
+  - generic: 使用方式
+  - generic: 发现状态
+  - generic: 配置
+  - button "界面设计 frontend-design":
+    - strong: 界面设计
+    - generic: frontend-design
+  - text: 固定快照
+  - generic: 入口已回读 · Agent 未知
+  - switch "移除 frontend-design 的项目配置" [checked]
+  - button "代码审查 code-review":
+    - strong: 代码审查
+    - generic: code-review
+  - text: 固定快照
+  - button "同名冲突":
+    - generic: 同名冲突
+  - switch "移除 code-review 的项目配置" [checked]
+  - button "技能创作 skill-creator":
+    - strong: 技能创作
+    - generic: skill-creator
+  - text: 固定快照
+  - generic: 入口已回读 · Agent 未知
+  - switch "移除 skill-creator 的项目配置" [checked]
+  - text: 入口检查只核对受管链接与固定快照，不运行 Agent，也不证明技能已被发现。
+- dialog "目标位置已有内容，不能覆盖":
+  - banner:
+    - generic: 项目预检 · 目标身份
+    - heading "目标位置已有内容，不能覆盖" [level=2]
+    - button "关闭对话框" [active]:
+  - generic: TARGET_CONFLICT / TARGET_CHANGED · 409
+  - paragraph: 计划中的项目入口已经存在，或预览后身份发生变化。Habitat 保留现场，不删除、不重命名，也不把它认作受管入口。
+  - code: Habitat/.claude/skills/code-review
+  - generic: 现有内容
+  - strong: 保持原样
+  - generic: 受管证明
+  - strong: 不足
+  - generic: 自动覆盖
+  - strong: 拒绝
+  - strong: 这是可审阅的候选状态
+  - text: 主要动作会在当前弹窗或抽屉内打开具体表单、文件清单、计划摘要或步骤证据；不会把失败改成生产成功。
+  - contentinfo:
+    - text: A2 合成候选 · 无 API / 无本机写入
+    - button "取消计划":
+      - generic: 取消计划
+    - button "返回继续编辑":
+      - generic: 返回继续编辑
+
+PRIMARY: 返回继续编辑
+
+- complementary:
+  - generic: LOCAL WORKSPACE
+  - button "Habitat 首页":
+    - generic: Habitat
+  - generic: 个人技能工作台
+  - generic: 工作空间
+  - navigation "主导航":
+    - button "技能库":
+      - generic: 技能库
+    - button "项目":
+      - generic: 项目
+    - button "需要处理 2":
+      - generic: 需要处理
+      - generic: "2"
+    - button "操作记录":
+      - generic: 操作记录
+  - generic: 最近项目
+  - button "添加项目":
+  - navigation "项目导航":
+    - button "Habitat 3":
+      - generic: Habitat
+      - generic: "3"
+    - button "warehouse-core 3":
+      - generic: warehouse-core
+      - generic: "3"
+    - button "personal-site 2":
+      - generic: personal-site
+      - generic: "2"
+  - text: 本地空间
+  - generic: 无需登录 · 不上传内容
+  - button "设置":
+    - generic: 设置
+  - button "帮助与说明 ?":
+    - generic: 帮助与说明
+    - generic: "?"
+- banner:
+  - button "收起侧栏":
+  - generic: 本地空间
+  - strong: 项目
+  - generic: Habitat
+  - button "搜索 ⌘/Ctrl K":
+    - generic: 搜索
+    - generic: ⌘/Ctrl K
+  - button "目标已被占用":
+    - generic: 目标已被占用
+  - generic: A2 失败状态候选
+- main:
+  - heading "项目" [level=1]
+  - paragraph: 为当前工作配上需要的技能，其他项目不受打扰。
+  - button "添加项目":
+    - generic: 添加项目
+  - button "Habitat 3 项技能 · 1 类可配置入口":
+    - strong: Habitat
+    - generic: 3 项技能 · 1 类可配置入口
+  - button "warehouse-core 3 项技能 · 1 类可配置入口":
+    - strong: warehouse-core
+    - generic: 3 项技能 · 1 类可配置入口
+  - button "personal-site 2 项技能 · 1 类可配置入口":
+    - strong: personal-site
+    - generic: 2 项技能 · 1 类可配置入口
+  - heading "Habitat" [level=2]
+  - paragraph:
+    - text: /Users/me/Projects/Habitat
+  - button "只读入口检查":
+    - generic: 只读入口检查
+  - generic: 项目默认工具
+  - generic "首发尚未实现这些项目适配":
+    - text: Codex / Pi / Cursor · 未支持
+  - text: Claude Code · 可配置
+  - button "能力与范围":
+    - text: 能力与范围
+  - button "1 项配置需要检查，查看原因与建议操作。":
+    - generic: 1 项配置需要检查，查看原因与建议操作。
+  - button "本项目配置 3":
+    - text: 本项目配置
+    - generic: "3"
+  - button "其他范围可见 未知":
+    - text: 其他范围可见
+    - generic "未授权，范围未知": 未知
+  - button "添加技能":
+    - generic: 添加技能
+  - generic: 技能
+  - generic: 使用方式
+  - generic: 发现状态
+  - generic: 配置
+  - button "界面设计 frontend-design":
+    - strong: 界面设计
+    - generic: frontend-design
+  - text: 固定快照
+  - generic: 入口已回读 · Agent 未知
+  - switch "移除 frontend-design 的项目配置" [checked]
+  - button "代码审查 code-review":
+    - strong: 代码审查
+    - generic: code-review
+  - text: 固定快照
+  - button "同名冲突":
+    - generic: 同名冲突
+  - switch "移除 code-review 的项目配置" [checked]
+  - button "技能创作 skill-creator":
+    - strong: 技能创作
+    - generic: skill-creator
+  - text: 固定快照
+  - generic: 入口已回读 · Agent 未知
+  - switch "移除 skill-creator 的项目配置" [checked]
+  - text: 入口检查只核对受管链接与固定快照，不运行 Agent，也不证明技能已被发现。
+- dialog "目标位置已有内容，不能覆盖":
+  - banner:
+    - generic: 项目预检 · 目标身份
+    - heading "目标位置已有内容，不能覆盖" [level=2]
+    - button "关闭对话框":
+  - generic: TARGET_CONFLICT / TARGET_CHANGED · 409
+  - paragraph: 计划中的项目入口已经存在，或预览后身份发生变化。Habitat 保留现场，不删除、不重命名，也不把它认作受管入口。
+  - code: Habitat/.claude/skills/code-review
+  - generic: 现有内容
+  - strong: 保持原样
+  - generic: 受管证明
+  - strong: 不足
+  - generic: 自动覆盖
+  - strong: 拒绝
+  - heading "编辑被阻断的项目草稿" [level=3]
+  - strong: code-review
+  - code: .claude/skills/code-review
+  - generic: 目标已有未知内容；不能覆盖或认领
+  - generic: 从草稿移除
+  - strong: frontend-design
+  - code: .claude/skills/frontend-design
+  - generic: 目标空闲，仍可保留在草稿
+  - generic: 保留
+  - button "保存编辑后的草稿":
+    - generic: 保存编辑后的草稿
+  - contentinfo:
+    - text: 具体合成子界面 · 无 API / 无本机写入
+    - button "返回状态":
+      - generic: 返回状态
+    - button "关闭" [active]:
+      - generic: 关闭

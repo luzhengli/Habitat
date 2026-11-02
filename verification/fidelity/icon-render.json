@@ -1,0 +1,10 @@
+{
+  "cases": [
+    "file",
+    "__proto__",
+    "constructor",
+    "missing-icon"
+  ],
+  "result": "passed",
+  "network": "disabled"
+}

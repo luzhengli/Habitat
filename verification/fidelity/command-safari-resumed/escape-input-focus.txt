@@ -1,0 +1,49 @@
+The following is a diff from the previous accessibility tree for Window: "Habitat · 本地技能工作台" with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+Removed element IDs: 135-140, 142, 144-146, 149-156
+~					133 container
+~						134 link Habitat 首页, Value: 127.0.0.1:4176/library
++						135 text 个人技能工作台 工作空间
++						136 container 主导航
++							137 link 技能库, Value: 127.0.0.1:4176/library
++							138 link 项目, Value: 127.0.0.1:4176/projects
++							139 link 需要处理, Value: 127.0.0.1:4176/issues
++							140 link 操作记录, Value: 127.0.0.1:4176/history
+~						141 文本 最近项目
++						142 按钮 添加项目
+~						143 container 项目导航
++							144 按钮 habitat 3, Help: habitat
++							145 按钮 warehouse-core 3, Help: warehouse-core
++							146 按钮 personal-site 2, Help: personal-site
+~						147 text 本地服务 仅授权目录 · 不上传
+~						148 link 设置, Value: 127.0.0.1:4176/settings
++					149 container
++						150 按钮 收起侧栏
++						151 text 本地空间 技能库
++						152 按钮 搜索 ⌘ K
++						153 文本 本地技能工作台
++					154 container
++						155 标题 技能库, Value: 1
++							156 文本 技能库
++						157 文本 你的 Agent 技能，一处看清，按需使用。
++						158 按钮 扫描授权目录
++						159 按钮 添加本地来源
++						160 标签组 (selectable) 技能范围
++							161 标签 (selected) 全部技能 9
++							162 标签 (selectable) 已收藏 3
++							163 标签 (selectable) 已托管 7
++							164 标签 (selectable) 仅收录 2
++						165 开关按钮 卡片视图, Value: on
++						166 开关按钮 列表视图, Value: off
++						167 文本栏 (settable) 搜索技能, Value: code, Placeholder: 搜索名称、用途或来源…
++						168 按钮 清空搜索
++						169 弹出式按钮 筛选分类, Value: 全部分类
++						170 text 1  项技能
++						171 弹出式按钮 技能排序, Value: 最近收录
++						172 container 代码审查
++							173 按钮 代码审查 source
++							174 开关按钮 取消收藏, Value: on
++							175 按钮 在合并代码之前，检查质量、风险与潜在回归。
++							176 文本 已托管
++							177 按钮 使用
++						178 文本 当前范围：直接子目录中的 SKILL.md；不递归、不跟随链接、不扫描全盘。这不是 Agent 完整可见范围。
+The focused UI element is 167 文本栏 (settable) 搜索技能, Value: code, Placeholder: 搜索名称、用途或来源…

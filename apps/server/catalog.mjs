@@ -54,7 +54,7 @@ export class Catalog {
         try {
           const content = await readSkill(grants, observed);
           const parsed = metadata(content.text, observed.directoryName);
-          const skill = { ...observed, ...parsed, id: previous?.id ?? randomUUID(), favorite: previous?.favorite ?? false, note: previous?.note ?? '', management: 'indexed' };
+          const skill = { ...observed, ...parsed, id: previous?.id ?? randomUUID(), favorite: previous?.favorite ?? false, note: previous?.note ?? '', firstIndexedAt: previous ? previous.firstIndexedAt ?? null : new Date().toISOString(), management: 'indexed' };
           this.put('skill', skill); skills.push(skill);
           for (const message of parsed.warnings) snapshot.diagnostics.push({ root: skill.path, code: 'METADATA_WARNING', message });
         } catch (error) { snapshot.diagnostics.push({ root: observed.path, code: 'METADATA_INVALID', message: error.message }); }

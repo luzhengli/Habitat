@@ -1,0 +1,245 @@
+- complementary:
+  - generic: DESKTOP PREVIEW
+  - button "Habitat 首页":
+    - generic: Habitat
+  - generic: 个人技能工作台
+  - generic: 工作空间
+  - navigation "主导航":
+    - button "技能库":
+      - generic: 技能库
+    - button "项目":
+      - generic: 项目
+    - button "需要处理 2":
+      - generic: 需要处理
+      - generic: "2"
+    - button "操作记录":
+      - generic: 操作记录
+  - generic: 最近项目
+  - button "添加项目":
+  - navigation "项目导航":
+    - button "Habitat 3":
+      - generic: Habitat
+      - generic: "3"
+    - button "warehouse-core 3":
+      - generic: warehouse-core
+      - generic: "3"
+    - button "personal-site 2":
+      - generic: personal-site
+      - generic: "2"
+  - text: 本地空间
+  - generic: 无需登录 · 不上传内容
+  - button "设置":
+    - generic: 设置
+  - button "帮助与说明 ?":
+    - generic: 帮助与说明
+    - generic: "?"
+- banner:
+  - button "收起侧栏":
+  - generic: 本地空间
+  - strong: 技能库
+  - button "搜索 ⌘ K":
+    - generic: 搜索
+    - generic: ⌘ K
+  - generic: 演示原型
+- main:
+  - heading "技能库" [level=1]
+  - paragraph: 你的 Agent 技能，一处看清，按需使用。
+  - button "扫描本机":
+    - generic: 扫描本机
+  - button "添加 Skill":
+    - generic: 添加 Skill
+  - tablist "技能范围":
+    - tab "全部技能 9" [selected]:
+      - text: 全部技能
+      - generic: "9"
+    - tab "已收藏 3":
+      - text: 已收藏
+      - generic: "3"
+    - tab "已托管 6":
+      - text: 已托管
+      - generic: "6"
+    - tab "仅收录 3":
+      - text: 仅收录
+      - generic: "3"
+  - button "卡片视图" [pressed]:
+  - button "列表视图":
+  - textbox "搜索技能":
+    - /placeholder: 搜索名称、用途或来源…
+  - combobox "筛选分类":
+    - option "全部分类" [selected]
+    - option "开发工程"
+    - option "数据分析"
+    - option "内容创作"
+    - option "效率工具"
+  - generic: 9 项技能
+  - combobox "技能排序":
+    - option "最近收录" [selected]
+    - option "名称排序"
+    - option "项目使用最多"
+  - article:
+    - button "界面设计 design-kit":
+      - heading "界面设计" [level=3]
+      - generic "GitHub · design-kit": design-kit
+    - button "取消收藏 frontend-design" [pressed]:
+    - button "查看 frontend-design 详情":
+      - generic: frontend-design
+      - paragraph: 把产品想法转化为精致、可交付的前端界面。
+    - button "2 个项目":
+      - text: 2 个项目
+    - generic: ·
+    - generic: 已托管
+    - button "将 frontend-design 用于项目":
+      - text: 使用
+  - article:
+    - button "数仓影响评估 我的技能仓库":
+      - heading "数仓影响评估" [level=3]
+      - generic "本地 · 我的技能仓库": 我的技能仓库
+    - button "取消收藏 rd-change-solution" [pressed]:
+    - button "查看 rd-change-solution 详情":
+      - generic: rd-change-solution
+      - paragraph: 分析研发变更的下游影响，生成可执行的兼容方案。
+    - button "1 个项目":
+      - text: 1 个项目
+    - generic: ·
+    - generic: 已托管
+    - button "将 rd-change-solution 用于项目":
+      - text: 使用
+  - article:
+    - button "文档写作 发现于 Claude Code":
+      - heading "文档写作" [level=3]
+      - generic "发现于 Claude Code"
+    - button "收藏 doc-writing":
+    - button "查看 doc-writing 详情":
+      - generic: doc-writing
+      - paragraph: 从零散材料出发，写出结构清晰、可行动的文档。
+    - button "1 个项目":
+      - text: 1 个项目
+    - generic: ·
+    - generic: 仅收录
+    - button "将 doc-writing 用于项目":
+      - text: 使用
+  - article:
+    - button "代码审查 engineering-kit":
+      - heading "代码审查" [level=3]
+      - generic "GitHub · engineering-kit": engineering-kit
+    - button "取消收藏 code-review" [pressed]:
+    - button "查看 code-review 详情":
+      - generic: code-review
+      - paragraph: 在合并代码之前，检查质量、风险与潜在回归。
+    - button "1 个项目":
+      - text: 1 个项目
+    - generic: ·
+    - button "有更新"
+    - button "将 code-review 用于项目":
+      - text: 使用
+  - article:
+    - button "网络研究 research-kit":
+      - heading "网络研究" [level=3]
+      - generic "GitHub · research-kit": research-kit
+    - button "收藏 web-research":
+    - button "查看 web-research 详情":
+      - generic: web-research
+      - paragraph: 交叉核实来源，把复杂问题整理为有依据的结论。
+    - button "1 个项目":
+      - text: 1 个项目
+    - generic: ·
+    - generic: 已托管
+    - button "将 web-research 用于项目":
+      - text: 使用
+  - article:
+    - button "系统化调试 engineering-kit":
+      - heading "系统化调试" [level=3]
+      - generic "GitHub · engineering-kit": engineering-kit
+    - button "收藏 systematic-debugging":
+    - button "查看 systematic-debugging 详情":
+      - generic: systematic-debugging
+      - paragraph: 从复现到根因，用可验证的步骤解决棘手问题。
+    - button "1 个项目":
+      - text: 1 个项目
+    - generic: ·
+    - generic: 已托管
+    - button "将 systematic-debugging 用于项目":
+      - text: 使用
+  - article:
+    - button "技能创作 我的技能仓库":
+      - heading "技能创作" [level=3]
+      - generic "本地 · 我的技能仓库": 我的技能仓库
+    - button "收藏 skill-creator":
+    - button "查看 skill-creator 详情":
+      - generic: skill-creator
+      - paragraph: 把重复工作沉淀为能被 Agent 稳定复用的技能。
+    - button "1 个项目":
+      - text: 1 个项目
+    - generic: ·
+    - generic: 已托管
+    - button "将 skill-creator 用于项目":
+      - text: 使用
+  - article:
+    - button "Git 工作流 发现于 Codex":
+      - heading "Git 工作流" [level=3]
+      - generic "发现于 Codex"
+    - button "收藏 git-workflow":
+    - button "查看 git-workflow 详情":
+      - generic: git-workflow
+      - paragraph: 规范分支与提交，让协作中的每次变更清晰可追溯。
+    - button "尚未用于项目":
+      - text: 尚未用于项目
+    - generic: ·
+    - generic: 仅收录
+    - button "将 git-workflow 用于项目":
+      - text: 使用
+  - article:
+    - button "技能发现 发现于共享目录":
+      - heading "技能发现" [level=3]
+      - generic "发现于共享目录"
+    - button "收藏 find-skills":
+    - button "查看 find-skills 详情":
+      - generic: find-skills
+      - paragraph: 根据手头任务，找到值得尝试的新技能。
+    - button "尚未用于项目":
+      - text: 尚未用于项目
+    - generic: ·
+    - generic: 仅收录
+    - button "将 find-skills 用于项目":
+      - text: 使用
+  - text: 收录不会自动启用，也不会移动原文件。
+  - button "了解管理方式":
+    - text: 了解管理方式
+- dialog "界面设计":
+  - banner:
+    - generic: 技能详情
+    - heading "界面设计" [level=2]
+    - button "关闭对话框" [active]:
+  - generic: frontend-design
+  - text: v1.4.0
+  - generic: Habitat 管理
+  - paragraph: 把产品想法转化为精致、可交付的前端界面。
+  - button "概览"
+  - button "使用位置 2":
+    - text: 使用位置
+    - generic: "2"
+  - button "文件"
+  - button "版本"
+  - heading "什么时候使用" [level=3]
+  - paragraph: 需要搭建产品界面、重构页面，或把设计方案转为前端实现时。
+  - heading "试着这样开始 用法示例" [level=3]:
+    - text: 试着这样开始
+    - generic: 用法示例
+  - paragraph: 请使用 frontend-design 帮我处理当前任务。开始前先确认目标、已有材料与约束。
+  - button "复制示例":
+    - text: 复制示例
+  - generic: 这是示例提示词，不会启动 Agent 或保证技能被调用。
+  - heading "来源与管理" [level=3]
+  - term: 收录来源
+  - definition: GitHub · design-kit
+  - term: 管理关系
+  - definition: 独立托管副本（演示）
+  - term: 内容版本
+  - definition: v1.4.0
+  - generic "查看技术路径":
+    - text: 查看技术路径
+  - contentinfo:
+    - button "已收藏":
+      - generic: 已收藏
+    - button "用于项目":
+      - generic: 用于项目

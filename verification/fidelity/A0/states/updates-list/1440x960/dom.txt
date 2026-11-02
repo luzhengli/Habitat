@@ -1,0 +1,67 @@
+- complementary:
+  - generic: DESKTOP PREVIEW
+  - button "Habitat 首页":
+    - generic: Habitat
+  - generic: 个人技能工作台
+  - generic: 工作空间
+  - navigation "主导航":
+    - button "技能库":
+      - generic: 技能库
+    - button "项目":
+      - generic: 项目
+    - button "需要处理 2":
+      - generic: 需要处理
+      - generic: "2"
+    - button "操作记录":
+      - generic: 操作记录
+  - generic: 最近项目
+  - button "添加项目":
+  - navigation "项目导航":
+    - button "Habitat 3":
+      - generic: Habitat
+      - generic: "3"
+    - button "warehouse-core 3":
+      - generic: warehouse-core
+      - generic: "3"
+    - button "personal-site 2":
+      - generic: personal-site
+      - generic: "2"
+  - text: 本地空间
+  - generic: 无需登录 · 不上传内容
+  - button "设置":
+    - generic: 设置
+  - button "帮助与说明 ?":
+    - generic: 帮助与说明
+    - generic: "?"
+- banner:
+  - button "收起侧栏":
+  - generic: 本地空间
+  - strong: 需要处理
+  - button "搜索 ⌘ K":
+    - generic: 搜索
+    - generic: ⌘ K
+  - generic: 演示原型
+- main:
+  - heading "需要处理 2" [level=1]:
+    - text: 需要处理
+    - generic: "2"
+  - paragraph: 看懂原因，再决定如何修复。
+  - button "重新检查":
+    - generic: 重新检查
+  - button "配置问题 2":
+    - text: 配置问题
+    - generic: "2"
+  - button "可用更新 1" [active]:
+    - text: 可用更新
+    - generic: "1"
+  - article:
+    - heading "代码审查" [level=3]
+    - generic: v2.2.0 可用
+    - paragraph: 增加安全检查与回归测试指引。先查看变更和影响项目，再决定是否更新。
+    - generic: v2.1.0 → v2.2.0
+    - generic: 1 个项目使用
+    - generic: 示例更新
+    - button "查看更新":
+      - generic: 查看更新
+  - text: 文件链接正常，只能说明配置完成。
+  - strong: 它并不证明 Agent 已发现技能，也不代表技能内容安全。

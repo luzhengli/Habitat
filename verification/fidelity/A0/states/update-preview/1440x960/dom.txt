@@ -1,0 +1,94 @@
+- complementary:
+  - generic: DESKTOP PREVIEW
+  - button "Habitat 首页":
+    - generic: Habitat
+  - generic: 个人技能工作台
+  - generic: 工作空间
+  - navigation "主导航":
+    - button "技能库":
+      - generic: 技能库
+    - button "项目":
+      - generic: 项目
+    - button "需要处理 2":
+      - generic: 需要处理
+      - generic: "2"
+    - button "操作记录":
+      - generic: 操作记录
+  - generic: 最近项目
+  - button "添加项目":
+  - navigation "项目导航":
+    - button "Habitat 3":
+      - generic: Habitat
+      - generic: "3"
+    - button "warehouse-core 3":
+      - generic: warehouse-core
+      - generic: "3"
+    - button "personal-site 2":
+      - generic: personal-site
+      - generic: "2"
+  - text: 本地空间
+  - generic: 无需登录 · 不上传内容
+  - button "设置":
+    - generic: 设置
+  - button "帮助与说明 ?":
+    - generic: 帮助与说明
+    - generic: "?"
+- banner:
+  - button "收起侧栏":
+  - generic: 本地空间
+  - strong: 需要处理
+  - button "搜索 ⌘ K":
+    - generic: 搜索
+    - generic: ⌘ K
+  - generic: 演示原型
+- main:
+  - heading "需要处理 2" [level=1]:
+    - text: 需要处理
+    - generic: "2"
+  - paragraph: 看懂原因，再决定如何修复。
+  - button "重新检查":
+    - generic: 重新检查
+  - button "配置问题 2":
+    - text: 配置问题
+    - generic: "2"
+  - button "可用更新 1":
+    - text: 可用更新
+    - generic: "1"
+  - article:
+    - heading "代码审查" [level=3]
+    - generic: v2.2.0 可用
+    - paragraph: 增加安全检查与回归测试指引。先查看变更和影响项目，再决定是否更新。
+    - generic: v2.1.0 → v2.2.0
+    - generic: 1 个项目使用
+    - generic: 示例更新
+    - button "查看更新":
+      - generic: 查看更新
+  - text: 文件链接正常，只能说明配置完成。
+  - strong: 它并不证明 Agent 已发现技能，也不代表技能内容安全。
+- dialog "更新 代码审查":
+  - banner:
+    - generic: 版本更新
+    - heading "更新 代码审查" [level=2]
+    - button "关闭对话框" [active]:
+  - generic: v2.1.0
+  - strong: v2.2.0
+  - generic: 示例新版本
+  - paragraph: 增加安全检查与回归测试指引。以下 diff 是产品演示内容，不是远程仓库的真实变更。
+  - banner:
+    - text: SKILL.md
+    - generic: + 3 / − 1
+  - generic: "## 审查要求"
+  - generic: − 关注代码可读性与常见错误。
+  - generic: + 关注可读性、边界条件与安全风险。
+  - generic: + 对行为变化提供最小回归测试。
+  - generic: + 标明尚未验证的结论与限制。
+  - heading "将影响这些项目" [level=3]
+  - strong: Habitat
+  - generic: 固定快照更新
+  - generic: 不拉取 Git 仓库，不覆盖真实修改。原型会记录旧版演示快照，并将关联配置恢复为“未检查”。
+  - contentinfo:
+    - text: 可从操作记录撤销
+    - button "暂不更新":
+      - generic: 暂不更新
+    - button "确认模拟更新":
+      - generic: 确认模拟更新

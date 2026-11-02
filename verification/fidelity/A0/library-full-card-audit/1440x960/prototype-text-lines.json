@@ -1,0 +1,407 @@
+[
+  {
+    "card": 0,
+    "lines": [
+      {
+        "font": "560 15px / 24px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+        "rects": [
+          {
+            "height": 17.5,
+            "width": 59.40625,
+            "x": 354,
+            "y": 360
+          }
+        ],
+        "selector": "h3",
+        "text": "代码审查"
+      },
+      {
+        "font": "11px / 18.15px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+        "rects": [
+          {
+            "height": 13,
+            "width": 79.984375,
+            "x": 354,
+            "y": 385.5
+          }
+        ],
+        "selector": "origin",
+        "text": "engineering-kit"
+      },
+      {
+        "font": "13px / 23.4px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+        "rects": [
+          {
+            "height": 15,
+            "width": 273,
+            "x": 299,
+            "y": 438
+          }
+        ],
+        "selector": "p",
+        "text": "在合并代码之前，检查质量、风险与潜在回归。"
+      }
+    ],
+    "title": "代码审查"
+  },
+  {
+    "card": 1,
+    "lines": [
+      {
+        "font": "560 15px / 24px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+        "rects": [
+          {
+            "height": 17.5,
+            "width": 59.40625,
+            "x": 921.5,
+            "y": 360
+          }
+        ],
+        "selector": "h3",
+        "text": "文档写作"
+      },
+      {
+        "font": "11px / 18.15px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+        "rects": [
+          {
+            "height": 13,
+            "width": 103.5625,
+            "x": 921.5,
+            "y": 385.5
+          }
+        ],
+        "selector": "origin",
+        "text": "发现于 Claude Code"
+      },
+      {
+        "font": "13px / 23.4px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+        "rects": [
+          {
+            "height": 15,
+            "width": 286,
+            "x": 866.5,
+            "y": 438
+          }
+        ],
+        "selector": "p",
+        "text": "从零散材料出发，写出结构清晰、可行动的文档。"
+      }
+    ],
+    "title": "文档写作"
+  },
+  {
+    "card": 2,
+    "lines": [
+      {
+        "font": "560 15px / 24px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+        "rects": [
+          {
+            "height": 17.5,
+            "width": 59.40625,
+            "x": 354,
+            "y": 590
+          }
+        ],
+        "selector": "h3",
+        "text": "技能发现"
+      },
+      {
+        "font": "11px / 18.15px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+        "rects": [
+          {
+            "height": 13,
+            "width": 77,
+            "x": 354,
+            "y": 615.5
+          }
+        ],
+        "selector": "origin",
+        "text": "发现于共享目录"
+      },
+      {
+        "font": "13px / 23.4px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+        "rects": [
+          {
+            "height": 15,
+            "width": 234,
+            "x": 299,
+            "y": 668
+          }
+        ],
+        "selector": "p",
+        "text": "根据手头任务，找到值得尝试的新技能。"
+      }
+    ],
+    "title": "技能发现"
+  },
+  {
+    "card": 3,
+    "lines": [
+      {
+        "font": "560 15px / 24px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+        "rects": [
+          {
+            "height": 17.5,
+            "width": 59.40625,
+            "x": 921.5,
+            "y": 590
+          }
+        ],
+        "selector": "h3",
+        "text": "界面设计"
+      },
+      {
+        "font": "11px / 18.15px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+        "rects": [
+          {
+            "height": 13,
+            "width": 53.1640625,
+            "x": 921.5,
+            "y": 615.5
+          }
+        ],
+        "selector": "origin",
+        "text": "design-kit"
+      },
+      {
+        "font": "13px / 23.4px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+        "rects": [
+          {
+            "height": 15,
+            "width": 260,
+            "x": 866.5,
+            "y": 668
+          }
+        ],
+        "selector": "p",
+        "text": "把产品想法转化为精致、可交付的前端界面。"
+      }
+    ],
+    "title": "界面设计"
+  },
+  {
+    "card": 4,
+    "lines": [
+      {
+        "font": "560 15px / 24px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+        "rects": [
+          {
+            "height": 17.5,
+            "width": 68.2265625,
+            "x": 354,
+            "y": 820
+          }
+        ],
+        "selector": "h3",
+        "text": "Git 工作流"
+      },
+      {
+        "font": "11px / 18.15px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+        "rects": [
+          {
+            "height": 13,
+            "width": 69.453125,
+            "x": 354,
+            "y": 845.5
+          }
+        ],
+        "selector": "origin",
+        "text": "发现于 Codex"
+      },
+      {
+        "font": "13px / 23.4px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+        "rects": [
+          {
+            "height": 15,
+            "width": 299,
+            "x": 299,
+            "y": 898
+          }
+        ],
+        "selector": "p",
+        "text": "规范分支与提交，让协作中的每次变更清晰可追溯。"
+      }
+    ],
+    "title": "Git 工作流"
+  },
+  {
+    "card": 5,
+    "lines": [
+      {
+        "font": "560 15px / 24px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+        "rects": [
+          {
+            "height": 17.5,
+            "width": 89.1015625,
+            "x": 921.5,
+            "y": 820
+          }
+        ],
+        "selector": "h3",
+        "text": "数仓影响评估"
+      },
+      {
+        "font": "11px / 18.15px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+        "rects": [
+          {
+            "height": 13,
+            "width": 66,
+            "x": 921.5,
+            "y": 845.5
+          }
+        ],
+        "selector": "origin",
+        "text": "我的技能仓库"
+      },
+      {
+        "font": "13px / 23.4px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+        "rects": [
+          {
+            "height": 15,
+            "width": 299,
+            "x": 866.5,
+            "y": 898
+          }
+        ],
+        "selector": "p",
+        "text": "分析研发变更的下游影响，生成可执行的兼容方案。"
+      }
+    ],
+    "title": "数仓影响评估"
+  },
+  {
+    "card": 6,
+    "lines": [
+      {
+        "font": "560 15px / 24px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+        "rects": [
+          {
+            "height": 17.5,
+            "width": 59.40625,
+            "x": 354,
+            "y": 1050
+          }
+        ],
+        "selector": "h3",
+        "text": "技能创作"
+      },
+      {
+        "font": "11px / 18.15px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+        "rects": [
+          {
+            "height": 13,
+            "width": 66,
+            "x": 354,
+            "y": 1075.5
+          }
+        ],
+        "selector": "origin",
+        "text": "我的技能仓库"
+      },
+      {
+        "font": "13px / 23.4px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+        "rects": [
+          {
+            "height": 15,
+            "width": 276.8203125,
+            "x": 299,
+            "y": 1128
+          }
+        ],
+        "selector": "p",
+        "text": "把重复工作沉淀为能被 Agent 稳定复用的技能。"
+      }
+    ],
+    "title": "技能创作"
+  },
+  {
+    "card": 7,
+    "lines": [
+      {
+        "font": "560 15px / 24px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+        "rects": [
+          {
+            "height": 17.5,
+            "width": 74.2578125,
+            "x": 921.5,
+            "y": 1050
+          }
+        ],
+        "selector": "h3",
+        "text": "系统化调试"
+      },
+      {
+        "font": "11px / 18.15px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+        "rects": [
+          {
+            "height": 13,
+            "width": 79.984375,
+            "x": 921.5,
+            "y": 1075.5
+          }
+        ],
+        "selector": "origin",
+        "text": "engineering-kit"
+      },
+      {
+        "font": "13px / 23.4px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+        "rects": [
+          {
+            "height": 15,
+            "width": 273,
+            "x": 866.5,
+            "y": 1128
+          }
+        ],
+        "selector": "p",
+        "text": "从复现到根因，用可验证的步骤解决棘手问题。"
+      }
+    ],
+    "title": "系统化调试"
+  },
+  {
+    "card": 8,
+    "lines": [
+      {
+        "font": "560 15px / 24px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+        "rects": [
+          {
+            "height": 17.5,
+            "width": 59.40625,
+            "x": 354,
+            "y": 1280
+          }
+        ],
+        "selector": "h3",
+        "text": "网络研究"
+      },
+      {
+        "font": "11px / 18.15px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+        "rects": [
+          {
+            "height": 13,
+            "width": 63.734375,
+            "x": 354,
+            "y": 1305.5
+          }
+        ],
+        "selector": "origin",
+        "text": "research-kit"
+      },
+      {
+        "font": "13px / 23.4px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+        "rects": [
+          {
+            "height": 15,
+            "width": 286,
+            "x": 299,
+            "y": 1358
+          }
+        ],
+        "selector": "p",
+        "text": "交叉核实来源，把复杂问题整理为有依据的结论。"
+      }
+    ],
+    "title": "网络研究"
+  }
+]

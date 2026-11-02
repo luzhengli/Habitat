@@ -1,0 +1,141 @@
+{
+  "elements": [
+    {
+      "color": "rgb(37, 40, 48)",
+      "font": "14px / 23.1px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "normal",
+      "height": 640,
+      "padding": "22px 12px 16px",
+      "selector": "sidebar ",
+      "width": 190,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "color": "rgb(50, 104, 216)",
+      "font": "650 21px / 34.65px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "10px",
+      "height": 49.6484375,
+      "padding": "15px 11px 0px",
+      "selector": "brand",
+      "width": 165,
+      "x": 12,
+      "y": 22
+    },
+    {
+      "color": "rgb(37, 40, 48)",
+      "font": "14px / 23.1px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "20px",
+      "height": 52,
+      "padding": "0px 24px",
+      "selector": "topbar",
+      "width": 770,
+      "x": 190,
+      "y": 0
+    },
+    {
+      "color": "rgb(37, 40, 48)",
+      "font": "14px / 23.1px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "normal",
+      "height": 588,
+      "padding": "28px 24px",
+      "selector": "main-content",
+      "width": 770,
+      "x": 190,
+      "y": 52
+    },
+    {
+      "color": "rgb(37, 40, 48)",
+      "font": "14px / 23.1px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "16px",
+      "height": 76,
+      "padding": "0px",
+      "selector": "page-heading",
+      "width": 715,
+      "x": 214,
+      "y": 80
+    },
+    {
+      "color": "rgb(37, 40, 48)",
+      "font": "14px / 23.1px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "12px",
+      "height": 36,
+      "padding": "0px",
+      "selector": "library-toolbar",
+      "width": 715,
+      "x": 214,
+      "y": 189
+    },
+    {
+      "color": "rgb(37, 40, 48)",
+      "font": "14px / 23.1px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "18px",
+      "height": 1142,
+      "padding": "0px",
+      "selector": "skill-grid",
+      "width": 715,
+      "x": 214,
+      "y": 249
+    },
+    {
+      "color": "rgb(37, 40, 48)",
+      "font": "14px / 23.1px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "normal",
+      "height": 214,
+      "padding": "20px 18px 17px",
+      "selector": "skill-card",
+      "width": 348.5,
+      "x": 214,
+      "y": 249
+    },
+    {
+      "color": "rgb(37, 40, 48)",
+      "font": "14px / 23.1px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "normal",
+      "height": 214,
+      "padding": "20px 18px 17px",
+      "selector": "skill-card",
+      "width": 348.5,
+      "x": 580.5,
+      "y": 249
+    },
+    {
+      "color": "rgb(37, 40, 48)",
+      "font": "14px / 23.1px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "normal",
+      "height": 214,
+      "padding": "20px 18px 17px",
+      "selector": "skill-card",
+      "width": 348.5,
+      "x": 214,
+      "y": 481
+    },
+    {
+      "color": "rgb(37, 40, 48)",
+      "font": "14px / 23.1px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "normal",
+      "height": 214,
+      "padding": "20px 18px 17px",
+      "selector": "skill-card",
+      "width": 348.5,
+      "x": 580.5,
+      "y": 481
+    },
+    {
+      "color": "rgb(37, 40, 48)",
+      "font": "14px / 23.1px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "normal",
+      "height": 214,
+      "padding": "20px 18px 17px",
+      "selector": "skill-card",
+      "width": 348.5,
+      "x": 214,
+      "y": 713
+    }
+  ],
+  "viewport": {
+    "dpr": 1,
+    "height": 640,
+    "width": 960
+  }
+}

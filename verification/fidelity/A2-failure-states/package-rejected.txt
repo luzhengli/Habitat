@@ -1,0 +1,211 @@
+- complementary:
+  - generic: LOCAL WORKSPACE
+  - button "Habitat 首页":
+    - generic: Habitat
+  - generic: 个人技能工作台
+  - generic: 工作空间
+  - navigation "主导航":
+    - button "技能库":
+      - generic: 技能库
+    - button "项目":
+      - generic: 项目
+    - button "需要处理 2":
+      - generic: 需要处理
+      - generic: "2"
+    - button "操作记录":
+      - generic: 操作记录
+  - generic: 最近项目
+  - button "添加项目":
+  - navigation "项目导航":
+    - button "Habitat 3":
+      - generic: Habitat
+      - generic: "3"
+    - button "warehouse-core 3":
+      - generic: warehouse-core
+      - generic: "3"
+    - button "personal-site 2":
+      - generic: personal-site
+      - generic: "2"
+  - text: 本地空间
+  - generic: 无需登录 · 不上传内容
+  - button "设置":
+    - generic: 设置
+  - button "帮助与说明 ?":
+    - generic: 帮助与说明
+    - generic: "?"
+- banner:
+  - button "收起侧栏":
+  - generic: 本地空间
+  - strong: 设置
+  - button "搜索 ⌘/Ctrl K":
+    - generic: 搜索
+    - generic: ⌘/Ctrl K
+  - button "技能包被拒绝":
+    - generic: 技能包被拒绝
+  - generic: A2 失败状态候选
+- main:
+  - heading "工作空间设置" [level=1]
+  - paragraph: 少一些负担，多一些掌控。
+  - generic: A2 · draft
+  - heading "浏览偏好" [level=2]
+  - strong: 显示完整来源路径
+  - paragraph: 在技能详情中默认展开技术路径；只影响当前浏览器显示。
+  - switch "显示完整来源路径"
+  - strong: 保留本机浏览偏好
+  - paragraph: 生产元数据与事务归本机服务；浏览器只保存显示偏好。
+  - switch "保留本机浏览偏好" [checked]
+  - heading "管理方式" [level=2]
+  - heading "明确授权，再只读收录" [level=3]
+  - paragraph: 默认不扫描；本地来源只读取明确授权目录的直接子项，不跟随链接。
+  - heading "项目变更先预检，再确认执行" [level=3]
+  - paragraph: 草稿由本机服务持久化；计划、目标身份、固定快照和回读结果分开显示。
+  - heading "不上传、不执行、不代管账号" [level=3]
+  - paragraph: 首发只管理 Claude Code 项目入口；其他 Agent 与未授权范围保持未知。
+  - heading "来源与数据" [level=2]
+  - strong: 本地来源授权
+  - paragraph: 只读访问明确授权的绝对目录；撤销授权不会删除源文件。
+  - button "添加来源":
+    - generic: 添加来源
+  - strong: 公开 GitHub 来源
+  - paragraph: 联网前单独确认，隔离下载完整包候选；不读取私有凭据。
+  - button "检查来源":
+    - generic: 检查来源
+  - strong: 导出本机元数据
+  - paragraph: 不包含 Store 快照正文，也不是自动恢复备份。
+  - button "导出元数据":
+    - generic: 导出元数据
+- dialog "这个技能包不能被收录":
+  - banner:
+    - generic: Git 来源 · 安全边界
+    - heading "这个技能包不能被收录" [level=2]
+    - button "关闭对话框" [active]:
+  - generic: GIT_LIMIT / UNSAFE_GIT_ENTRY · HTTP 422
+  - paragraph: 完整包超出限制，或包含链接、子模块、特殊类型与不安全路径。Habitat 不会跳过部分文件后继续收录。失败时没有持久 git-candidate 或来源记录，但隔离下载目录可能需要服务清理。
+  - code: 1,148 项 · 24.6 MiB · 检出 submodule
+  - generic: 项目数上限
+  - strong: 1000 项
+  - generic: 总大小上限
+  - strong: 20 MiB
+  - generic: 特殊类型
+  - strong: 拒绝
+  - strong: 这是可审阅的候选状态
+  - text: 主要动作会在当前弹窗或抽屉内打开具体表单、文件清单、计划摘要或步骤证据；不会把失败改成生产成功。
+  - contentinfo:
+    - text: A2 合成候选 · 无 API / 无本机写入
+    - button "取消收录":
+      - generic: 取消收录
+    - button "修改来源范围":
+      - generic: 修改来源范围
+
+PRIMARY: 修改来源范围
+
+- complementary:
+  - generic: LOCAL WORKSPACE
+  - button "Habitat 首页":
+    - generic: Habitat
+  - generic: 个人技能工作台
+  - generic: 工作空间
+  - navigation "主导航":
+    - button "技能库":
+      - generic: 技能库
+    - button "项目":
+      - generic: 项目
+    - button "需要处理 2":
+      - generic: 需要处理
+      - generic: "2"
+    - button "操作记录":
+      - generic: 操作记录
+  - generic: 最近项目
+  - button "添加项目":
+  - navigation "项目导航":
+    - button "Habitat 3":
+      - generic: Habitat
+      - generic: "3"
+    - button "warehouse-core 3":
+      - generic: warehouse-core
+      - generic: "3"
+    - button "personal-site 2":
+      - generic: personal-site
+      - generic: "2"
+  - text: 本地空间
+  - generic: 无需登录 · 不上传内容
+  - button "设置":
+    - generic: 设置
+  - button "帮助与说明 ?":
+    - generic: 帮助与说明
+    - generic: "?"
+- banner:
+  - button "收起侧栏":
+  - generic: 本地空间
+  - strong: 设置
+  - button "搜索 ⌘/Ctrl K":
+    - generic: 搜索
+    - generic: ⌘/Ctrl K
+  - button "技能包被拒绝":
+    - generic: 技能包被拒绝
+  - generic: A2 失败状态候选
+- main:
+  - heading "工作空间设置" [level=1]
+  - paragraph: 少一些负担，多一些掌控。
+  - generic: A2 · draft
+  - heading "浏览偏好" [level=2]
+  - strong: 显示完整来源路径
+  - paragraph: 在技能详情中默认展开技术路径；只影响当前浏览器显示。
+  - switch "显示完整来源路径"
+  - strong: 保留本机浏览偏好
+  - paragraph: 生产元数据与事务归本机服务；浏览器只保存显示偏好。
+  - switch "保留本机浏览偏好" [checked]
+  - heading "管理方式" [level=2]
+  - heading "明确授权，再只读收录" [level=3]
+  - paragraph: 默认不扫描；本地来源只读取明确授权目录的直接子项，不跟随链接。
+  - heading "项目变更先预检，再确认执行" [level=3]
+  - paragraph: 草稿由本机服务持久化；计划、目标身份、固定快照和回读结果分开显示。
+  - heading "不上传、不执行、不代管账号" [level=3]
+  - paragraph: 首发只管理 Claude Code 项目入口；其他 Agent 与未授权范围保持未知。
+  - heading "来源与数据" [level=2]
+  - strong: 本地来源授权
+  - paragraph: 只读访问明确授权的绝对目录；撤销授权不会删除源文件。
+  - button "添加来源":
+    - generic: 添加来源
+  - strong: 公开 GitHub 来源
+  - paragraph: 联网前单独确认，隔离下载完整包候选；不读取私有凭据。
+  - button "检查来源":
+    - generic: 检查来源
+  - strong: 导出本机元数据
+  - paragraph: 不包含 Store 快照正文，也不是自动恢复备份。
+  - button "导出元数据":
+    - generic: 导出元数据
+- dialog "这个技能包不能被收录":
+  - banner:
+    - generic: Git 来源 · 安全边界
+    - heading "这个技能包不能被收录" [level=2]
+    - button "关闭对话框":
+  - generic: GIT_LIMIT / UNSAFE_GIT_ENTRY · HTTP 422
+  - paragraph: 完整包超出限制，或包含链接、子模块、特殊类型与不安全路径。Habitat 不会跳过部分文件后继续收录。失败时没有持久 git-candidate 或来源记录，但隔离下载目录可能需要服务清理。
+  - code: 1,148 项 · 24.6 MiB · 检出 submodule
+  - generic: 项目数上限
+  - strong: 1000 项
+  - generic: 总大小上限
+  - strong: 20 MiB
+  - generic: 特殊类型
+  - strong: 拒绝
+  - heading "缩小公开仓库范围" [level=3]
+  - text: 新的技能子目录
+  - textbox "新的技能子目录": skills/review
+  - strong: 项目数量
+  - generic: 需不超过 1000 项
+  - generic: 原范围 1,148
+  - strong: 完整包大小
+  - generic: 需不超过 20 MiB
+  - generic: 原范围 24.6 MiB
+  - strong: 特殊类型
+  - generic: 链接、子模块和特殊文件仍会拒绝
+  - generic: 不能跳过
+  - button "重新校验合成范围":
+    - generic: 重新校验合成范围
+  - contentinfo:
+    - text: 具体合成子界面 · 无 API / 无本机写入
+    - button "返回状态":
+      - generic: 返回状态
+    - button "关闭" [active]:
+      - generic: 关闭

@@ -1,0 +1,34 @@
+The following is a diff from the previous accessibility tree for Window: "Habitat · 本地技能工作台" with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+Removed element IDs: 5-11
+~				4 HTML内容 Description: Habitat · 本地技能工作台, URL: 127.0.0.1:4176/library/bddce053-da9b-4810-923b-7111c9117d81
++					50 container frontend-design
++						51 container
++							52 文本 真实只读内容
++							53 标题 frontend-design, Value: 2
++								54 文本 frontend-design
++							55 按钮 关闭对话框
++						56 文本 只预览，不执行 Markdown、HTML 或脚本。
++						57 文本 /private/tmp/habitat-fidelity-kDqkXp/source/frontend-design
++						58 摘要 文件与内容指纹, Value: off
++							59 文本 文件与内容指纹
++						60 文本 ---
+name: frontend-design
+description: 把产品想法转化为精致、可交付的前端界面。
+title: 界面设计
+category: 开发工程
+icon: pen
+color: violet
+version: v1.4.0
+---
+
+# 界面设计
+
+这是用于 Habitat 高保真采证的合成、静态 Skill 内容。
+
+- 仅供本地只读索引与文本预览。
+- 不执行任何脚本，也不声明 Agent 已发现。
+
++						61 按钮 关闭
+~			18 按钮 Description: 返回, Help: 显示上一页, ID: BackButton
+~			23 文本栏 (settable) Description: 智能搜索栏, Value: 127.0.0.1:4176/library/bddce053-da9b-4810-923b-7111c9117d81, ID: WEB_BROWSER_ADDRESS_AND_SEARCH_FIELD
+The focused UI element is 55 按钮 关闭对话框

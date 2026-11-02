@@ -1,0 +1,96 @@
+The following is a diff from the previous accessibility tree for Window: "Habitat · 本地技能工作台" with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+Removed element IDs: 178-183, 185, 187-189, 192-199
+~					176 container
+~						177 link Habitat 首页, Value: 127.0.0.1:4176/library
++						178 text 个人技能工作台 工作空间
++						179 container 主导航
++							180 link 技能库, Value: 127.0.0.1:4176/library
++							181 link 项目, Value: 127.0.0.1:4176/projects
++							182 link 需要处理, Value: 127.0.0.1:4176/issues
++							183 link 操作记录, Value: 127.0.0.1:4176/history
+~						184 文本 最近项目
++						185 按钮 添加项目
+~						186 container 项目导航
++							187 按钮 habitat 3, Help: habitat
++							188 按钮 warehouse-core 3, Help: warehouse-core
++							189 按钮 personal-site 2, Help: personal-site
+~						190 text 本地服务 仅授权目录 · 不上传
+~						191 link 设置, Value: 127.0.0.1:4176/settings
++					192 container
++						193 按钮 收起侧栏
++						194 text 本地空间 技能库
++						195 按钮 搜索 ⌘ K
++						196 文本 本地技能工作台
++					197 container
++						198 标题 技能库, Value: 1
++							199 文本 技能库
++						200 文本 你的 Agent 技能，一处看清，按需使用。
++						201 按钮 扫描授权目录
++						202 按钮 添加本地来源
++						203 标签组 (selectable) 技能范围
++							204 标签 (selected) 全部技能 9
++							205 标签 (selectable) 已收藏 3
++							206 标签 (selectable) 已托管 7
++							207 标签 (selectable) 仅收录 2
++						208 开关按钮 卡片视图, Value: on
++						209 开关按钮 列表视图, Value: off
++						210 文本栏 (settable) 搜索技能, Placeholder: 搜索名称、用途或来源…
++						211 弹出式按钮 筛选分类, Value: 全部分类
++						212 text 9  项技能
++						213 弹出式按钮 技能排序, Value: 最近收录
++						214 container 代码审查
++							215 按钮 代码审查 source
++							216 开关按钮 取消收藏, Value: on
++							217 按钮 在合并代码之前，检查质量、风险与潜在回归。
++							218 文本 已托管
++							219 按钮 使用
++						220 container 文档写作
++							221 按钮 文档写作 source
++							222 开关按钮 收藏技能, Value: off
++							223 按钮 从零散材料出发，写出结构清晰、可行动的文档。
++							224 文本 已托管
++							225 按钮 使用
++						226 container 技能发现
++							227 按钮 技能发现 source
++							228 开关按钮 收藏技能, Value: off
++							229 按钮 根据手头任务，找到值得尝试的新技能。
++							230 文本 仅收录
++							231 按钮 使用
++						232 container 界面设计
++							233 按钮 界面设计 source
++							234 开关按钮 取消收藏, Value: on
++							235 按钮 把产品想法转化为精致、可交付的前端界面。
++							236 文本 已托管
++							237 按钮 使用
++						238 container Git 工作流
++							239 按钮 Git 工作流 source
++							240 开关按钮 收藏技能, Value: off
++							241 按钮 规范分支与提交，让协作中的每次变更清晰可追溯。
++							242 文本 仅收录
++							243 按钮 使用
++						244 container 数仓影响评估
++							245 按钮 数仓影响评估 source
++							246 开关按钮 取消收藏, Value: on
++							247 按钮 分析研发变更的下游影响，生成可执行的兼容方案。
++							248 文本 已托管
++							249 按钮 使用
++						250 container 技能创作
++							251 按钮 技能创作 source
++							252 开关按钮 收藏技能, Value: off
++							253 按钮 把重复工作沉淀为能被 Agent 稳定复用的技能。
++							254 文本 已托管
++							255 按钮 使用
++						256 container 系统化调试
++							257 按钮 系统化调试 source
++							258 开关按钮 收藏技能, Value: off
++							259 按钮 从复现到根因，用可验证的步骤解决棘手问题。
++							260 文本 已托管
++							261 按钮 使用
++						262 container 网络研究
++							263 按钮 网络研究 source
++							264 开关按钮 收藏技能, Value: off
++							265 按钮 交叉核实来源，把复杂问题整理为有依据的结论。
++							266 文本 已托管
++							267 按钮 使用
++						268 文本 当前范围：直接子目录中的 SKILL.md；不递归、不跟随链接、不扫描全盘。这不是 Agent 完整可见范围。
+The focused UI element is 195 按钮 搜索 ⌘ K

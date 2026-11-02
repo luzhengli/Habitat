@@ -1,0 +1,401 @@
+{
+  "viewport": {
+    "dpr": 1,
+    "height": 640,
+    "width": 960
+  },
+  "rasterSize": [
+    960,
+    640
+  ],
+  "pairing": "component class and DOM occurrence; requires equal content order",
+  "status": "measurement-only-not-accepted",
+  "geometry": [
+    {
+      "selector": "sidebar ",
+      "occurrence": 1,
+      "prototype": {
+        "color": "rgb(37, 40, 48)",
+        "font": "14px / 23.1px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+        "gap": "normal",
+        "height": 640,
+        "padding": "0px 12px 16px",
+        "selector": "sidebar ",
+        "width": 190,
+        "x": 0,
+        "y": 0
+      },
+      "production": {
+        "color": "rgb(37, 40, 48)",
+        "font": "14px / 23.1px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+        "gap": "normal",
+        "height": 640,
+        "padding": "22px 12px 16px",
+        "selector": "sidebar ",
+        "width": 190,
+        "x": 0,
+        "y": 0
+      },
+      "delta": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      }
+    },
+    {
+      "selector": "brand",
+      "occurrence": 1,
+      "prototype": {
+        "color": "rgb(37, 40, 48)",
+        "font": "650 21px / 34.65px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+        "gap": "10px",
+        "height": 49.6484375,
+        "padding": "15px 11px 0px",
+        "selector": "brand",
+        "width": 158,
+        "x": 12,
+        "y": 52
+      },
+      "production": {
+        "color": "rgb(50, 104, 216)",
+        "font": "650 21px / 34.65px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+        "gap": "10px",
+        "height": 49.6484375,
+        "padding": "15px 11px 0px",
+        "selector": "brand",
+        "width": 165,
+        "x": 12,
+        "y": 22
+      },
+      "delta": {
+        "x": 0,
+        "y": -30,
+        "width": 7,
+        "height": 0.0
+      }
+    },
+    {
+      "selector": "topbar",
+      "occurrence": 1,
+      "prototype": {
+        "color": "rgb(37, 40, 48)",
+        "font": "14px / 23.1px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+        "gap": "20px",
+        "height": 52,
+        "padding": "0px 24px",
+        "selector": "topbar",
+        "width": 770,
+        "x": 190,
+        "y": 0
+      },
+      "production": {
+        "color": "rgb(37, 40, 48)",
+        "font": "14px / 23.1px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+        "gap": "20px",
+        "height": 52,
+        "padding": "0px 24px",
+        "selector": "topbar",
+        "width": 770,
+        "x": 190,
+        "y": 0
+      },
+      "delta": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      }
+    },
+    {
+      "selector": "main-content page-library",
+      "occurrence": 1,
+      "prototype": {
+        "color": "rgb(37, 40, 48)",
+        "font": "14px / 23.1px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+        "gap": "normal",
+        "height": 588,
+        "padding": "28px 24px",
+        "selector": "main-content page-library",
+        "width": 770,
+        "x": 190,
+        "y": 52
+      },
+      "production": {
+        "color": "rgb(37, 40, 48)",
+        "font": "14px / 23.1px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+        "gap": "normal",
+        "height": 588,
+        "padding": "28px 24px",
+        "selector": "main-content",
+        "width": 770,
+        "x": 190,
+        "y": 52
+      },
+      "delta": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      }
+    },
+    {
+      "selector": "page-heading",
+      "occurrence": 1,
+      "prototype": {
+        "color": "rgb(37, 40, 48)",
+        "font": "14px / 23.1px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+        "gap": "16px",
+        "height": 76,
+        "padding": "0px",
+        "selector": "page-heading",
+        "width": 715,
+        "x": 214,
+        "y": 80
+      },
+      "production": {
+        "color": "rgb(37, 40, 48)",
+        "font": "14px / 23.1px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+        "gap": "16px",
+        "height": 76,
+        "padding": "0px",
+        "selector": "page-heading",
+        "width": 715,
+        "x": 214,
+        "y": 80
+      },
+      "delta": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      }
+    },
+    {
+      "selector": "library-toolbar",
+      "occurrence": 1,
+      "prototype": {
+        "color": "rgb(37, 40, 48)",
+        "font": "14px / 23.1px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+        "gap": "12px",
+        "height": 36,
+        "padding": "0px",
+        "selector": "library-toolbar",
+        "width": 715,
+        "x": 214,
+        "y": 257
+      },
+      "production": {
+        "color": "rgb(37, 40, 48)",
+        "font": "14px / 23.1px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+        "gap": "12px",
+        "height": 36,
+        "padding": "0px",
+        "selector": "library-toolbar",
+        "width": 715,
+        "x": 214,
+        "y": 189
+      },
+      "delta": {
+        "x": 0,
+        "y": -68,
+        "width": 0,
+        "height": 0
+      }
+    },
+    {
+      "selector": "skill-grid ",
+      "occurrence": 1,
+      "prototype": {
+        "color": "rgb(37, 40, 48)",
+        "font": "14px / 23.1px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+        "gap": "18px",
+        "height": 1142,
+        "padding": "0px",
+        "selector": "skill-grid ",
+        "width": 715,
+        "x": 214,
+        "y": 317
+      },
+      "production": {
+        "color": "rgb(37, 40, 48)",
+        "font": "14px / 23.1px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+        "gap": "18px",
+        "height": 1142,
+        "padding": "0px",
+        "selector": "skill-grid",
+        "width": 715,
+        "x": 214,
+        "y": 249
+      },
+      "delta": {
+        "x": 0,
+        "y": -68,
+        "width": 0,
+        "height": 0
+      }
+    },
+    {
+      "selector": "skill-card ",
+      "occurrence": 1,
+      "prototype": {
+        "color": "rgb(37, 40, 48)",
+        "font": "14px / 23.1px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+        "gap": "normal",
+        "height": 214,
+        "padding": "20px 18px 17px",
+        "selector": "skill-card ",
+        "width": 348.5,
+        "x": 214,
+        "y": 317
+      },
+      "production": {
+        "color": "rgb(37, 40, 48)",
+        "font": "14px / 23.1px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+        "gap": "normal",
+        "height": 214,
+        "padding": "20px 18px 17px",
+        "selector": "skill-card",
+        "width": 348.5,
+        "x": 214,
+        "y": 249
+      },
+      "delta": {
+        "x": 0,
+        "y": -68,
+        "width": 0.0,
+        "height": 0
+      }
+    },
+    {
+      "selector": "skill-card ",
+      "occurrence": 2,
+      "prototype": {
+        "color": "rgb(37, 40, 48)",
+        "font": "14px / 23.1px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+        "gap": "normal",
+        "height": 214,
+        "padding": "20px 18px 17px",
+        "selector": "skill-card ",
+        "width": 348.5,
+        "x": 580.5,
+        "y": 317
+      },
+      "production": {
+        "color": "rgb(37, 40, 48)",
+        "font": "14px / 23.1px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+        "gap": "normal",
+        "height": 214,
+        "padding": "20px 18px 17px",
+        "selector": "skill-card",
+        "width": 348.5,
+        "x": 580.5,
+        "y": 249
+      },
+      "delta": {
+        "x": 0.0,
+        "y": -68,
+        "width": 0.0,
+        "height": 0
+      }
+    },
+    {
+      "selector": "skill-card ",
+      "occurrence": 3,
+      "prototype": {
+        "color": "rgb(37, 40, 48)",
+        "font": "14px / 23.1px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+        "gap": "normal",
+        "height": 214,
+        "padding": "20px 18px 17px",
+        "selector": "skill-card ",
+        "width": 348.5,
+        "x": 214,
+        "y": 549
+      },
+      "production": {
+        "color": "rgb(37, 40, 48)",
+        "font": "14px / 23.1px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+        "gap": "normal",
+        "height": 214,
+        "padding": "20px 18px 17px",
+        "selector": "skill-card",
+        "width": 348.5,
+        "x": 214,
+        "y": 481
+      },
+      "delta": {
+        "x": 0,
+        "y": -68,
+        "width": 0.0,
+        "height": 0
+      }
+    },
+    {
+      "selector": "skill-card has-update",
+      "occurrence": 4,
+      "prototype": {
+        "color": "rgb(37, 40, 48)",
+        "font": "14px / 23.1px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+        "gap": "normal",
+        "height": 214,
+        "padding": "20px 18px 17px",
+        "selector": "skill-card has-update",
+        "width": 348.5,
+        "x": 580.5,
+        "y": 549
+      },
+      "production": {
+        "color": "rgb(37, 40, 48)",
+        "font": "14px / 23.1px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+        "gap": "normal",
+        "height": 214,
+        "padding": "20px 18px 17px",
+        "selector": "skill-card",
+        "width": 348.5,
+        "x": 580.5,
+        "y": 481
+      },
+      "delta": {
+        "x": 0.0,
+        "y": -68,
+        "width": 0.0,
+        "height": 0
+      }
+    }
+  ],
+  "unmatchedPrototype": [
+    {
+      "component": "library-tabs",
+      "occurrence": 1,
+      "element": {
+        "color": "rgb(37, 40, 48)",
+        "font": "14px / 23.1px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+        "gap": "16px",
+        "height": 45,
+        "padding": "0px",
+        "selector": "library-tabs",
+        "width": 715,
+        "x": 214,
+        "y": 189
+      }
+    }
+  ],
+  "unmatchedProduction": [
+    {
+      "component": "skill-card",
+      "occurrence": 5,
+      "element": {
+        "color": "rgb(37, 40, 48)",
+        "font": "14px / 23.1px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+        "gap": "normal",
+        "height": 214,
+        "padding": "20px 18px 17px",
+        "selector": "skill-card",
+        "width": 348.5,
+        "x": 214,
+        "y": 713
+      }
+    }
+  ]
+}

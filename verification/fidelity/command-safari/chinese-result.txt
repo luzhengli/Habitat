@@ -1,0 +1,53 @@
+Window: "Habitat · 本地技能工作台", App: Safari浏览器.
+0 标准窗口 Habitat · 本地技能工作台, ID: SafariWindow?IsSecure=false&UUID=66732F3B-04FD-404D-96E4-DCED31232944, Secondary Actions: Raise
+	1 分离组
+		2 标签组
+			3 滚动区
+				4 HTML内容 Description: Habitat · 本地技能工作台, URL: 127.0.0.1:4176/library
+					5 container 去你想去的地方
+						6 container
+							7 文本栏 (settable) 全局搜索, Value: 界面, Placeholder: 搜索技能、项目或操作…
+							8 文本 ESC
+						9 标题 技能, Value: 4
+							10 文本 技能
+						11 按钮 界面设计 frontend-design
+	12 图像 WindowControlShadowView._shadowImageView
+	13 工具栏
+		14 container Secondary Actions: 移到下一项, 从工具栏移除
+			15 按钮 Description: 显示边栏, ID: SidebarButton
+			16 菜单按钮 Description: 标签页组选择器, ID: TabGroupPickerButton?TabGroup=
+		17 container BackForwardSegmentedControl
+			18 按钮 (disabled) Description: 返回, Help: 显示上一页, ID: BackButton
+			19 按钮 (disabled) Description: 前进, Help: 显示下一页, ID: ForwardButton
+		20 container Secondary Actions: 移到上一项, 移到下一项, 从工具栏移除
+			21 按钮 页面菜单, ID: AssistantButton
+			22 按钮 将页面添加到阅读列表, ID: OneStepBookmarkingButton
+			23 文本栏 (settable) Description: 智能搜索栏, Value: 127.0.0.1:4176/library, ID: WEB_BROWSER_ADDRESS_AND_SEARCH_FIELD
+			24 按钮 重新载入此页面, ID: ReloadButton
+		25 按钮 Description: 共享, ID: ShareButton, Secondary Actions: 移到上一项, 移到下一项, 从工具栏移除
+		26 按钮 Description: 新建标签页, ID: NewTabButton, Secondary Actions: 移到上一项, 移到下一项, 从工具栏移除
+		27 按钮 Description: 标签页概览, ID: TabOverviewButton, Secondary Actions: 移到上一项, 从工具栏移除
+	28 标签组 Description: 标签页栏，3个标签页, ID: TabBar?isSeparate=false
+		29 标签 Air · 个人技能工作台, Value: off, ID: TabBarTab?isPinned=false&isNarrow=false&isActive=false, Secondary Actions: 关闭标签页
+			30 图像 FaviconImageView
+			31 文本 Value: Air · 个人技能工作台, ID: UnifiedTabBarButton._titleTextField
+		32 标签 A1 · Web 真实能力候选, Value: off, ID: TabBarTab?isPinned=false&isNarrow=false&isActive=false, Secondary Actions: 关闭标签页
+			33 图像 FaviconImageView
+			34 文本 Value: A1 · Web 真实能力候选, ID: UnifiedTabBarButton._titleTextField
+		35 标签 本地技能工作台, Help: 若要与此按钮中的项目交互，请按下Control-Option-Shift-下箭头键。, Value: on, ID: TabBarTab?isPinned=false&isNarrow=false&isActive=true, Secondary Actions: 关闭标签页
+			36 图像 FaviconImageView
+			37 文本 Value: 本地技能工作台, ID: UnifiedTabBarButton._titleTextField
+	38 关闭按钮
+	39 全屏幕按钮 Help: 此按钮也可以执行缩放窗口的操作, Secondary Actions: 缩放窗口
+	40 最小化按钮
+41 menu bar
+	42 Safari浏览器
+	43 文件
+	44 编辑
+	45 显示, ID: SafariViewMenu
+	46 历史记录
+	47 书签, ID: SafariBookmarksMenu
+	48 窗口, ID: SafariWindowMenu
+	49 帮助, ID: SafariHelpMenu
+
+The focused UI element is 7 文本栏 (settable) 全局搜索, Value: 界面, Placeholder: 搜索技能、项目或操作…

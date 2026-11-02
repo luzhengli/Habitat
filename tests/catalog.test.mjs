@@ -21,6 +21,19 @@ test('explicit grant, durable identity and preferences survive restart; source u
  f.db.preferences(skill.id,{favorite:true});f.restart();await f.db.scan();assert.equal(f.db.inventory().skills[0].id,skill.id);assert.equal(f.db.inventory().skills[0].favorite,true);
  assert.deepEqual(await fs.readFile(f.file),before);const source=f.db.grants()[0];f.db.revoke(source.id);assert.equal(f.db.inventory().skills.length,0);await assert.rejects(f.db.read(skill.id),/撤销/);assert.deepEqual(await fs.readFile(f.file),before);
 });
+test('first indexing time is stable across rescans, new sources get a timestamp, and favorites persist',async t=>{
+ const f=await fixture(t);await f.grant();await f.db.scan();const first=f.db.inventory().skills[0];
+ assert.equal(typeof first.firstIndexedAt,'string');assert.ok(Number.isFinite(Date.parse(first.firstIndexedAt)));
+ f.db.preferences(first.id,{favorite:true});await f.db.scan();const rescanned=f.db.inventory().skills.find(skill=>skill.id===first.id);
+ assert.equal(rescanned.firstIndexedAt,first.firstIndexedAt);assert.equal(rescanned.favorite,true);
+ const secondRoot=path.join(f.dir,'second-source');await fs.mkdir(path.join(secondRoot,'two'),{recursive:true});await fs.writeFile(path.join(secondRoot,'two/SKILL.md'),'---\nname: two\ndescription: later source\n---\ntext');
+ await f.db.authorize({absolutePath:secondRoot,permission:'read-only',confirm:true});await f.db.scan();const added=f.db.inventory().skills.find(skill=>skill.declaredName==='two');
+ assert.equal(typeof added.firstIndexedAt,'string');assert.ok(Number.isFinite(Date.parse(added.firstIndexedAt)));assert.equal(f.db.inventory().skills.find(skill=>skill.id===first.id).favorite,true);
+});
+test('legacy skills without a first indexing time remain unknown after rescan',async t=>{
+ const f=await fixture(t);await f.grant();await f.db.scan();const skill=f.db.inventory().skills[0];const legacy={...skill};delete legacy.firstIndexedAt;f.db.put('skill',legacy);await f.db.scan();
+ assert.equal(f.db.inventory().skills[0].firstIndexedAt,null);
+});
 test('variants, missing fields, source drift and symlink gaps remain explicit',async t=>{
  const f=await fixture(t);await f.grant();await fs.mkdir(path.join(f.dir,'source/two'));await fs.writeFile(path.join(f.dir,'source/two/SKILL.md'),'---\nname: one\n---\nvariant');await fs.symlink(path.dirname(f.file),path.join(f.dir,'source/link'));await f.db.scan();
  assert.ok(f.db.inventory().diagnostics.some(d=>d.code==='NAME_VARIANT'));assert.ok(f.db.inventory().diagnostics.some(d=>d.code==='SYMLINK_NOT_FOLLOWED'));

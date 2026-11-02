@@ -1,0 +1,650 @@
+[
+  {
+    "card": 0,
+    "title": "代码审查",
+    "selector": "h3",
+    "textEqual": true,
+    "fontEqual": true,
+    "rectsEqual": true,
+    "prototypeRects": [
+      {
+        "height": 17.5,
+        "width": 59.40625,
+        "x": 354,
+        "y": 360
+      }
+    ],
+    "productionRects": [
+      {
+        "height": 17.5,
+        "width": 59.40625,
+        "x": 354,
+        "y": 360
+      }
+    ]
+  },
+  {
+    "card": 0,
+    "title": "代码审查",
+    "selector": "origin",
+    "textEqual": false,
+    "fontEqual": true,
+    "rectsEqual": false,
+    "prototypeRects": [
+      {
+        "height": 13,
+        "width": 79.984375,
+        "x": 354,
+        "y": 385.5
+      }
+    ],
+    "productionRects": [
+      {
+        "height": 13,
+        "width": 35.53125,
+        "x": 354,
+        "y": 385.5
+      }
+    ]
+  },
+  {
+    "card": 0,
+    "title": "代码审查",
+    "selector": "p",
+    "textEqual": true,
+    "fontEqual": true,
+    "rectsEqual": true,
+    "prototypeRects": [
+      {
+        "height": 15,
+        "width": 273,
+        "x": 299,
+        "y": 438
+      }
+    ],
+    "productionRects": [
+      {
+        "height": 15,
+        "width": 273,
+        "x": 299,
+        "y": 438
+      }
+    ]
+  },
+  {
+    "card": 1,
+    "title": "文档写作",
+    "selector": "h3",
+    "textEqual": true,
+    "fontEqual": true,
+    "rectsEqual": true,
+    "prototypeRects": [
+      {
+        "height": 17.5,
+        "width": 59.40625,
+        "x": 921.5,
+        "y": 360
+      }
+    ],
+    "productionRects": [
+      {
+        "height": 17.5,
+        "width": 59.40625,
+        "x": 921.5,
+        "y": 360
+      }
+    ]
+  },
+  {
+    "card": 1,
+    "title": "文档写作",
+    "selector": "origin",
+    "textEqual": false,
+    "fontEqual": true,
+    "rectsEqual": false,
+    "prototypeRects": [
+      {
+        "height": 13,
+        "width": 103.5625,
+        "x": 921.5,
+        "y": 385.5
+      }
+    ],
+    "productionRects": [
+      {
+        "height": 13,
+        "width": 35.53125,
+        "x": 921.5,
+        "y": 385.5
+      }
+    ]
+  },
+  {
+    "card": 1,
+    "title": "文档写作",
+    "selector": "p",
+    "textEqual": true,
+    "fontEqual": true,
+    "rectsEqual": true,
+    "prototypeRects": [
+      {
+        "height": 15,
+        "width": 286,
+        "x": 866.5,
+        "y": 438
+      }
+    ],
+    "productionRects": [
+      {
+        "height": 15,
+        "width": 286,
+        "x": 866.5,
+        "y": 438
+      }
+    ]
+  },
+  {
+    "card": 2,
+    "title": "技能发现",
+    "selector": "h3",
+    "textEqual": true,
+    "fontEqual": true,
+    "rectsEqual": true,
+    "prototypeRects": [
+      {
+        "height": 17.5,
+        "width": 59.40625,
+        "x": 354,
+        "y": 590
+      }
+    ],
+    "productionRects": [
+      {
+        "height": 17.5,
+        "width": 59.40625,
+        "x": 354,
+        "y": 590
+      }
+    ]
+  },
+  {
+    "card": 2,
+    "title": "技能发现",
+    "selector": "origin",
+    "textEqual": false,
+    "fontEqual": true,
+    "rectsEqual": false,
+    "prototypeRects": [
+      {
+        "height": 13,
+        "width": 77,
+        "x": 354,
+        "y": 615.5
+      }
+    ],
+    "productionRects": [
+      {
+        "height": 13,
+        "width": 35.53125,
+        "x": 354,
+        "y": 615.5
+      }
+    ]
+  },
+  {
+    "card": 2,
+    "title": "技能发现",
+    "selector": "p",
+    "textEqual": true,
+    "fontEqual": true,
+    "rectsEqual": true,
+    "prototypeRects": [
+      {
+        "height": 15,
+        "width": 234,
+        "x": 299,
+        "y": 668
+      }
+    ],
+    "productionRects": [
+      {
+        "height": 15,
+        "width": 234,
+        "x": 299,
+        "y": 668
+      }
+    ]
+  },
+  {
+    "card": 3,
+    "title": "界面设计",
+    "selector": "h3",
+    "textEqual": true,
+    "fontEqual": true,
+    "rectsEqual": true,
+    "prototypeRects": [
+      {
+        "height": 17.5,
+        "width": 59.40625,
+        "x": 921.5,
+        "y": 590
+      }
+    ],
+    "productionRects": [
+      {
+        "height": 17.5,
+        "width": 59.40625,
+        "x": 921.5,
+        "y": 590
+      }
+    ]
+  },
+  {
+    "card": 3,
+    "title": "界面设计",
+    "selector": "origin",
+    "textEqual": false,
+    "fontEqual": true,
+    "rectsEqual": false,
+    "prototypeRects": [
+      {
+        "height": 13,
+        "width": 53.1640625,
+        "x": 921.5,
+        "y": 615.5
+      }
+    ],
+    "productionRects": [
+      {
+        "height": 13,
+        "width": 35.53125,
+        "x": 921.5,
+        "y": 615.5
+      }
+    ]
+  },
+  {
+    "card": 3,
+    "title": "界面设计",
+    "selector": "p",
+    "textEqual": true,
+    "fontEqual": true,
+    "rectsEqual": true,
+    "prototypeRects": [
+      {
+        "height": 15,
+        "width": 260,
+        "x": 866.5,
+        "y": 668
+      }
+    ],
+    "productionRects": [
+      {
+        "height": 15,
+        "width": 260,
+        "x": 866.5,
+        "y": 668
+      }
+    ]
+  },
+  {
+    "card": 4,
+    "title": "Git 工作流",
+    "selector": "h3",
+    "textEqual": true,
+    "fontEqual": true,
+    "rectsEqual": true,
+    "prototypeRects": [
+      {
+        "height": 17.5,
+        "width": 68.2265625,
+        "x": 354,
+        "y": 820
+      }
+    ],
+    "productionRects": [
+      {
+        "height": 17.5,
+        "width": 68.2265625,
+        "x": 354,
+        "y": 820
+      }
+    ]
+  },
+  {
+    "card": 4,
+    "title": "Git 工作流",
+    "selector": "origin",
+    "textEqual": false,
+    "fontEqual": true,
+    "rectsEqual": false,
+    "prototypeRects": [
+      {
+        "height": 13,
+        "width": 69.453125,
+        "x": 354,
+        "y": 845.5
+      }
+    ],
+    "productionRects": [
+      {
+        "height": 13,
+        "width": 35.53125,
+        "x": 354,
+        "y": 845.5
+      }
+    ]
+  },
+  {
+    "card": 4,
+    "title": "Git 工作流",
+    "selector": "p",
+    "textEqual": true,
+    "fontEqual": true,
+    "rectsEqual": true,
+    "prototypeRects": [
+      {
+        "height": 15,
+        "width": 299,
+        "x": 299,
+        "y": 898
+      }
+    ],
+    "productionRects": [
+      {
+        "height": 15,
+        "width": 299,
+        "x": 299,
+        "y": 898
+      }
+    ]
+  },
+  {
+    "card": 5,
+    "title": "数仓影响评估",
+    "selector": "h3",
+    "textEqual": true,
+    "fontEqual": true,
+    "rectsEqual": true,
+    "prototypeRects": [
+      {
+        "height": 17.5,
+        "width": 89.1015625,
+        "x": 921.5,
+        "y": 820
+      }
+    ],
+    "productionRects": [
+      {
+        "height": 17.5,
+        "width": 89.1015625,
+        "x": 921.5,
+        "y": 820
+      }
+    ]
+  },
+  {
+    "card": 5,
+    "title": "数仓影响评估",
+    "selector": "origin",
+    "textEqual": false,
+    "fontEqual": true,
+    "rectsEqual": false,
+    "prototypeRects": [
+      {
+        "height": 13,
+        "width": 66,
+        "x": 921.5,
+        "y": 845.5
+      }
+    ],
+    "productionRects": [
+      {
+        "height": 13,
+        "width": 35.53125,
+        "x": 921.5,
+        "y": 845.5
+      }
+    ]
+  },
+  {
+    "card": 5,
+    "title": "数仓影响评估",
+    "selector": "p",
+    "textEqual": true,
+    "fontEqual": true,
+    "rectsEqual": true,
+    "prototypeRects": [
+      {
+        "height": 15,
+        "width": 299,
+        "x": 866.5,
+        "y": 898
+      }
+    ],
+    "productionRects": [
+      {
+        "height": 15,
+        "width": 299,
+        "x": 866.5,
+        "y": 898
+      }
+    ]
+  },
+  {
+    "card": 6,
+    "title": "技能创作",
+    "selector": "h3",
+    "textEqual": true,
+    "fontEqual": true,
+    "rectsEqual": true,
+    "prototypeRects": [
+      {
+        "height": 17.5,
+        "width": 59.40625,
+        "x": 354,
+        "y": 1050
+      }
+    ],
+    "productionRects": [
+      {
+        "height": 17.5,
+        "width": 59.40625,
+        "x": 354,
+        "y": 1050
+      }
+    ]
+  },
+  {
+    "card": 6,
+    "title": "技能创作",
+    "selector": "origin",
+    "textEqual": false,
+    "fontEqual": true,
+    "rectsEqual": false,
+    "prototypeRects": [
+      {
+        "height": 13,
+        "width": 66,
+        "x": 354,
+        "y": 1075.5
+      }
+    ],
+    "productionRects": [
+      {
+        "height": 13,
+        "width": 35.53125,
+        "x": 354,
+        "y": 1075.5
+      }
+    ]
+  },
+  {
+    "card": 6,
+    "title": "技能创作",
+    "selector": "p",
+    "textEqual": true,
+    "fontEqual": true,
+    "rectsEqual": true,
+    "prototypeRects": [
+      {
+        "height": 15,
+        "width": 276.8203125,
+        "x": 299,
+        "y": 1128
+      }
+    ],
+    "productionRects": [
+      {
+        "height": 15,
+        "width": 276.8203125,
+        "x": 299,
+        "y": 1128
+      }
+    ]
+  },
+  {
+    "card": 7,
+    "title": "系统化调试",
+    "selector": "h3",
+    "textEqual": true,
+    "fontEqual": true,
+    "rectsEqual": true,
+    "prototypeRects": [
+      {
+        "height": 17.5,
+        "width": 74.2578125,
+        "x": 921.5,
+        "y": 1050
+      }
+    ],
+    "productionRects": [
+      {
+        "height": 17.5,
+        "width": 74.2578125,
+        "x": 921.5,
+        "y": 1050
+      }
+    ]
+  },
+  {
+    "card": 7,
+    "title": "系统化调试",
+    "selector": "origin",
+    "textEqual": false,
+    "fontEqual": true,
+    "rectsEqual": false,
+    "prototypeRects": [
+      {
+        "height": 13,
+        "width": 79.984375,
+        "x": 921.5,
+        "y": 1075.5
+      }
+    ],
+    "productionRects": [
+      {
+        "height": 13,
+        "width": 35.53125,
+        "x": 921.5,
+        "y": 1075.5
+      }
+    ]
+  },
+  {
+    "card": 7,
+    "title": "系统化调试",
+    "selector": "p",
+    "textEqual": true,
+    "fontEqual": true,
+    "rectsEqual": true,
+    "prototypeRects": [
+      {
+        "height": 15,
+        "width": 273,
+        "x": 866.5,
+        "y": 1128
+      }
+    ],
+    "productionRects": [
+      {
+        "height": 15,
+        "width": 273,
+        "x": 866.5,
+        "y": 1128
+      }
+    ]
+  },
+  {
+    "card": 8,
+    "title": "网络研究",
+    "selector": "h3",
+    "textEqual": true,
+    "fontEqual": true,
+    "rectsEqual": true,
+    "prototypeRects": [
+      {
+        "height": 17.5,
+        "width": 59.40625,
+        "x": 354,
+        "y": 1280
+      }
+    ],
+    "productionRects": [
+      {
+        "height": 17.5,
+        "width": 59.40625,
+        "x": 354,
+        "y": 1280
+      }
+    ]
+  },
+  {
+    "card": 8,
+    "title": "网络研究",
+    "selector": "origin",
+    "textEqual": false,
+    "fontEqual": true,
+    "rectsEqual": false,
+    "prototypeRects": [
+      {
+        "height": 13,
+        "width": 63.734375,
+        "x": 354,
+        "y": 1305.5
+      }
+    ],
+    "productionRects": [
+      {
+        "height": 13,
+        "width": 35.53125,
+        "x": 354,
+        "y": 1305.5
+      }
+    ]
+  },
+  {
+    "card": 8,
+    "title": "网络研究",
+    "selector": "p",
+    "textEqual": true,
+    "fontEqual": true,
+    "rectsEqual": true,
+    "prototypeRects": [
+      {
+        "height": 15,
+        "width": 286,
+        "x": 299,
+        "y": 1358
+      }
+    ],
+    "productionRects": [
+      {
+        "height": 15,
+        "width": 286,
+        "x": 299,
+        "y": 1358
+      }
+    ]
+  }
+]

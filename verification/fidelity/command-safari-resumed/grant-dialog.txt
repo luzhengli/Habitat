@@ -1,0 +1,18 @@
+The following is a diff from the previous accessibility tree for Window: "Habitat · 本地技能工作台" with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+Removed element IDs: 5-28
++					64 container 添加本地来源
++						65 container
++							66 标题 添加本地来源, Value: 2
++								67 文本 添加本地来源
++							68 按钮 关闭对话框
++						69 文本 输入服务所在电脑的绝对目录。仅读取直接子目录中的 SKILL.md，不移动原件、不执行脚本。
++						70 container
++							71 文本 本机来源路径
++							72 文本栏 (settable) 本机来源路径, Placeholder: /absolute/path/to/skills
++						73 container
++							74 复选框 我允许 Habitat 只读访问此目录, Value: 0
++							75 文本  我允许 Habitat 只读访问此目录
++						76 container
++							77 按钮 取消
++							78 按钮 (disabled) 只读授权并扫描
+The focused UI element is 68 按钮 关闭对话框

@@ -1,6 +1,10 @@
 # Habitat Web
 
-本地优先的 Skills 工作台。沿用 Air 视觉；React Web + 同机 Node 服务，全新独立项目，不依赖旧 Habitat、Rust 或桌面壳。
+本地优先的 Skills 工作台。React Web + 同机 Node 服务，全新独立项目，不依赖旧 Habitat、Rust 或桌面壳。
+
+**当前状态：高保真还原进行中，A1 候选待用户确认。** 已开始原型对照与 A0 不变范围首切片；尚未满足整体视觉验收，M4 保持重新打开。按 [PLAN](PLAN.md)、[覆盖矩阵](verification/fidelity/coverage.md) 和 [高保真合同](docs/10-原型先行与高保真还原合同.md) 继续 V0–V3。
+
+后续 UI/交互设计变化必须先改独立原型候选，由用户确认后再做像素级实现。已有明确批准的设计可直接还原，不需要重复确认。生产 CSS 和既有实现不能替代 [已确认原型基线](design/prototype-baselines.md)。A1 候选与生产实现独立，未获确认的变化尚未进入生产。
 
 ## 安装与运行
 
@@ -17,7 +21,7 @@ npm start
 
 开发：停止生产进程后运行 `npm run dev`，打开 http://127.0.0.1:5173 。端口占用会报错，不换成公网地址。终端 **Ctrl+C** 停服。`/demo` 仅为冻结 Air 原型，正式页面不导入原型模拟状态。
 
-## 首次使用
+## 当前实现的功能用法（不代表目标界面已验收）
 
 1. 在技能库点击“添加本地来源”，输入服务所在电脑的绝对目录，明确勾选只读授权。
 2. 扫描该目录直接子目录中的 `SKILL.md`。来源不会移动，脚本不会执行；不自动扫描 home、全盘或 Agent 全局目录。
@@ -52,4 +56,4 @@ HABITAT_DATA_DIR=/private/tmp/habitat-demo-data npm run start:fixture
 
 此命令仅明确读取本仓库 `fixtures/skills`，与正式默认无授权区分。生产失败不会回退为演示数据。
 
-实测平台与截图、完整测试结果见 `verification/` 和 `PLAN.md`。Chromium 内嵌浏览器与真实 Safari 分别验收；Windows/Linux 文件语义和 Firefox 未验收，不声称支持。没有公网部署、云账号、私有 Git 凭据或 Agent 付费运行集成。未经用户指令不 push、发布 npm 或部署。
+上一轮实测平台与截图、测试结果见 `verification/`；当前待办见 `PLAN.md`。这些记录不证明高保真还原通过。Chromium 内嵌浏览器与真实 Safari 分别验收；Windows/Linux 文件语义和 Firefox 未验收，不声称支持。没有公网部署、云账号、私有 Git 凭据或 Agent 付费运行集成。未经用户指令不 push、发布 npm 或部署。

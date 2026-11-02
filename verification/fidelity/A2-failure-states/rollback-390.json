@@ -1,0 +1,53 @@
+{
+  "parts": [
+    {
+      "class": "modal modal-wide  ",
+      "clientHeight": 818,
+      "clientWidth": 364,
+      "height": 820,
+      "scrollHeight": 818,
+      "scrollWidth": 364,
+      "width": 366,
+      "x": 12,
+      "y": 12
+    },
+    {
+      "class": "modal-header",
+      "clientHeight": 88,
+      "clientWidth": 364,
+      "height": 89.09375,
+      "scrollHeight": 88,
+      "scrollWidth": 364,
+      "width": 364,
+      "x": 13,
+      "y": 13
+    },
+    {
+      "class": "modal-body",
+      "clientHeight": 633,
+      "clientWidth": 357,
+      "height": 633.40625,
+      "scrollHeight": 1115,
+      "scrollWidth": 357,
+      "width": 364,
+      "x": 13,
+      "y": 102.09375
+    },
+    {
+      "class": "modal-footer",
+      "clientHeight": 95,
+      "clientWidth": 364,
+      "height": 95.5,
+      "scrollHeight": 95,
+      "scrollWidth": 364,
+      "width": 364,
+      "x": 13,
+      "y": 735.5
+    }
+  ],
+  "viewport": {
+    "dpr": 1,
+    "h": 844,
+    "w": 390
+  }
+}

@@ -18,7 +18,7 @@ Local Node service (127.0.0.1)
           explicitly granted local roots + application-owned storage
 ```
 
-不建立 Tauri、Electron、浏览器扩展、MCP、微服务、容器编排或 Agent 多代理系统。新服务语言默认 JS/TypeScript，少量领域模块即可。当前内建 HTTP 服务是可测试起点，可按增长转为 Fastify但不是首个里程碑前置条件。
+不建立 Tauri、Electron、浏览器扩展、MCP、微服务、容器编排或 Agent 多代理系统。这里限制的是 Habitat 产品架构，不限制开发过程使用 Codex subagent；开发协作按 AGENTS.md 的 Orchestration 合同执行。新服务语言默认 JS/TypeScript，少量领域模块即可。当前内建 HTTP 服务是可测试起点，可按增长转为 Fastify但不是首个里程碑前置条件。
 
 React 页面通过 HTTP 客户端而非 IPC 调用；构建后静态资源和 API 同端口。开发 Vite5173 代理本地4173，不开放宽松 CORS。无 SSR 需求，不默认引入 Next.js 服务端渲染、RSC或云数据库。
 

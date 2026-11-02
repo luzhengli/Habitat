@@ -1,0 +1,95 @@
+{
+  "candidateHash": "fb14fb3abb64c1c9b9a4ddaccc9c6f9ca1111bfd767639649791abc23cc3a243",
+  "states": [
+    {
+      "slug": "source-revoked",
+      "primary": "重新授权来源",
+      "changed": true
+    },
+    {
+      "slug": "network-failed",
+      "primary": "重试下载",
+      "changed": true
+    },
+    {
+      "slug": "git-quota",
+      "primary": "稍后重试",
+      "changed": true
+    },
+    {
+      "slug": "package-rejected",
+      "primary": "修改来源范围",
+      "changed": true
+    },
+    {
+      "slug": "detail-binary",
+      "primary": "返回文件清单",
+      "changed": true
+    },
+    {
+      "slug": "detail-limit",
+      "primary": "查看其他文件",
+      "changed": true
+    },
+    {
+      "slug": "source-drift",
+      "primary": "重新扫描来源",
+      "changed": true
+    },
+    {
+      "slug": "plan-expired",
+      "primary": "重新生成预览",
+      "changed": true
+    },
+    {
+      "slug": "revision-conflict",
+      "primary": "刷新并比较",
+      "changed": true
+    },
+    {
+      "slug": "target-occupied",
+      "primary": "返回继续编辑",
+      "changed": true
+    },
+    {
+      "slug": "personal-modification",
+      "primary": "查看变化位置",
+      "changed": true
+    },
+    {
+      "slug": "succeeded-readback",
+      "primary": "查看项目配置",
+      "changed": true
+    },
+    {
+      "slug": "rolled-back",
+      "primary": "重新预览草稿",
+      "changed": true
+    },
+    {
+      "slug": "recovery-required",
+      "primary": "查看恢复证据",
+      "changed": true
+    },
+    {
+      "slug": "undo-blocked",
+      "primary": "查看后续操作",
+      "changed": true
+    },
+    {
+      "slug": "pinned-version-rollback",
+      "primary": "生成回退预览",
+      "changed": true
+    }
+  ],
+  "running": {
+    "duringCancelCloseDisabled": true,
+    "escKeptDialog": true,
+    "after": "cancel-requested; no succeeded or rolled-back transition"
+  },
+  "rollback": {
+    "secondConfirmationShown": true,
+    "executeInitiallyDisabled": true
+  },
+  "scope": "candidate UI only; no production/API acceptance"
+}

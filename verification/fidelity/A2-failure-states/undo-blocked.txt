@@ -1,0 +1,174 @@
+- complementary:
+  - generic: LOCAL WORKSPACE
+  - button "Habitat 首页":
+    - generic: Habitat
+  - generic: 个人技能工作台
+  - generic: 工作空间
+  - navigation "主导航":
+    - button "技能库":
+      - generic: 技能库
+    - button "项目":
+      - generic: 项目
+    - button "需要处理 2":
+      - generic: 需要处理
+      - generic: "2"
+    - button "操作记录":
+      - generic: 操作记录
+  - generic: 最近项目
+  - button "添加项目":
+  - navigation "项目导航":
+    - button "Habitat 3":
+      - generic: Habitat
+      - generic: "3"
+    - button "warehouse-core 3":
+      - generic: warehouse-core
+      - generic: "3"
+    - button "personal-site 2":
+      - generic: personal-site
+      - generic: "2"
+  - text: 本地空间
+  - generic: 无需登录 · 不上传内容
+  - button "设置":
+    - generic: 设置
+  - button "帮助与说明 ?":
+    - generic: 帮助与说明
+    - generic: "?"
+- banner:
+  - button "收起侧栏":
+  - generic: 本地空间
+  - strong: 操作记录
+  - button "搜索 ⌘/Ctrl K":
+    - generic: 搜索
+    - generic: ⌘/Ctrl K
+  - button "撤销被阻断":
+    - generic: 撤销被阻断
+  - generic: A2 失败状态候选
+- main:
+  - heading "操作记录" [level=1]
+  - paragraph: 发生了什么、影响了哪里，都有迹可循。
+  - generic: 本机服务持久记录
+  - strong: 撤销一次操作，不是重置整个工作空间。
+  - text: 真实服务按项目 revision、目标身份与内容指纹判断能否撤销；后续变更或个人修改会阻断。
+  - text: 本次工作空间
+  - generic: 0 条操作
+  - heading "你的下一次操作，会留在这里。" [level=3]
+  - paragraph:
+    - text: 试着给项目添加一项技能，或处理一个配置问题。
+    - button "配置一个项目":
+      - generic: 配置一个项目
+  - strong: A2 合成工作区已准备好
+  - paragraph: 9 项技能 · 17 个具体失败/恢复状态 · 没有读取或改动任何真实文件
+- dialog "这次操作现在不能撤销":
+  - banner:
+    - generic: 操作记录 · 安全撤销
+    - heading "这次操作现在不能撤销" [level=2]
+    - button "关闭对话框" [active]:
+  - generic: LATER_CHANGE / UNDO_UNAVAILABLE · 409
+  - paragraph: 项目在该操作后已有新 revision，或目标不再是可证明的受管状态。旧撤销不会覆盖后续变更。
+  - code: 操作结果 revision 12 · 当前 revision 14
+  - generic: 旧操作
+  - strong: 保留记录
+  - generic: 后续变更
+  - strong: 保持原样
+  - generic: 强制撤销
+  - strong: 不提供
+  - strong: 这是可审阅的候选状态
+  - text: 主要动作会在当前弹窗或抽屉内打开具体表单、文件清单、计划摘要或步骤证据；不会把失败改成生产成功。
+  - contentinfo:
+    - text: A2 合成候选 · 无 API / 无本机写入
+    - button "关闭":
+      - generic: 关闭
+    - button "查看后续操作":
+      - generic: 查看后续操作
+
+PRIMARY: 查看后续操作
+
+- complementary:
+  - generic: LOCAL WORKSPACE
+  - button "Habitat 首页":
+    - generic: Habitat
+  - generic: 个人技能工作台
+  - generic: 工作空间
+  - navigation "主导航":
+    - button "技能库":
+      - generic: 技能库
+    - button "项目":
+      - generic: 项目
+    - button "需要处理 2":
+      - generic: 需要处理
+      - generic: "2"
+    - button "操作记录":
+      - generic: 操作记录
+  - generic: 最近项目
+  - button "添加项目":
+  - navigation "项目导航":
+    - button "Habitat 3":
+      - generic: Habitat
+      - generic: "3"
+    - button "warehouse-core 3":
+      - generic: warehouse-core
+      - generic: "3"
+    - button "personal-site 2":
+      - generic: personal-site
+      - generic: "2"
+  - text: 本地空间
+  - generic: 无需登录 · 不上传内容
+  - button "设置":
+    - generic: 设置
+  - button "帮助与说明 ?":
+    - generic: 帮助与说明
+    - generic: "?"
+- banner:
+  - button "收起侧栏":
+  - generic: 本地空间
+  - strong: 操作记录
+  - button "搜索 ⌘/Ctrl K":
+    - generic: 搜索
+    - generic: ⌘/Ctrl K
+  - button "撤销被阻断":
+    - generic: 撤销被阻断
+  - generic: A2 失败状态候选
+- main:
+  - heading "操作记录" [level=1]
+  - paragraph: 发生了什么、影响了哪里，都有迹可循。
+  - generic: 本机服务持久记录
+  - strong: 撤销一次操作，不是重置整个工作空间。
+  - text: 真实服务按项目 revision、目标身份与内容指纹判断能否撤销；后续变更或个人修改会阻断。
+  - text: 本次工作空间
+  - generic: 0 条操作
+  - heading "你的下一次操作，会留在这里。" [level=3]
+  - paragraph:
+    - text: 试着给项目添加一项技能，或处理一个配置问题。
+    - button "配置一个项目":
+      - generic: 配置一个项目
+  - strong: A2 合成工作区已准备好
+  - paragraph: 9 项技能 · 17 个具体失败/恢复状态 · 没有读取或改动任何真实文件
+- dialog "这次操作现在不能撤销":
+  - banner:
+    - generic: 操作记录 · 安全撤销
+    - heading "这次操作现在不能撤销" [level=2]
+    - button "关闭对话框":
+  - generic: LATER_CHANGE / UNDO_UNAVAILABLE · 409
+  - paragraph: 项目在该操作后已有新 revision，或目标不再是可证明的受管状态。旧撤销不会覆盖后续变更。
+  - code: 操作结果 revision 12 · 当前 revision 14
+  - generic: 旧操作
+  - strong: 保留记录
+  - generic: 后续变更
+  - strong: 保持原样
+  - generic: 强制撤销
+  - strong: 不提供
+  - heading "阻断撤销的后续操作" [level=3]
+  - button "revision 13 切换 code-review 到 v2.4.0 入口与快照已回读":
+    - generic: revision 13
+    - strong: 切换 code-review 到 v2.4.0
+    - generic: 入口与快照已回读
+  - button "revision 14 添加 frontend-design 当前项目最新操作":
+    - generic: revision 14
+    - strong: 添加 frontend-design
+    - generic: 当前项目最新操作
+  - contentinfo:
+    - text: 具体合成子界面 · 无 API / 无本机写入
+    - button "返回状态":
+      - generic: 返回状态
+    - button "关闭" [active]:
+      - generic: 关闭

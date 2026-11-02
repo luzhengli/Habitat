@@ -1,0 +1,103 @@
+- complementary:
+  - generic: DESKTOP PREVIEW
+  - button "Habitat 首页":
+    - generic: Habitat
+  - generic: 个人技能工作台
+  - generic: 工作空间
+  - navigation "主导航":
+    - button "技能库":
+      - generic: 技能库
+    - button "项目":
+      - generic: 项目
+    - button "需要处理 2":
+      - generic: 需要处理
+      - generic: "2"
+    - button "操作记录":
+      - generic: 操作记录
+  - generic: 最近项目
+  - button "添加项目":
+  - navigation "项目导航":
+    - button "Habitat 3":
+      - generic: Habitat
+      - generic: "3"
+    - button "warehouse-core 3":
+      - generic: warehouse-core
+      - generic: "3"
+    - button "personal-site 2":
+      - generic: personal-site
+      - generic: "2"
+  - text: 本地空间
+  - generic: 无需登录 · 不上传内容
+  - button "设置":
+    - generic: 设置
+  - button "帮助与说明 ?":
+    - generic: 帮助与说明
+    - generic: "?"
+- banner:
+  - button "收起侧栏":
+  - generic: 本地空间
+  - strong: 需要处理
+  - button "搜索 ⌘ K":
+    - generic: 搜索
+    - generic: ⌘ K
+  - generic: 演示原型
+- main:
+  - heading "需要处理 2" [level=1]:
+    - text: 需要处理
+    - generic: "2"
+  - paragraph: 看懂原因，再决定如何修复。
+  - button "重新检查":
+    - generic: 重新检查
+  - button "配置问题 2":
+    - text: 配置问题
+    - generic: "2"
+  - button "可用更新 1":
+    - text: 可用更新
+    - generic: "1"
+  - article:
+    - heading "同名 Skill 存在两个来源" [level=3]
+    - generic: 可能被遮蔽
+    - paragraph: Claude Code 的用户级目录还有另一份 code-review，可能遮蔽项目版本。
+    - text: Habitat
+    - text: code-review
+    - generic: 演示检查
+    - button "查看并处理":
+      - text: 查看并处理
+  - article:
+    - heading "来源位置已变化" [level=3]
+    - generic: 需要修复
+    - paragraph: web-research 的原目录已移动，当前项目入口无法解析。
+    - text: personal-site
+    - text: web-research
+    - generic: 演示检查
+    - button "查看并处理":
+      - text: 查看并处理
+  - text: 文件链接正常，只能说明配置完成。
+  - strong: 它并不证明 Agent 已发现技能，也不代表技能内容安全。
+- dialog "确认修复的影响范围":
+  - banner:
+    - generic: 问题诊断
+    - heading "确认修复的影响范围" [level=2]
+    - button "关闭对话框":
+  - strong: "3"
+  - text: 个相关项目
+  - strong: "1"
+  - text: 项入口调整
+  - strong: "0"
+  - text: 个内容删除
+  - strong: Habitat
+  - generic: 全局来源可见性变化，项目配置保持不变
+  - generic: 需重检
+  - strong: warehouse-core
+  - generic: 全局来源可见性变化，项目配置保持不变
+  - generic: 需重检
+  - strong: personal-site
+  - generic: 全局来源可见性变化，项目配置保持不变
+  - generic: 需重检
+  - strong: 可从操作记录逆序撤销
+  - text: 修复后只回到“已配置、未检查”，不会直接宣称 Agent 已发现或运行成功。
+  - contentinfo:
+    - button "返回比较":
+      - generic: 返回比较
+    - button "确认模拟修复" [active]:
+      - generic: 确认模拟修复

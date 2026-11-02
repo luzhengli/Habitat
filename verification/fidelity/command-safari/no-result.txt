@@ -1,0 +1,7 @@
+The following is a diff from the previous accessibility tree for Window: "Habitat · 本地技能工作台" with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+Removed element IDs: 57-73
+~							52 文本栏 (settable) 全局搜索, Value: no-such-skill-fidelity, Placeholder: 搜索技能、项目或操作…
+~						54 标题 没有匹配项, Value: 3
+~							55 文本 没有匹配项
+~						56 文本 试试 Skill 名称或项目名。
+The focused UI element is 52 文本栏 (settable) 全局搜索, Value: no-such-skill-fidelity, Placeholder: 搜索技能、项目或操作…

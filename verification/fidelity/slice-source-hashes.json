@@ -1,0 +1,21 @@
+{
+  "apps/web/src/SkillDetailFrame.tsx": "50d7b98a951305ee720056e74370e4c982f208d7061cb973fbacf2b09174135f",
+  "apps/web/src/App.tsx": "6e5064b61a98aa56f2b02ab4b77ba4bc99c7710f3b4b54396b0a14e178e123e8",
+  "apps/web/src/main.tsx": "25e9a5336a7b22d9cc04da4c03d4262f287845da7dd32bd070a4560fdbea383d",
+  "apps/web/src/SkillCard.tsx": "ed31350def9e8d01936a26235901bf9ff784832cb96c89a531c1c82ddf5f2233",
+  "apps/web/src/styles.css": "304205764eadec21f8a28d67a9c2d9f6fec49986028e1accd5882caa29f49780",
+  "apps/web/src/icon-data.json": "56f6b1086b057cc3803746be17f764f5dafc5054a7f2fea075a993ad1bc767ad",
+  "apps/web/src/Management.tsx": "4539d238d4882c9f5e02d9ea41271e11ba6c4e053657978f3138ef6ff1140f0f",
+  "apps/web/src/tokens.css": "fa5722c50aeaaf530ad913930bf2bc4333f3e58ef44c2a864bd0dc52d4e7b2ce",
+  "apps/web/src/types.ts": "6ffae8eb0cb269995ca9b0abafd21e84c83a51aa1b2199066c9f8e5570ba30db",
+  "apps/web/src/GitSources.tsx": "3fa907c816ccc95231fc10347bd7219098636efa2f6aedc45fc478430977c993",
+  "apps/web/src/vite-env.d.ts": "65996936fbb042915f7b74a200fcdde7e410f32a669b1ab9597cfaa4b0faddb5",
+  "apps/web/src/Diagnostics.tsx": "85c4389a0aa80905cabd37824bf987ab691edaf748f7914517e43da7f6f12ec3",
+  "apps/web/src/client.ts": "468d929b6fe7de76931a21b9ef82618f40df8a6dbb40e98d018b65884d730b19",
+  "apps/web/src/LibraryControls.tsx": "dd5b138fb3c89a145290054179e34e05565c83f197d69f4956eed98dcd7208d1",
+  "apps/web/src/web.css": "dbb02d64bfc7a8cb7e7c092f6e6f1d6b67fa059ce78be22e7ceedb82d1beeb21",
+  "apps/web/src/components/Icon.tsx": "4b78ffe8ede006b2fb12734f95428959a2ca14c45ab146b51d31ef9584c703a2",
+  "apps/web/src/components/UI.tsx": "4e568991da936cefbe4fcebcd6747bfce2bdada4e2bca5c6ced627b0fab602fa",
+  "apps/server/catalog.mjs": "5b674c41d2cc0f3f348a8473f8a5b3369057baa7d4b35a014b060c77d48c3821",
+  "scripts/fidelity-fixture.mjs": "0655973529091c8c22bca1c8028c2b5988bdbf13e14b006ab0ce0b7ea2210a70"
+}

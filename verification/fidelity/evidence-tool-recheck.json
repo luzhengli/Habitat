@@ -1,0 +1,416 @@
+[
+  {
+    "path": "verification/fidelity/A0/library-list-name-sort/1440x960",
+    "exitCode": 0,
+    "error": "",
+    "paired": 12,
+    "unmatchedPrototype": 0,
+    "unmatchedProduction": 0,
+    "cardDeltas": [
+      {
+        "occurrence": 1,
+        "delta": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      {
+        "occurrence": 2,
+        "delta": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      {
+        "occurrence": 3,
+        "delta": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      {
+        "occurrence": 4,
+        "delta": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      }
+    ]
+  },
+  {
+    "path": "verification/fidelity/A0/library-restoration/1280x820",
+    "exitCode": 0,
+    "error": "",
+    "paired": 11,
+    "unmatchedPrototype": 1,
+    "unmatchedProduction": 1,
+    "cardDeltas": [
+      {
+        "occurrence": 1,
+        "delta": {
+          "x": 0,
+          "y": -68,
+          "width": 0.0,
+          "height": 0
+        }
+      },
+      {
+        "occurrence": 2,
+        "delta": {
+          "x": 0.0,
+          "y": -68,
+          "width": 0.0,
+          "height": 0
+        }
+      },
+      {
+        "occurrence": 3,
+        "delta": {
+          "x": 0,
+          "y": -68,
+          "width": 0.0,
+          "height": 0
+        }
+      },
+      {
+        "occurrence": 4,
+        "delta": {
+          "x": 0.0,
+          "y": -68,
+          "width": 0.0,
+          "height": 0
+        }
+      }
+    ]
+  },
+  {
+    "path": "verification/fidelity/A0/library-restoration/1440x960",
+    "exitCode": 0,
+    "error": "",
+    "paired": 11,
+    "unmatchedPrototype": 1,
+    "unmatchedProduction": 1,
+    "cardDeltas": [
+      {
+        "occurrence": 1,
+        "delta": {
+          "x": 0,
+          "y": -68,
+          "width": 0.0,
+          "height": 0
+        }
+      },
+      {
+        "occurrence": 2,
+        "delta": {
+          "x": 0.0,
+          "y": -68,
+          "width": 0.0,
+          "height": 0
+        }
+      },
+      {
+        "occurrence": 3,
+        "delta": {
+          "x": 0,
+          "y": -68,
+          "width": 0.0,
+          "height": 0
+        }
+      },
+      {
+        "occurrence": 4,
+        "delta": {
+          "x": 0.0,
+          "y": -68,
+          "width": 0.0,
+          "height": 0
+        }
+      }
+    ]
+  },
+  {
+    "path": "verification/fidelity/A0/library-restoration/390x844",
+    "exitCode": 0,
+    "error": "",
+    "paired": 11,
+    "unmatchedPrototype": 1,
+    "unmatchedProduction": 1,
+    "cardDeltas": [
+      {
+        "occurrence": 1,
+        "delta": {
+          "x": 0,
+          "y": -94.796875,
+          "width": 0,
+          "height": 0
+        }
+      },
+      {
+        "occurrence": 2,
+        "delta": {
+          "x": 0,
+          "y": -94.796875,
+          "width": 0,
+          "height": -2.09375
+        }
+      },
+      {
+        "occurrence": 3,
+        "delta": {
+          "x": 0,
+          "y": -96.890625,
+          "width": 0,
+          "height": 0
+        }
+      },
+      {
+        "occurrence": 4,
+        "delta": {
+          "x": 0,
+          "y": -96.890625,
+          "width": 0,
+          "height": 0
+        }
+      }
+    ]
+  },
+  {
+    "path": "verification/fidelity/A0/library-restoration/960x640",
+    "exitCode": 0,
+    "error": "",
+    "paired": 11,
+    "unmatchedPrototype": 1,
+    "unmatchedProduction": 1,
+    "cardDeltas": [
+      {
+        "occurrence": 1,
+        "delta": {
+          "x": 0,
+          "y": -68,
+          "width": 0.0,
+          "height": 0
+        }
+      },
+      {
+        "occurrence": 2,
+        "delta": {
+          "x": 0.0,
+          "y": -68,
+          "width": 0.0,
+          "height": 0
+        }
+      },
+      {
+        "occurrence": 3,
+        "delta": {
+          "x": 0,
+          "y": -68,
+          "width": 0.0,
+          "height": 0
+        }
+      },
+      {
+        "occurrence": 4,
+        "delta": {
+          "x": 0.0,
+          "y": -68,
+          "width": 0.0,
+          "height": 0
+        }
+      }
+    ]
+  },
+  {
+    "path": "verification/fidelity/A0/library-slice-name-sort/1280x820",
+    "exitCode": 0,
+    "error": "",
+    "paired": 12,
+    "unmatchedPrototype": 0,
+    "unmatchedProduction": 0,
+    "cardDeltas": [
+      {
+        "occurrence": 1,
+        "delta": {
+          "x": 0,
+          "y": 0,
+          "width": 0.0,
+          "height": 0
+        }
+      },
+      {
+        "occurrence": 2,
+        "delta": {
+          "x": 0.0,
+          "y": 0,
+          "width": 0.0,
+          "height": 0
+        }
+      },
+      {
+        "occurrence": 3,
+        "delta": {
+          "x": 0,
+          "y": 0,
+          "width": 0.0,
+          "height": 0
+        }
+      },
+      {
+        "occurrence": 4,
+        "delta": {
+          "x": 0.0,
+          "y": 0,
+          "width": 0.0,
+          "height": 0
+        }
+      }
+    ]
+  },
+  {
+    "path": "verification/fidelity/A0/library-slice-name-sort/1440x960",
+    "exitCode": 0,
+    "error": "",
+    "paired": 12,
+    "unmatchedPrototype": 0,
+    "unmatchedProduction": 0,
+    "cardDeltas": [
+      {
+        "occurrence": 1,
+        "delta": {
+          "x": 0,
+          "y": 0,
+          "width": 0.0,
+          "height": 0
+        }
+      },
+      {
+        "occurrence": 2,
+        "delta": {
+          "x": 0.0,
+          "y": 0,
+          "width": 0.0,
+          "height": 0
+        }
+      },
+      {
+        "occurrence": 3,
+        "delta": {
+          "x": 0,
+          "y": 0,
+          "width": 0.0,
+          "height": 0
+        }
+      },
+      {
+        "occurrence": 4,
+        "delta": {
+          "x": 0.0,
+          "y": 0,
+          "width": 0.0,
+          "height": 0
+        }
+      }
+    ]
+  },
+  {
+    "path": "verification/fidelity/A0/library-slice-name-sort/390x844",
+    "exitCode": 0,
+    "error": "",
+    "paired": 12,
+    "unmatchedPrototype": 0,
+    "unmatchedProduction": 0,
+    "cardDeltas": [
+      {
+        "occurrence": 1,
+        "delta": {
+          "x": 0,
+          "y": 0.0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      {
+        "occurrence": 2,
+        "delta": {
+          "x": 0,
+          "y": 0.0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      {
+        "occurrence": 3,
+        "delta": {
+          "x": 0,
+          "y": 0.0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      {
+        "occurrence": 4,
+        "delta": {
+          "x": 0,
+          "y": 0.0,
+          "width": 0,
+          "height": 0
+        }
+      }
+    ]
+  },
+  {
+    "path": "verification/fidelity/A0/library-slice-name-sort/960x640",
+    "exitCode": 0,
+    "error": "",
+    "paired": 12,
+    "unmatchedPrototype": 0,
+    "unmatchedProduction": 0,
+    "cardDeltas": [
+      {
+        "occurrence": 1,
+        "delta": {
+          "x": 0,
+          "y": 0,
+          "width": 0.0,
+          "height": 0
+        }
+      },
+      {
+        "occurrence": 2,
+        "delta": {
+          "x": 0.0,
+          "y": 0,
+          "width": 0.0,
+          "height": 0
+        }
+      },
+      {
+        "occurrence": 3,
+        "delta": {
+          "x": 0,
+          "y": 0,
+          "width": 0.0,
+          "height": 0
+        }
+      },
+      {
+        "occurrence": 4,
+        "delta": {
+          "x": 0.0,
+          "y": 0,
+          "width": 0.0,
+          "height": 0
+        }
+      }
+    ]
+  }
+]

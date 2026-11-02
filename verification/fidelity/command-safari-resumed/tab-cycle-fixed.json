@@ -1,0 +1,62 @@
+[
+  {
+    "step": 1,
+    "focus": "11 按钮 添加一个 Skill"
+  },
+  {
+    "step": 2,
+    "focus": "12 按钮 处理配置问题 0"
+  },
+  {
+    "step": 3,
+    "focus": "15 按钮 代码审查 code-review"
+  },
+  {
+    "step": 4,
+    "focus": "16 按钮 文档写作 doc-writing"
+  },
+  {
+    "step": 5,
+    "focus": "17 按钮 技能发现 find-skills"
+  },
+  {
+    "step": 6,
+    "focus": "18 按钮 界面设计 frontend-design"
+  },
+  {
+    "step": 7,
+    "focus": "19 按钮 Git 工作流 git-workflow"
+  },
+  {
+    "step": 8,
+    "focus": "20 按钮 数仓影响评估 rd-change-solution"
+  },
+  {
+    "step": 9,
+    "focus": "21 按钮 技能创作 skill-creator"
+  },
+  {
+    "step": 10,
+    "focus": "22 按钮 系统化调试 systematic-debugging"
+  },
+  {
+    "step": 11,
+    "focus": "23 按钮 网络研究 web-research"
+  },
+  {
+    "step": 12,
+    "focus": "26 按钮 habitat"
+  },
+  {
+    "step": 13,
+    "focus": "27 按钮 warehouse-core"
+  },
+  {
+    "step": 14,
+    "focus": "28 按钮 personal-site"
+  },
+  {
+    "step": 15,
+    "focus": "7 文本栏 (settable) 全局搜索, Placeholder: 搜索技能、项目或操作…"
+  }
+]

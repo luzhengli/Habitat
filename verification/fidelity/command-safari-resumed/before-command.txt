@@ -1,0 +1,6 @@
+The following is a diff from the previous accessibility tree for Window: "Habitat · 本地技能工作台" with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+Removed element IDs: 49-96
+~						39 文本栏 (settable) 搜索技能, Value: code, Placeholder: 搜索名称、用途或来源…
++						133 按钮 清空搜索
+~						41 text 1  项技能
+The focused UI element is 39 文本栏 (settable) 搜索技能, Value: code, Placeholder: 搜索名称、用途或来源…

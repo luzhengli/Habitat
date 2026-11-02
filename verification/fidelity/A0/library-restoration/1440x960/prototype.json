@@ -1,0 +1,141 @@
+{
+  "elements": [
+    {
+      "color": "rgb(37, 40, 48)",
+      "font": "14px / 23.1px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "normal",
+      "height": 960,
+      "padding": "0px 16px 16px",
+      "selector": "sidebar ",
+      "width": 224,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "color": "rgb(37, 40, 48)",
+      "font": "650 21px / 34.65px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "10px",
+      "height": 49.6484375,
+      "padding": "15px 11px 0px",
+      "selector": "brand",
+      "width": 191,
+      "x": 16,
+      "y": 52
+    },
+    {
+      "color": "rgb(37, 40, 48)",
+      "font": "14px / 23.1px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "20px",
+      "height": 52,
+      "padding": "0px 24px",
+      "selector": "topbar",
+      "width": 1216,
+      "x": 224,
+      "y": 0
+    },
+    {
+      "color": "rgb(37, 40, 48)",
+      "font": "14px / 23.1px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "normal",
+      "height": 908,
+      "padding": "43px 48px 36px",
+      "selector": "main-content page-library",
+      "width": 1216,
+      "x": 224,
+      "y": 52
+    },
+    {
+      "color": "rgb(37, 40, 48)",
+      "font": "14px / 23.1px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "24px",
+      "height": 76,
+      "padding": "0px",
+      "selector": "page-heading",
+      "width": 1113,
+      "x": 272,
+      "y": 95
+    },
+    {
+      "color": "rgb(37, 40, 48)",
+      "font": "14px / 23.1px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "16px",
+      "height": 45,
+      "padding": "0px",
+      "selector": "library-tabs",
+      "width": 1113,
+      "x": 272,
+      "y": 204
+    },
+    {
+      "color": "rgb(37, 40, 48)",
+      "font": "14px / 23.1px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "12px",
+      "height": 36,
+      "padding": "0px",
+      "selector": "library-toolbar",
+      "width": 1113,
+      "x": 272,
+      "y": 272
+    },
+    {
+      "color": "rgb(37, 40, 48)",
+      "font": "14px / 23.1px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "22px",
+      "height": 1128,
+      "padding": "0px",
+      "selector": "skill-grid ",
+      "width": 1113,
+      "x": 272,
+      "y": 332
+    },
+    {
+      "color": "rgb(37, 40, 48)",
+      "font": "14px / 23.1px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "normal",
+      "height": 208,
+      "padding": "24px 26px 19px",
+      "selector": "skill-card ",
+      "width": 545.5,
+      "x": 272,
+      "y": 332
+    },
+    {
+      "color": "rgb(37, 40, 48)",
+      "font": "14px / 23.1px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "normal",
+      "height": 208,
+      "padding": "24px 26px 19px",
+      "selector": "skill-card ",
+      "width": 545.5,
+      "x": 839.5,
+      "y": 332
+    },
+    {
+      "color": "rgb(37, 40, 48)",
+      "font": "14px / 23.1px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "normal",
+      "height": 208,
+      "padding": "24px 26px 19px",
+      "selector": "skill-card ",
+      "width": 545.5,
+      "x": 272,
+      "y": 562
+    },
+    {
+      "color": "rgb(37, 40, 48)",
+      "font": "14px / 23.1px -apple-system, \"system-ui\", \"Segoe UI\", \"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", sans-serif",
+      "gap": "normal",
+      "height": 208,
+      "padding": "24px 26px 19px",
+      "selector": "skill-card has-update",
+      "width": 545.5,
+      "x": 839.5,
+      "y": 562
+    }
+  ],
+  "viewport": {
+    "dpr": 1,
+    "height": 960,
+    "width": 1440
+  }
+}

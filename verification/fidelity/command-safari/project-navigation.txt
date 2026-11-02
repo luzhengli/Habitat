@@ -1,0 +1,65 @@
+The following is a diff from the previous accessibility tree for Window: "Habitat · 本地技能工作台" with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+Removed element IDs: 5-11
+~				4 HTML内容 Description: Habitat · 本地技能工作台, URL: 127.0.0.1:4176/projects/1bf72edc-90e1-48ec-b014-8fb26cf138bd
++					50 container
++						51 link Habitat 首页, Value: 127.0.0.1:4176/library
++						52 text 个人技能工作台 工作空间
++						53 container 主导航
++							54 link 技能库, Value: 127.0.0.1:4176/library
++							55 link 项目, Value: 127.0.0.1:4176/projects
++							56 link 需要处理, Value: 127.0.0.1:4176/issues
++							57 link 操作记录, Value: 127.0.0.1:4176/history
++						58 文本 最近项目
++						59 按钮 添加项目
++						60 container 项目导航
++							61 按钮 habitat 3, Help: habitat
++							62 按钮 warehouse-core 3, Help: warehouse-core
++							63 按钮 personal-site 2, Help: personal-site
++						64 text 本地服务 仅授权目录 · 不上传
++						65 link 设置, Value: 127.0.0.1:4176/settings
++					66 container
++						67 按钮 收起侧栏
++						68 text 本地空间 项目
++						69 按钮 搜索 ⌘ K
++						70 文本 本地技能工作台
++					71 container
++						72 标题 项目, Value: 1
++							73 文本 项目
++						74 文本 按项目配置，变更先预览，结果可回读。
++						75 按钮 添加项目
++						76 按钮 habitat Claude Code · 项目入口
++						77 按钮 warehouse-core Claude Code · 项目入口
++						78 按钮 personal-site Claude Code · 项目入口
++						79 标题 warehouse-core, Value: 2
++							80 文本 warehouse-core
++						81 text /private/tmp/habitat-fidelity-kDqkXp/projects/warehouse-core 默认工具：Claude Code 仅管理 .claude/skills 下的受管入口。个人、企业与父目录可见范围未知；项目移除不等于全局禁用。共享目录不是权限隔离。
++						82 标题 本项目配置, Value: 3
++							83 文本 本项目配置
++						84 text rd-change-solution 入口已回读；Agent 未运行实测 已配置 · 发现未知
++						85 按钮 加入移除草稿
++						86 text systematic-debugging 入口已回读；Agent 未运行实测 已配置 · 发现未知
++						87 按钮 加入移除草稿
++						88 text doc-writing 入口已回读；Agent 未运行实测 已配置 · 发现未知
++						89 按钮 加入移除草稿
++						90 标题 添加技能, Value: 3
++							91 文本 添加技能
++						92 复选框 code-review · eb4afb4e, Value: 0
++						93 text code-review ·  eb4afb4e
++						94 复选框 doc-writing · ab27934b, Value: 0
++						95 text doc-writing ·  ab27934b
++						96 复选框 find-skills · 086d522c, Value: 0
++						97 text find-skills ·  086d522c
++						98 复选框 frontend-design · 3bea9ff8, Value: 0
++						99 text frontend-design ·  3bea9ff8
++						100 复选框 git-workflow · b731be0b, Value: 0
++						101 text git-workflow ·  b731be0b
++						102 复选框 rd-change-solution · 3684531f, Value: 0
++						103 text rd-change-solution ·  3684531f
++						104 复选框 skill-creator · 0c1ee4f0, Value: 0
++						105 text skill-creator ·  0c1ee4f0
++						106 复选框 systematic-debugging · 6d477c46, Value: 0
++						107 text systematic-debugging ·  6d477c46
++						108 复选框 web-research · 33fd8fbd, Value: 0
++						109 text web-research ·  33fd8fbd
+~			23 文本栏 (settable) Description: 智能搜索栏, Value: 127.0.0.1:4176/projects/1bf72edc-90e1-48ec-b014-8fb26cf138bd, ID: WEB_BROWSER_ADDRESS_AND_SEARCH_FIELD
+The focused UI element is 69 按钮 搜索 ⌘ K

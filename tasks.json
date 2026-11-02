@@ -441,9 +441,23 @@
       "evidence": [
         "verification/github-sync.md"
       ]
+    },
+    {
+      "id": "ORCH-TRIM-REVIEW",
+      "parentPhase": "agent-contract-maintenance",
+      "dependsOn": [],
+      "owner": "orchestration_trim_review",
+      "model": "gpt-6.1-terra",
+      "reasoningEffort": "medium",
+      "writeScope": [],
+      "status": "done",
+      "evidence": [
+        "AGENTS.md",
+        "JOURNAL.md"
+      ]
     }
   ],
-  "lastCommand": "Conventional Commits policy consistency check; tasks.json JSON parse; git diff --check",
+  "lastCommand": "orchestration length/scope/semantic review; tasks.json JSON parse; git diff --check",
   "next_action": "等待用户确认A1 f5386425…93a4及A2 fb14fb3a…3a243的已展示范围，或指出具体修改；然后继续按获批范围实现和完整验收。Mac锁屏已解除，不再列为当前阻塞。",
   "blockers": [
     "恢复后的连续3个目标轮仍未收到A1/A2具体版本的用户确认。候选可运行且已展示，下一阶段真实状态/流程实现依赖该确认。"

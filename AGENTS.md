@@ -13,6 +13,11 @@
 3. 本包可以就是仓库根。无 Git 时可 `git init -b main`；有 Git 则在当前项目继续。不要嵌套克隆旧仓库，不擅自 push/发布。
 4. CODEX-START 已更新为高保真续跑入口。从 PLAN 的 next_action（V0）继续，不重复已完成的 M0 工程初始化。
 
+## Git 提交约定
+
+- 后续 Git 提交统一使用约定式提交（Conventional Commits）：`<type>(<scope>): <description>`，`scope` 可省略；按实际改动选择 `feat`、`fix`、`docs`、`refactor`、`test`、`chore` 等类型。
+- 大迭代可按独立功能、修复或阶段拆分提交；每次提交聚焦一个完整目的，包含必要的配套文档与测试，完成对应验证，便于独立审查与回退。
+
 ## Orchestration 与 subagent 派发
 
 ### 授权与主代理职责

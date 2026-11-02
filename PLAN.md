@@ -79,3 +79,7 @@ next_action：开发仍等待 A1/A2 具体版本确认；后续仓库同步使�
 按用户要求将 AGENTS.md 的选型更新为 GPT-6.1 Terra、GPT-6.1 Sol、GPT-6 Astra：Terra 承接规则明确与有限范围任务，Sol 负责复杂实现/视觉判断/独立审查，Astra 负责关键架构及疑难问题。起始强度沿用按风险分级的 low/medium/high，必要时升至 xhigh；派发前核对工具支持并显式传参。历史任务模型记录保留。
 
 验证：模型 ID/强度与当前 spawn_agent 工具核对、tasks.json 解析和 git diff --check；仅文档变更，无需重跑生产测试。V0–V3/M4、A1/A2 确认状态及开发 next_action 不变。
+
+## 2026-11-02 — Git 提交约定
+
+按用户要求在 AGENTS.md 固化约定式提交格式；大迭代可按完整且可独立验证的改动拆分提交。验证使用规则一致性检查、tasks.json 解析及 git diff --check；仅文档变更，不重跑生产测试。开发 next_action 仍为等待 A1/A2 具体版本确认后按获批范围继续。

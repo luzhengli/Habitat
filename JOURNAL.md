@@ -139,3 +139,9 @@ Chromium实测中文匹配/输入焦点，但新截图出现异常画布且CDP�
 按用户要求准备同步当前项目。main 尚无 remote；GitHub luzhengli 登录有效，目标仓库链接/新建名称待用户提供。工程 check（54 tests、源边界、严格 TSX、build）及 git diff --check 通过；首次沙箱监听 EPERM 已通过允许本机监听后重跑解决。截图差异专项脚本缺 Pillow，未运行。GH-AUDIT 只读子代理完成上传内容检查，见 verification/github-sync.md；采用实际可用 gpt-6.1-terra/medium，替代表中不可用5.6版本。
 
 next_action（同步）：取得目标仓库后配置远程、推送并核对 SHA。开发阶段和原型批准状态不变，A1/A2 仍待确认，M4 保持 reopened。
+
+## 2026-11-02 — GitHub 首次同步完成
+
+用户明确确认旧仓库改名 Habitat-archived、新项目使用公开 Habitat。旧仓库经临时解除归档完成改名后已立即恢复归档，ID/历史保留。新建独立公开仓库 https://github.com/luzhengli/Habitat，origin 使用 HTTPS，main 首次推送5524674成功并设置跟踪。详情见 verification/github-sync.md。本补充记录随提交同步；不改变原型确认和视觉验收状态。
+
+next_action：开发仍等待 A1/A2 具体版本确认；后续仓库同步使用 git push origin main。

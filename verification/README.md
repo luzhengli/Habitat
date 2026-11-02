@@ -1,16 +1,23 @@
-# 当前实现验收
+# 验证入口与历史证据
 
-当前状态：M4 的高保真视觉验收重新打开。旧记录 [m4-acceptance.md](m4-acceptance.md) 仅保留上一轮工程/功能/兼容性结果，不证明用户通过视觉验收。新对照证据须按 docs/10 写入 verification/fidelity；当前尚未建立 V0 证据。M0–M3 分阶段记录和截图同目录；52 项最终测试日志为 m4-check.log/node24-check.log/clean-clone-check.log。以下原交付记录仅作历史。
+当前高保真验收未完成，M4 保持重新打开。逐页缺口见 [fidelity/coverage.md](fidelity/coverage.md)，验收合同见 [docs/10](../docs/10-原型先行与高保真还原合同.md)；原型批准见 [基线登记](../design/prototype-baselines.md)。
 
-# 验证记录的层级
+## 当前检查方式
 
-current-* 是2026-09-22本次操作；historical-*是原Air包附带历史。两者不能相加后声称全是新Web测试。
+- 安装按 [README](../README.md) 执行根目录与 apps/web 的 `npm ci`。`npm run check` 包含 Node 测试、源边界、严格 TSX 和 Vite build，需要两侧依赖。
+- UI 验收另按 docs/10 做同浏览器/视口/内容/状态的截图、测量和 diff；工程 check 不能代替视觉验收。
+- 仅文档或 harness 状态变更核对 JSON、任务依赖/本地引用、原型/归档保真及 `git diff --check`，无需重复生产测试。
+- `npm run verify:delivery` 仅用于原始交付清单核对，不作当前开发 gate。旧 `tests/browser-smoke.py` 依赖已移除的 bootstrap 页面，已[退役归档](../docs/archive/harness/2026-11-02-pre-audit/browser-smoke.py.txt)。当前没有覆盖全部生产页面的通用浏览器脚本，按覆盖矩阵采证。
 
-current-node-check.log：27项通过（14服务、13原型模型）。
-current-contract-typecheck.log：仅领域合同，TS5.8.3。
-current-jsx-syntax.log：4份JSX可转译语法，不证明npm依赖/Vite/React类型。
-current-npm-registry.log：安装前置网络检查失败，EAI_AGAIN。
-current-browser.log：ERR_BLOCKED_BY_ADMINISTRATOR；没有生成本轮通过结果或截图。
-reference-preservation.json：HTML和设计PNG的SHA-256与原包比对。
+## 证据索引
 
-无需前端依赖即可跑npm start和npm run check；依赖安装、Vite和正式浏览器测试必须由Codex M0补齐。
+| 范围 | 证据 | 限制 |
+|---|---|---|
+| M0–M3 工程基线 | [M0](m0-acceptance.md)、[M1](m1-acceptance.md)、[M2](m2-acceptance.md)、[M3](m3-acceptance.md) | 历史功能与安全记录 |
+| M4 历史工程结果 | [M4](m4-acceptance.md)、m4-check.log / node24-check.log / clean-clone-check.log | 52 项历史测试及兼容性；视觉完成声明已撤回 |
+| 高保真切片 | [slice-acceptance](fidelity/slice-acceptance.md)、[command-acceptance](fidelity/command-acceptance.md)、[覆盖矩阵](fidelity/coverage.md) | 部分 A0 范围，不代表整体验收 |
+| 2026-11-02 工程检查 | [GitHub 同步记录](github-sync.md) | 54 tests/类型/build；截图差异专项因缺 Pillow 未运行 |
+| Harness 维护 | [2026-11-03 审计](harness-audit-2026-11-03.md) | 状态/入口/归档检查，不是应用回归 |
+| 原交付 | [docs/08](../docs/08-交付清单与验证记录.md)、[原型保真](reference-preservation.json) | `current-*` 是 2026-09-22 的旧命名，不代表当前结果；`historical-*` 是原 Air 包记录 |
+
+新证据采用日期/阶段/版本目录，记录命令、提交或文件 hash、fixture 与运行环境；既有截图/日志不覆盖。历史引用中缺失的文件应明确标为不可用，不能据文档描述补造结果。追溯旧进程和状态见 [归档索引](../docs/archive/README.md)。

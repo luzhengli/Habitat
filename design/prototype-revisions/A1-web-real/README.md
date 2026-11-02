@@ -1,6 +1,6 @@
 # A1 Web 真实能力适配候选
 
-状态：`draft`，未获用户确认。本目录不是生效基线，不能导入生产。
+状态：`awaiting-user-confirmation`，已展示范围见[基线登记](../../prototype-baselines.md)，未获用户确认。本目录不是生效基线，不能导入生产。
 
 ## 目的
 

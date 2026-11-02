@@ -1,17 +1,10 @@
-# Habitat Web · 高保真还原续跑入口
+# Habitat Web · 续跑入口
 
-当前项目已存在真实 Web 工程、后端和测试，继续在本仓库工作，不重做 M0 bootstrap，不克隆旧 Habitat、不迁入 Rust/Tauri/Electron。
+1. 读 [AGENTS](AGENTS.md)、[README](README.md)、[PLAN](PLAN.md)、[JOURNAL](JOURNAL.md) 最新检查点和 [tasks.json](tasks.json)；核对 cwd、分支与 git status，保留已有修改。归档按需查，不重做已完成的工程初始化和差异盘点。
+2. 本轮任务以用户最新请求为准；继续高保真工作时按 PLAN 的 next_action 选择范围。读取 [原型合同](docs/10-原型先行与高保真还原合同.md)、[基线登记](design/prototype-baselines.md) 与 [覆盖矩阵](verification/fidelity/coverage.md)，先核对已有证据。
+3. A1/A2 的可审阅文件见 [REVIEW](design/prototype-revisions/REVIEW.md)。未获确认的设计不得接入生产；已确认 A0 范围可继续还原或补证，不把候选等待扩大成所有工作的禁令。若需修改候选，创建新版本并记录确认范围。
+4. 按 AGENTS 拆分有独立收益的工作，固定接口、文件与浏览器负责人。复用真实 API/授权/事务/回读/撤销链；按 docs/10 完成同条件测量、实现、叠加/diff 与修正。
+5. 代码改动运行 `npm run check` 和必要专项回归；UI 改动另需 docs/10 的 Chromium/Safari 与逐状态视觉证据。仅文档变更检查 JSON、依赖/引用和 `git diff --check`。命令范围见 [验证索引](verification/README.md)。
+6. 同步 PLAN/tasks 的当前状态和唯一下一步，将实际结果、失败与未验证项写入 JOURNAL；旧检查点按 [归档索引](docs/archive/README.md) 保留。使用约定式提交，大迭代可按完整、可验证的改动拆分。
 
-用户最新目标：当前界面与提供的原型差异很大，需要按已认可 Air 原型做高保真、像素级还原；之后任何 UI/交互设计修改必须先改原型，用户确认后才能接入生产实现。功能能用或测试通过不能替代视觉验收。
-
-1. 读取 AGENTS.md、README、PLAN、JOURNAL、tasks.json、docs/00、docs/10、design/prototype-baselines.md；核对 cwd、分支、git status。保留已有修改。按需读取 docs/02、03 和 reference/AGENTS.md。
-2. 先按 AGENTS 的 Orchestration 合同划分依赖、工作包与写入负责人；对独立子任务主动使用 subagent，并按实际可用模型/思考强度适配任务。主代理保留关键路径、用户确认、集成和最终验收职责；不要对每次派发重复询问。随后从 PLAN.next_action 的 V0 开始。实际打开原型 HTML 与当前应用，阅读相关原型组件/CSS，按同视口/同内容/同状态保存双方截图，建立逐页逐状态差异清单。不能只比较空态，也不以当前生产 UI 为设计基线。
-3. 现有明确批准的原型可直接还原，无须重复确认。涉及 Web 适配、布局/交互调整或原型缺失的真实状态，先在 design/prototype-revisions/<revision>/ 做独立可运行候选，展示具体变化并请用户确认；确认前不将该候选实现到生产页面。不要为了匹配当前实现而降低原型标准。
-4. 获得所需确认后按 V2 逐页完成“测量 → 实现 → 截图/叠加/diff → 修复”。复用原型的展示结构、样式和资产，保留正式 API/持久化/授权/事务/回读/撤销链；不能导入原型 model.js 或模拟成功。
-5. 按 docs/10 的覆盖矩阵完成 V3：1440×960、1280×820、960×640，390px 可读兜底；Chromium 与真实 Safari；导航/详情/项目/表单/确认/诊断/更新/历史/设置及关键状态。每项保留原始截图、对照和测量，不用“整体风格一致”判完成。
-6. 运行 npm run check 及受影响的真实流程回归，fixture 只用合成临时数据。未实现能力保持真实边界，其视觉表达同样先经原型确认。
-7. 每个切片更新 PLAN、JOURNAL、tasks.json、基线登记与 verification/fidelity。对已确认范围连续推进，不在每页后等待开工许可；需要设计确认时提供可审阅候选并等待用户确认，同时继续不依赖它的工作。
-
-结束条件：V0–V3 均满足退出条件，重大及可控视觉差异修复或逐项获得用户确认，真实流程/测试/build 通过，用户最终视觉验收完成，才可关闭重新打开的 M4。未知状态与阻塞如实记录，不写“全部完成”。
-
-文档维护记录：本文件更新当次仅修改文档，没有修改原型或 UI。下一实施会话按用户的新请求执行本入口，涉及原型变更时仍遵守上述确认门槛。
+V0–V3 的退出条件、功能回归及用户最终视觉确认均满足后才可关闭 M4。临时端口、进程号、会话状态必须在使用前重查；历史测试通过或打开候选不代表用户批准。

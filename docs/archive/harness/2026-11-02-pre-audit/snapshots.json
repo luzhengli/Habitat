@@ -1,0 +1,36 @@
+{
+  "sourceCommit": "73b712f8c5648c5b898c7658c2617201c6c41d17",
+  "archivedAt": "2026-11-02",
+  "files": [
+    {
+      "source": "PLAN.md",
+      "snapshot": "PLAN.md",
+      "sha256": "7ecf7a6615b8de3fefba77d8fa0abfe02a9e2738cfb2cc52724d33cc4265e27c"
+    },
+    {
+      "source": "JOURNAL.md",
+      "snapshot": "JOURNAL.md",
+      "sha256": "1fae92e03441bd5aa04d50bd436d136a7486332d5de09745ece33ff602ead146"
+    },
+    {
+      "source": "tasks.json",
+      "snapshot": "tasks.json",
+      "sha256": "73c08c8f33d8e8298076b8dd02d3a0dfcd9d6b5e6a7f3bcbe14feeef308afe53"
+    },
+    {
+      "source": "docs/06-实施计划与验收.md",
+      "snapshot": "06-original-plan.md",
+      "sha256": "26402470e6174505992a77f4cccc73fb3ab5555e78dbdc3c8f7c7db5a69c608f"
+    },
+    {
+      "source": "docs/08-交付清单与验证记录.md",
+      "snapshot": "08-original-delivery.md",
+      "sha256": "5fdd363a08aa3459bbc18ad2a7f8a89311b4f3a78681df2bab33811d3500aec0"
+    },
+    {
+      "source": "tests/browser-smoke.py",
+      "snapshot": "browser-smoke.py.txt",
+      "sha256": "519400640c829069e94745b1552c0077d27f3efb81562b5a718953145bd72aaa"
+    }
+  ]
+}

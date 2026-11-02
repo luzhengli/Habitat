@@ -73,3 +73,9 @@ next_action（同步）：取得目标仓库后配置远程、推送并核对 SH
 用户明确确认旧仓库改名 Habitat-archived、新项目使用公开 Habitat。旧仓库经临时解除归档完成改名后已立即恢复归档，ID/历史保留。新建独立公开仓库 https://github.com/luzhengli/Habitat，origin 使用 HTTPS，main 首次推送5524674成功并设置跟踪。详情见 verification/github-sync.md。本补充记录随提交同步；不改变原型确认和视觉验收状态。
 
 next_action：开发仍等待 A1/A2 具体版本确认；后续仓库同步使用 git push origin main。
+
+## 2026-11-02 — 模型调度规则更新（仅文档）
+
+按用户要求将 AGENTS.md 的选型更新为 GPT-6.1 Terra、GPT-6.1 Sol、GPT-6 Astra：Terra 承接规则明确与有限范围任务，Sol 负责复杂实现/视觉判断/独立审查，Astra 负责关键架构及疑难问题。起始强度沿用按风险分级的 low/medium/high，必要时升至 xhigh；派发前核对工具支持并显式传参。历史任务模型记录保留。
+
+验证：模型 ID/强度与当前 spawn_agent 工具核对、tasks.json 解析和 git diff --check；仅文档变更，无需重跑生产测试。V0–V3/M4、A1/A2 确认状态及开发 next_action 不变。

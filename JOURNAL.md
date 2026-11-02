@@ -145,3 +145,11 @@ next_action（同步）：取得目标仓库后配置远程、推送并核对 SH
 用户明确确认旧仓库改名 Habitat-archived、新项目使用公开 Habitat。旧仓库经临时解除归档完成改名后已立即恢复归档，ID/历史保留。新建独立公开仓库 https://github.com/luzhengli/Habitat，origin 使用 HTTPS，main 首次推送5524674成功并设置跟踪。详情见 verification/github-sync.md。本补充记录随提交同步；不改变原型确认和视觉验收状态。
 
 next_action：开发仍等待 A1/A2 具体版本确认；后续仓库同步使用 git push origin main。
+
+## 2026-11-02 — 更新模型与思考强度选择
+
+按用户要求更新 AGENTS.md，移除当前选型表中的 GPT-5.6 Luna/Terra/Sol，改用 GPT-6.1 Terra、GPT-6.1 Sol、GPT-6 Astra。规则明确的小任务使用 Terra/low，需要上下文或有限实现使用 Terra/medium，复杂实现与审查使用 Sol/high，关键架构及疑难问题使用 Astra/high，必要时升至 xhigh。明确项目起始强度与工具默认值的区别，保留派发前能力核对和不可用回退；修正自定义模型/强度时只使用当前接口支持的 fork_turns="none"。
+
+已核对当前会话工具与官方 OpenAI Docs 的 Subagents、Model selection。两次尝试读取官方 Markdown 地址被检索工具以不支持的内容类型拒绝，改用已成功打开的 HTML 页面定位到正文完成核对；不影响文件修改。验证使用文档一致性检查、tasks.json 解析及 git diff --check；未运行生产测试。此次小修改由主代理完成，历史 subagent 模型记录保留；V0–V3/M4 和 A1/A2 待确认状态不变。
+
+next_action：本次规则更新完成；开发仍等待 A1/A2 具体版本确认后按获批范围继续，仓库同步按用户后续要求执行。
